@@ -78,8 +78,8 @@
     function settingsRevert(bNotUserAction) {
         cbVideoDisable.checked = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
         cbRTCWebBreaker.checked = (window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true");
-        txtWebsocketServerUrl.value = (window.localStorage.getItem('org.doubango.expert.websocket_server_url') || "");
-        txtSIPOutboundProxyUrl.value = (window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') || "");
+        txtWebsocketServerUrl.value = (window.localStorage.getItem('org.doubango.expert.websocket_server_url') || "wss://sip.ringplan.com:443");
+        txtSIPOutboundProxyUrl.value = (window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') || "tcp://sip.ringplan.com:5060");
         txtIceServers.value = (window.localStorage.getItem('org.doubango.expert.ice_servers') || "");
         txtBandwidth.value = (window.localStorage.getItem('org.doubango.expert.bandwidth') || "");
         txtSizeVideo.value = (window.localStorage.getItem('org.doubango.expert.video_size') || "");
