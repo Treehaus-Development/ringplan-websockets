@@ -1119,7 +1119,7 @@
     </div>
     <div class="container">
         <div class="row-fluid">
-          <div id="divCallCtrl" class="span5 well" style='display:table-cell; vertical-align:middle'>
+            <div id="divCallCtrl" class="span5 well" style='display:table-cell; vertical-align:middle'>
                 <label style="width: 100%;" align="center" id="txtCallStatus">
                 </label>
                 <h2>
@@ -1148,6 +1148,7 @@
                         </td>
                     </tr>
                     <tr>
+                        <!-- Disable Video Classes
                         <td id="tdVideo" class='tab-video'>
                             <div id="divVideo" class='div-video'>
                                 <div id="divVideoRemote" style='position:relative; border:1px solid #009; height:100%; width:100%; z-index: auto; opacity: 1'>
@@ -1167,7 +1168,7 @@
                                     <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
                                     <div id="divScreencastLocal" class="previewvideo" style=' border:0px solid #009; z-index: 1000'>
                                     </div>
-                                </div>
+                                </div> -->
                                 <!--div id="div1" style="margin-left: 300px; border:0px solid #009; z-index: 1000">
                                     <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
                                     <div id="div2" class="previewvideo" style='border:0px solid #009; z-index: 1000'>
@@ -1191,15 +1192,16 @@
                     </tr>
                 </table>
             </div>
-          </div>
-          <div class="row-fluid">
+        </div>
+        <div class="row-fluid">
             <div class="span5 well">
                 <label style="width: 100%;" align="center" id="txtRegStatus">
                 </label>
-                <h2>
+                <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#Registration" aria-expanded="false" aria-controls="Registration">
                     Registration
-                </h2>
-                <br />
+                  </button>
+                <div class="collapse" id="Registration">
+                <div class="card card-body">
                 <table style='width: 100%'>
                     <tr>
                         <td>
@@ -1273,16 +1275,14 @@
                         </td>
                     </tr>
                 </table>
+                </div>
+                </div>
             </div>
         </div>
 
         <br />
         <footer>
 
-            <p>
-                &copy; Doubango Telecom 2012-2016 <br />
-                <i>Inspiring the future</i>
-            </p>
             <!-- Creates all ATL/COM objects right now
                 Will open confirmation dialogs if not already done
             -->
