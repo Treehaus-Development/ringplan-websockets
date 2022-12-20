@@ -43,4 +43,4 @@ deploy:
   script:
     - kubectl cluster-info
     - kubectl get nodes -o wide
-    - kubectl apply -f deployment.yml
+    - kubectl create -f deployment.yml
