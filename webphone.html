@@ -7,82 +7,86 @@
     <title>Ringplan WebPhone</title>
     <link rel="stylesheet" href="css/webphone.css" type="text/css" />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/dialpad.css" />
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"
+    ></script>
   </head>
 
-  <body>
-    <div class="header-section">
-      <div class="header-content">
-        <div>
-          <img src="images/ringplan-md.svg" />
-        </div>
-        <h1>Ringplan Webphone</h1>
-      </div>
-      <div class="header-img-wrapper">
-        <img src="images/ringplan-header.png" />
-      </div>
+  <body
+    class="m-0 !font-body antialiased font-normal text-base leading-default"
+  >
+    <div id="dialpad-content">
+      <div id="my-container" class="justify-center flex items-center"></div>
     </div>
-    <div id="my-container" class="container"></div>
-    <div id="main">
-      <h1>Login with extension and secret</h1>
+    <div id="login-content">
+      <div id="header-section" class="header-section">
+        <div class="header-content">
+          <div>
+            <img src="images/ringplan-md.svg" />
+          </div>
+          <h1>Ringplan Webphone</h1>
+        </div>
+        <div class="header-img-wrapper">
+          <img src="images/ringplan-header.png" />
+        </div>
+      </div>
+      <div id="main-login">
+        <h1>Login with extension and secret</h1>
 
-      <div id="login-extension">
-        <div class="input-wrapper">
-          <label for="user_id">Extension</label>
-          <input
-            type="text"
-            id="user_id"
-            placeholder="Enter extension here..."
-          />
-        </div>
-        <div class="input-wrapper">
-          <label for="user_domain">Server address</label>
-          <input
-            type="text"
-            id="user_domain"
-            placeholder="Enter server address"
-          />
-        </div>
-        <div class="input-wrapper">
-          <label for="user_pwd">Secret</label>
-          <input
-            type="password"
-            id="user_pwd"
-            placeholder="Enter secret code here..."
-          />
-        </div>
-        <div style="display: none"><input id="user_cname" type="text" /></div>
-        <span id="error-message">Invalid credentials</span>
-        <div id="btn-wrapper">
-          <button id="login-btn">Login</button>
+        <div id="login-extension">
+          <div class="input-wrapper">
+            <label for="user_id">Extension</label>
+            <input
+              type="text"
+              id="user_id"
+              placeholder="Enter extension here..."
+            />
+          </div>
+          <div class="input-wrapper">
+            <label for="user_domain">Server address</label>
+            <input
+              type="text"
+              id="user_domain"
+              placeholder="Enter server address"
+            />
+          </div>
+          <div class="input-wrapper">
+            <label for="user_pwd">Secret</label>
+            <input
+              type="password"
+              id="user_pwd"
+              placeholder="Enter secret code here..."
+            />
+          </div>
+          <div style="display: none"><input id="user_cname" type="text" /></div>
+          <span id="error-message">Invalid credentials</span>
+          <div id="btn-wrapper">
+            <button id="login-btn">Login</button>
+          </div>
         </div>
       </div>
     </div>
     <div
       id="loading-progress"
       tabindex="-1"
-      class="fixed hidden top-0 w-full h-full place-content-center
-       bg-modal left-0 right-0 overflow-x-hidden 
-       overflow-y-auto z-[999] md:inset-0 h-modal md:h-full"
+      class="fixed hidden top-0 w-full h-full place-content-center bg-modal left-0 right-0 overflow-x-hidden overflow-y-auto z-[999] md:inset-0 h-modal md:h-full"
     >
-      <div>
-        <svg
-          class="inline mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-          viewBox="0 0 100 101"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-            fill="currentColor"
-          />
-          <path
-            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-            fill="currentFill"
-          />
-        </svg>
+      <div class="w-16 h-16">
+        <img
+          class="animate-spin w-full h-full object-contain"
+          src="/images/loader.svg"
+        />
         <span class="sr-only">Loading...</span>
       </div>
     </div>
+    <script src="../lib/websbc-client.js"></script>
+    <script src="../lib/webphone-plugin.js"></script>
     <script src="js/webphone.js"></script>
   </body>
 </html>
