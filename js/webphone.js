@@ -18,7 +18,7 @@ async function login() {
       async () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-
+        sessionStorage.setItem("user", user.value)
         if (params.error) {
           urlSearchParams.delete("error");
           history.pushState({}, "", window.location.pathname);
@@ -36,9 +36,16 @@ async function login() {
 
 const logout = async () => {
   $("#my-container").webphone.logout();
-  $("#dialpad-content").addClass("hidden");
   $("#login-content").removeClass("hidden");
   $("#my-container").removeClass("px-2 md:px-4 lg:px-6 py-6");
+  let container = document.getElementById("my-container")
+  let dialpadContent = document.getElementById("dialpad-content")
+  dialpadContent.classList.add('hidden')
+  dialpadContent.innerHTML = ""
+  dialpadContent.appendChild(container)
+
+  sessionStorage.clear()
+
   setCookie("user_id", "", 1);
   setCookie("secret", "", 1);
   setCookie("cname", "", 1);
@@ -51,9 +58,12 @@ async function updateUI() {
     document.getElementById("login-content").classList.add("hidden");
     const data = await fetch("/dialpad/index.html");
     const html = await data.text();
-    document
-      .getElementById("dialpad-content")
-      .insertAdjacentHTML("afterbegin", html);
+    document.getElementById("dialpad-content").classList.remove("hidden");
+    if (!document.getElementById("main")) {
+      document
+        .getElementById("dialpad-content")
+        .insertAdjacentHTML("afterbegin", html);
+    }
     document.getElementById("error-message").style.display = "none";
     document.getElementById("loading-progress").classList.remove("grid");
     document.getElementById("loading-progress").classList.add("hidden");
@@ -84,7 +94,7 @@ async function updateUI() {
     let hamburgerBtn = document.getElementById("hamburger");
 
     extensionOpts.querySelector("span").innerText =
-      document.getElementById("user_id").value || getCookie("user_id");
+      sessionStorage.getItem("user") || getCookie("user_id");
 
     const cancelLogout = () => {
       modal.classList.remove("grid");
@@ -152,7 +162,7 @@ async function updateUI() {
       sidebar.classList.toggle("-translate-x-full");
     };
   } catch (error) {
-    document.getElementById("dialpad-content").innerHTML = "";
+    document.getElementById("dialpad-content").classList.add('hidden')
     document.getElementById("login-content").classList.remove("hidden");
     document.getElementById("loading-progress").classList.remove("grid");
     document.getElementById("loading-progress").classList.add("hidden");
