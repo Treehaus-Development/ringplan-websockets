@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location = "/webphone.html";
   };
   ringplanBtn.onclick = () => {
-    console.log("adsadasd");
+    window.location = "https://my.ringplan.com"
   };
   logoContainer.addEventListener("animationend", (e) => {
     let img = logoContainer.querySelector("img")

@@ -616,6 +616,14 @@ video {
   right: 0px;
 }
 
+.\!right-12 {
+  right: 3rem !important;
+}
+
+.\!right-0 {
+  right: 0px !important;
+}
+
 .z-\[999\] {
   z-index: 999;
 }
@@ -743,8 +751,8 @@ video {
   height: calc(100vh - 370px);
 }
 
-.h-24 {
-  height: 6rem;
+.h-16 {
+  height: 4rem;
 }
 
 .h-12 {
@@ -753,10 +761,6 @@ video {
 
 .h-full {
   height: 100%;
-}
-
-.h-16 {
-  height: 4rem;
 }
 
 .h-14 {
@@ -775,6 +779,14 @@ video {
   height: 4.625rem;
 }
 
+.\!h-main {
+  height: calc(100vh - 100px) !important;
+}
+
+.\!h-screen {
+  height: 100vh !important;
+}
+
 .max-h-screen {
   max-height: 100vh;
 }
@@ -787,16 +799,16 @@ video {
   width: 100%;
 }
 
-.w-24 {
-  width: 6rem;
+.w-16 {
+  width: 4rem;
+}
+
+.w-9 {
+  width: 2.25rem;
 }
 
 .w-12 {
   width: 3rem;
-}
-
-.w-16 {
-  width: 4rem;
 }
 
 .w-14 {
@@ -1099,6 +1111,11 @@ video {
   padding-right: 1.5rem;
 }
 
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -1119,9 +1136,9 @@ video {
   padding-right: 2rem;
 }
 
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .pb-6 {
@@ -1270,6 +1287,11 @@ video {
 .text-\[\#9C9C9C\] {
   --tw-text-opacity: 1;
   color: rgb(156 156 156 / var(--tw-text-opacity));
+}
+
+.text-\[\#545454\] {
+  --tw-text-opacity: 1;
+  color: rgb(84 84 84 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -1498,6 +1520,10 @@ video {
     top: 0.25rem;
   }
 
+  .md\:h-24 {
+    height: 6rem;
+  }
+
   .md\:h-full {
     height: 100%;
   }
@@ -1506,22 +1532,23 @@ video {
     height: auto;
   }
 
-  .md\:h-24 {
-    height: 6rem;
-  }
-
   .md\:w-24 {
     width: 6rem;
   }
 
-  .md\:px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
+  .md\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
   .md\:px-10 {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
+  }
+
+  .md\:px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .md\:text-xl {
@@ -1537,6 +1564,10 @@ video {
 
   .lg\:left-0 {
     left: 0px;
+  }
+
+  .lg\:right-24 {
+    right: 6rem;
   }
 
   .lg\:hidden {
