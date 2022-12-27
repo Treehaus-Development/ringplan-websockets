@@ -6,12 +6,6 @@ function getTitle(ele) {
   if (ele === "#") return "pound";
 }
 
-let networkStatus = navigator.connection.downlink < 5 ? "Weak" : "Strong";
-let netWorkImageSrc =
-  navigator.connection.downlink < 5
-    ? "/images/wifi-slow.svg"
-    : "/images/wifi.svg";
-
 function getSubText(ele) {
   let result;
   switch (ele) {
@@ -53,6 +47,7 @@ function getSubText(ele) {
 
 (function ($) {
   var _oSansayClient = null;
+
   var _eSansayClientAudioFastBusy = null;
 
   var _vSansayClientConnUp = false;
@@ -153,7 +148,6 @@ function getSubText(ele) {
     }
   }
 
-
   function _fSansayUiLogoInit() {
     $(".webphone-logo").attr("src", "../images/ringplan-sm-blue.png");
   }
@@ -166,7 +160,7 @@ function getSubText(ele) {
         return `
       <div
         id="webphone-${id}-btn"
-        class="bg-white ${id === 1 ? "pb-2" : ""} hover:bg-gray-500 flex-col
+        class="bg-white ${id === 1 ? 'pb-2' : ''} hover:bg-gray-500 flex-col
                duration-200 ease-in transition-colors hover:text-white
               text-[#42353B] cursor-pointer
                 font-semibold text-3xl justify-center flex
@@ -240,18 +234,6 @@ function getSubText(ele) {
     $("#webphone-call-btn").click(function () {
       _fSansayUiCallKey();
     });
-    $("#hang-up").click(function () {
-      _fSansayUiCallKey();
-    });
-
-    $("#speaker-btn").click(function() {
-      $("#volume").toggleClass('hidden')
-    })
-
-    
-
-    console.log(_oSansayClient, "osansayyy");
-
     $("#webphone-video-btn").click(function () {
       _fSansayUiCallKey(1);
     });
@@ -331,11 +313,18 @@ function getSubText(ele) {
 
   function _fSansayUiMuteKey() {
     _vSansayUiMute ^= 1;
-    $("#webphone-mute-btn > img").attr(
-      "src",
-      _vSansayUiMute ? "/images/mute.svg" : "/images/unmute.svg"
-    );
+    if (_vSansayUiMute) {
+      $("#mute-btn-text").addClass("webphone-inactive");
+      $("#unmute-btn-text").removeClass("webphone-inactive");
+      $("#webphone-mute-btn").addClass("webphone-fkey-alt");
+    } else {
+      $("#unmute-btn-text").addClass("webphone-inactive");
+      $("#webphone-mute-btn").removeClass("webphone-fkey-alt");
+      $("#mute-btn-text").removeClass("webphone-inactive");
+    }
   }
+
+  function _fSansayUiXferKey() {}
 
   function _fSansayUiCallKey(video_call) {
     _vSansayUiCallStateActive ^= 1;
@@ -364,8 +353,6 @@ function getSubText(ele) {
       _vSansayUiMute = 0;
       _vSansayUiHold = 0;
       _vSansayUiXfer = 0;
-
-      $("#webphone-backspace-btn").addClass('hidden')
 
       if (_vSansayClientCallError) {
         // this is to handle user pressing the "end call" key to stop the fast busy
@@ -412,6 +399,11 @@ function getSubText(ele) {
       });
     }
     function __video_aspect_ratio_update() {
+      var remote_frame_width = $(".webphone-video-frame").width();
+      var remote_frame_height = $(".webphone-video-frame").height();
+      var local_frame_width = $(".webphone-pip-frame").width();
+      var local_frame_height = $(".webphone-pip-frame").height();
+
       if (_vSansayUiIsMobile) {
         // do something about the frame width and height for both local and remote-side-video
         // if the orientation of the screen changes
@@ -486,19 +478,15 @@ function getSubText(ele) {
       $("#last-call").html("Last call: " + remote_num);
 
       $("#last-call").hide();
-
-      $("#calling-state").addClass("hidden");
+      $("#elapse-time").show();
 
       // flip the funciton keys
-      $("#no-call").addClass("hidden");
-      $("#in-call").removeClass("hidden");
-      $("#webphone-keypad").removeClass("flex");
-      $("#webphone-keypad").addClass("hidden");
-      $("#my-container").addClass("bg-white");
-      $("#caller-number").html(remote_num);
-      $(".network-status").html(networkStatus);
-      $(".network-img").attr("src", netWorkImageSrc);
+      $("#no-call").addClass("webphone-inactive");
+      $("#in-call").removeClass("webphone-inactive");
+
       // flip the text of the call button
+      $("#call-btn-text").addClass("webphone-inactive");
+      $("#end-call-btn-text").removeClass("webphone-inactive");
 
       var updaters = [__elapsed_update];
       if (_vSansayUiVideoCall) {
@@ -523,18 +511,16 @@ function getSubText(ele) {
     } else {
       clearTimeout(_vSansayUiCallElapsedTimer);
 
-      $("#elapse-time").addClass("hidden");
+      $("#elapse-time").hide();
       $("#last-call").show();
 
       $(".webphone-digits").html("");
 
-      $("#in-call").addClass("hidden");
-      $("#my-container").removeClass("bg-white");
+      $("#in-call").addClass("webphone-inactive");
+      $("#no-call").removeClass("webphone-inactive");
 
-      $("#webphone-keypad").addClass("flex");
-      $("#webphone-keypad").removeClass("hidden");
-
-      $("#no-call").removeClass("hidden");
+      $("#end-call-btn-text").addClass("webphone-inactive");
+      $("#call-btn-text").removeClass("webphone-inactive");
 
       if (_vSansayUiVideoCall) {
         $("#webphone-video").hide();
@@ -550,7 +536,7 @@ function getSubText(ele) {
     if (keypad_on) {
       $("#webphone-keypad").hide();
     } else {
-      $("#webphone-incoming-call").addClass("hidden");
+      $("#webphone-incoming-call").hide();
     }
 
     // setup video view ports
@@ -582,12 +568,11 @@ function getSubText(ele) {
     $("body").off("click", ".webphone-answer-key");
 
     function __answer() {
-      $("#webphone-incoming-call").addClass("hidden");
-      console.log(keypad_on, 'onnnnnnnnnnnnnnnnnnnnnnnn');
+      $("#webphone-incoming-call").hide();
       if (keypad_on) $("#webphone-keypad").show();
-      $("#page-title").text('Phone')
-      $("#elapse-time").removeClass("hidden");
-      
+      else {
+        // handle else case
+      }
       _vSansayUiVideoCall = 0;
       if (ctype == "VIDEO") {
         _vSansayUiVideoCall = 1;
@@ -603,11 +588,9 @@ function getSubText(ele) {
       cb(true, caller, ctype);
     }
     function __reject() {
-
-      $("#webphone-incoming-call").addClass("hidden");
+      $("#webphone-incoming-call").hide();
       if (keypad_on) $("#webphone-keypad").show();
-      $("#page-title").text('Phone')
-      cb(false);
+      else cb(false);
     }
 
     $("body").on("click", ".webphone-answer-key", __answer);
@@ -615,10 +598,7 @@ function getSubText(ele) {
 
     $("#webphone-keypad").hide(); // do this just in case
     $(".webphone-caller-id b").html(caller);
-    $("#webphone-incoming-call").removeClass("hidden");
-    $("#page-title").text('Incoming call')
-    $(".network-status").html(networkStatus);
-    $(".network-img").attr("src", netWorkImageSrc);
+    $("#webphone-incoming-call").show();
   }
 
   $.fn.webphone = function (server, options) {
@@ -829,12 +809,13 @@ function getSubText(ele) {
       // NOTE: for multi-homing so we need to use this as an indicator to switch
       //
 
-      if (status == "connected") {
+      _vSansayClientConnUp = status == "connected" ? true : false;
+      if (_vSansayClientConnUp) {
         clearTimeout(_vSansayClientConnTimer);
         if (typeof login_success === "function") {
           login_success();
         }
-      } else if (status === "err") {
+      } else {
         // handle connection error
         if (typeof login_fail === "function") login_fail();
       }
@@ -861,7 +842,7 @@ function getSubText(ele) {
         ctype
       );
     }
-
+    function __incoming_call_cancel() {}
     _oSansayClient.login({
       user_id: user,
       secret: pwd,
@@ -874,10 +855,6 @@ function getSubText(ele) {
         incoming_cancel_cb: function () {},
         end_session_cb: __call_end,
         error_cb: function () {},
-        stop_ring: function(e){
-          $("#webphone-keypad").show()
-          $("#in-call").addClass('hidden')
-        }
       },
       auto_answer_ui_handler: function (remote_user, ctype) {
         _vSansayUiVideoCall = 0;

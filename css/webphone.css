@@ -49,7 +49,7 @@
   object-fit: cover;
 }
 
-#main h1 {
+#main-login h1 {
   text-align: center;
   font-weight: 500;
   font-size: 30px;
@@ -58,7 +58,7 @@
   color: #015fa5;
 }
 
-#main {
+#main-login {
   padding: 3rem 0;
 }
 
@@ -140,12 +140,20 @@
     padding-left: 1rem;
   }
 
-  #main {
+  #main-login {
     padding: 3rem 1.5rem;
   }
 
-  #main h1 {
+  #main-login h1 {
     font-size: 20px;
     line-height: 30px;
   }
+}
+
+input[type=range][orient=vertical]{
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* Chromium */
+    width: 8px;
+    height: 175px;
+    padding: 0 5px;
 }
