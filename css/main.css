@@ -616,10 +616,6 @@ video {
   right: 0px;
 }
 
-.\!right-12 {
-  right: 3rem !important;
-}
-
 .\!right-0 {
   right: 0px !important;
 }
@@ -777,10 +773,6 @@ video {
 
 .h-18\.5 {
   height: 4.625rem;
-}
-
-.\!h-main {
-  height: calc(100vh - 100px) !important;
 }
 
 .\!h-screen {
