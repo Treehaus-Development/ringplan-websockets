@@ -18,7 +18,7 @@ async function login() {
       async () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-        sessionStorage.setItem("user", user.value)
+        sessionStorage.setItem("user", user.value);
         if (params.error) {
           urlSearchParams.delete("error");
           history.pushState({}, "", window.location.pathname);
@@ -38,13 +38,13 @@ const logout = async () => {
   $("#my-container").webphone.logout();
   $("#login-content").removeClass("hidden");
   $("#my-container").removeClass("px-2 md:px-4 lg:px-6 py-6");
-  let container = document.getElementById("my-container")
-  let dialpadContent = document.getElementById("dialpad-content")
-  dialpadContent.classList.add('hidden')
-  dialpadContent.innerHTML = ""
-  dialpadContent.appendChild(container)
+  let container = document.getElementById("my-container");
+  let dialpadContent = document.getElementById("dialpad-content");
+  dialpadContent.classList.add("hidden");
+  dialpadContent.innerHTML = "";
+  dialpadContent.appendChild(container);
 
-  sessionStorage.clear()
+  sessionStorage.clear();
 
   setCookie("user_id", "", 1);
   setCookie("secret", "", 1);
@@ -162,7 +162,7 @@ async function updateUI() {
       sidebar.classList.toggle("-translate-x-full");
     };
   } catch (error) {
-    document.getElementById("dialpad-content").classList.add('hidden')
+    document.getElementById("dialpad-content").classList.add("hidden");
     document.getElementById("login-content").classList.remove("hidden");
     document.getElementById("loading-progress").classList.remove("grid");
     document.getElementById("loading-progress").classList.add("hidden");
@@ -170,6 +170,46 @@ async function updateUI() {
     document.getElementById("error-message").style.display = "inline";
   }
 }
+
+const loginWithApi = async () => {
+  const token = getCookie("id_token")
+  const data = await fetch(
+    "https://ssp-backend.ringplan.com/system/instances",
+    {
+      headers: {
+        Authorization: token
+      },
+    }
+  );
+  const info = await data.json();
+  console.log(info, "info");
+  if (info) {
+    let uuid = info[0].uuid;
+    const extensions = await fetch(
+      `https://ssp-backend.ringplan.com/instances/${uuid}/bulks/extensions`,
+      {
+        headers: {
+          Authorization: token
+        },
+      }
+    );
+
+    const list = await extensions.json();
+    console.log(list, "list");
+  }
+
+  try {
+    const vals = await fetch("http://ssp-backend.dev.ringplan.com/account", {
+      headers: {
+        authorization: `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzIyODA3OTMsIm5iZiI6MTY3MjI1MTk5MywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyMjUxOTkzLCJhdXRoX3RpbWUiOjE2NzIyNTE5OTIsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiS1pvNXc3YlRvdUlxaTMyTVgwTU5YUSJ9.pYHi1efoj7ACCt5LczOJz_xWihfOqg2xkRI6YpxtVmPwgRQVnPWi8XQsf8IfReeVPUAgJAEOfFSFHYHdqq2J_LB0zfgSb_esOOlEj4TfAVz0YHSH2Ae511z1mnjFN_MEkDIshcx-gJ4H1_oDc6lZ6R5Egp_CYgIFWCH0RH44n-1AgjCSu9eoAh7l3b3FosXspBBqJTg6RQLyo4Zhu2Ft8lXXt-vKS3ncTiVasQTJyS2VpVhlCbHr7-UKEAq2JxWaKE75pzkrPzq0qoBnKrO_jHF1n3I9bJZqMpkey_7YJn6b-8gffrz9jpEXfyaTI1Ae83uobNeWzF1HR1RtIwD7lg`,
+      },
+    });
+    const finalData = await vals.json();
+    console.log(finalData);
+  } catch (error) {
+    console.dir(error);
+  }
+};
 
 window.onload = function () {
   let userDomain = document.getElementById("user_domain");
@@ -221,6 +261,12 @@ window.onload = function () {
 
 document.addEventListener("DOMContentLoaded", () => {
   $("#my-container").webphone(["sip.ringplan.com"]);
+  
+  const isDev = location.hostname === "localhost";
+  if(document.referrer === window.location.origin + '/'){
+    loginWithApi();
+  }
+
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
   let loginBtn = document.getElementById("login-btn");
