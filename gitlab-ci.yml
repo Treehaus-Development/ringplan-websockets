@@ -1,0 +1,46 @@
+variables:
+  DOCKER_REGISTRY: ${JFROG}
+  DOCKER_REGISTRY_USER: ${JFROG_USER}
+  DOCKER_REGISTRY_PASSWORD: ${JFROG_PASSWORD}
+
+workflow:
+  rules:
+  - if: $CI_COMMIT_BRANCH == 'dev'
+    variables:
+      ENVIRONMENT: dev
+      KUBECONFIG_CONTEXT: dev
+      KUBERNETES_NAMESPACE: default
+      IMAGE_TAG: $CI_COMMIT_SHA
+  
+stages:
+  - build
+  - push
+  - deploy
+
+
+build:
+  stage: build
+  script:
+    - echo $IMAGE_TAG
+    - echo $DOCKER_REGISTRY
+    - echo $CI_COMMIT_REF_SLUG
+    - echo $CI_PROJECT_NAME
+    - echo $CI_PIPELINE_ID
+    - docker build -t $DOCKER_REGISTRY/$CI_COMMIT_REF_SLUG/$CI_PROJECT_NAME .
+    
+push:
+  stage: push
+  before_script:
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+  script:
+    - docker push $DOCKER_REGISTRY/$CI_COMMIT_REF_SLUG/$CI_PROJECT_NAME
+  
+deploy:
+  stage: deploy
+  before_script:
+    - docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+    - &kubectl_change_context kubectl config use-context "${KUBECONFIG_CONTEXT}" --kubeconfig="${KUBECONFIG}"
+  script:
+    - kubectl cluster-info
+    - kubectl get nodes -o wide
+    - kubectl delete -f deployment.yml && kubectl apply -f deployment.yml
