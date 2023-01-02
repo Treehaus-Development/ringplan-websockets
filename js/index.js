@@ -6,11 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location = "/webphone.html";
   };
   ringplanBtn.onclick = () => {
-    const isDev = location.hostname === "localhost";
-    window.location = `https://b2clogin.ringplan.com/login?back=${
+    const isDev = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+    console.log(isDev,"isdev");
+    console.log(window.location);
+    window.location = `https://b2clogin.dev.ringplan.com/login?back=${
       isDev
-        ? "http://localhost:5500/webphone.html"
-        : "https://webphone.dev.ringplan.com/webphone.html"
+        ? "http://localhost:5500/callback.html"
+        : "https://webphone.dev.ringplan.com/callback.html"
     }`;
   };
   
