@@ -1,18 +1,16 @@
+const cookiesObj = Object.fromEntries(
+  document.cookie
+    .split("; ")
+    .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
+);
+const id_token =
+  cookiesObj.id_token ||
+  `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjNpUDRvM2cyZHpQOFQxcXJYWjFZQXNzN1dhY19zSmNpcldkaGRiRDBqa1EifQ.eyJleHAiOjE2NzI2OTEwNDcsIm5iZiI6MTY3MjY4NzQ0NywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kZXZyaW5ncGxhbi5iMmNsb2dpbi5jb20vZTdiZmZlNmEtN2M5ZC00ODY0LThmYmYtNmIzNmVjMjJkODExL3YyLjAvIiwic3ViIjoiNjQzZThjZmItZDBhZC00YTY1LWJjYjktYThkZTkxNzc4YTgwIiwiYXVkIjoiZGQwN2U1NTUtZTFiNi00ZTViLWJhOGItYjUyZDJhZmVkOWI4IiwiYWNyIjoiYjJjXzFhX3NpZ25pbm9ubHkiLCJpYXQiOjE2NzI2ODc0NDcsImF1dGhfdGltZSI6MTY3MjY4NzQ0NiwiZ2l2ZW5fbmFtZSI6IkRlZXAiLCJmYW1pbHlfbmFtZSI6IkNoYW5kIiwiZXh0ZW5zaW9uX2NvbXBhbnkiOiJTdGFydHhsYWJzIFRlY2hub2xvZ2llcyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJlN2JmZmU2YS03YzlkLTQ4NjQtOGZiZi02YjM2ZWMyMmQ4MTEiLCJhdF9oYXNoIjoibHRFWjBXY3NaTWk1NlNuOTZZUkhTdyJ9.iwhBi5BC6NwzvOs7OOhTXwYOH_DF6WP_RydIc_ntEaQ2E2j51ZZntdc0Eqta4_tgnEZaYWPcqF3kW49gOK7-Ltu5jGIuv47QWLNRYgnGf6rzIXUYxCIK7pL43XByiTdF6SsZVGYnmjb5BBHdtHD7an8jyl3g9wgZPPGsbCBCFFPccv3dEXHoIGjw40uwEfrqcgU29cFL-0vAFT-y6TPYL6fHvX1YNO86vKFLdF8UZJvXg40-c0JpYVFhzoXKX5bAjeoBedYt6UUfWZIRiVwsX2k55u1iKUbM5F9HCW-TsTwjFEQkyP-CGXW8br8LHTV9UUV-xwDZfXsUgm85b-TfHA`;
+const access_token = cookiesObj.refresh_token;
+const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
+let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
+
 const loginWithApi = async () => {
-  const cookiesObj = Object.fromEntries(
-    document.cookie
-      .split("; ")
-      .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
-  );
-
-  const id_token =
-    cookiesObj.id_token ||
-    `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjNpUDRvM2cyZHpQOFQxcXJYWjFZQXNzN1dhY19zSmNpcldkaGRiRDBqa1EifQ.eyJleHAiOjE2NzI2NjI2NTEsIm5iZiI6MTY3MjY1OTA1MSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kZXZyaW5ncGxhbi5iMmNsb2dpbi5jb20vZTdiZmZlNmEtN2M5ZC00ODY0LThmYmYtNmIzNmVjMjJkODExL3YyLjAvIiwic3ViIjoiNjQzZThjZmItZDBhZC00YTY1LWJjYjktYThkZTkxNzc4YTgwIiwiYXVkIjoiZGQwN2U1NTUtZTFiNi00ZTViLWJhOGItYjUyZDJhZmVkOWI4IiwiYWNyIjoiYjJjXzFhX3NpZ25pbm9ubHkiLCJpYXQiOjE2NzI2NTkwNTEsImF1dGhfdGltZSI6MTY3MjY1OTA1MCwiZ2l2ZW5fbmFtZSI6IkRlZXAiLCJmYW1pbHlfbmFtZSI6IkNoYW5kIiwiZXh0ZW5zaW9uX2NvbXBhbnkiOiJTdGFydHhsYWJzIFRlY2hub2xvZ2llcyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJlN2JmZmU2YS03YzlkLTQ4NjQtOGZiZi02YjM2ZWMyMmQ4MTEiLCJhdF9oYXNoIjoiMUZHb1hJTXgzMUR4SHlUa1ZoaU9VQSJ9.VM2MqiZINWl6FL8dUMP3LnHehSyrbF_J4rL_48G5FBeEPgKLlGaCbJlaI4dXEJLY66FyFZe_FUQqJMYUSLJ4_Mj1DhZvM0yVburMW5uEO8LM4CeTsuUbh0VQSBxrdhdfBuh9S-_AdYt-I6Wxlf_Vvu2ofaHU0d7E6Iphjz458JuiiDy95myxCqzVDxr_uQS8_Y96_aRNUWuCHl4f25lDCS48FSBPiITEXVaAvOOymyi3P5o1bBjb4TjRiQcwRGWtTM74RiOUI8SaTvz5OU4WQvtX8XCkK7zoI2auV3vnoF5P_bJezz45PsnzmUvs6lQRtM0uM5bEdSOvEnQ9N6OfAw`;
-  const access_token =
-    cookiesObj.refresh_token ||
-    `eyJraWQiOiJ3Q0RtM0lnTjZaT0NRYzI2di1lbFZPUUtxcU85TXAwOUcwS3lZZk02MEswIiwidmVyIjoiMS4wIiwiemlwIjoiRGVmbGF0ZSIsInNlciI6IjEuMCJ9.RbTz_VzgQaRtBr7Gfsv1HKjZ0lSB1sr3ThgidRzCKMerIvL-uKU8i1y280Y1HXEce9laehG1cOVPfHTLjXGHaw6q_nVhyzNYnB8vk8GUG8ton56rQpsDupC5rq_GONEB9cScXMJPurbmCdNbLSaznebPAeoti0iTzg_27EnDkdf82ueZm2Adn78BsNUfTNzNu696C69FqCBHsssR3kWGgKKkhOcFVwaJZXHVha5TgY1LcNpjIbSBjhG0H-Oi_-LvHZHUxazdcMrhXVIoMUJapeCbZftrXnnhcn5YDGpmGsq7O4C_TNEbxk3znK39A1kUsTZETAfhongHbPQXOf7d0w.P9mgkae-K7bR31VW.5_zOrPf8Q0Hy9p3B9z8uTdfK_nEeyqMuJzfIepHWmfhfm1i6mW_fJyO88J0vlixDGo9vGMrICAYCmd_CAyQqfJSo_3TWje6oQdL5qd8vHE5v8cLQLARDn2lZF-jO5NaMDHgSvsxoYbo6IMMX953iqUabckrQVqcurqJsybeDi4DgElGABUbWc_1NiYPqD6Zh2MvQNMVrjCuXviN0VVmT4kgFL0hy2xzJyJZCqeVJGNXMnjDwcS1llxF2eAIvovW97a3YIYWPd91NZTJtYjAUuxr-Cmo_L4zLplvgMsQ2CEM0mO_Wja07lpg_8ohUDIQaqT9u7xl9a89CEBIE5xoKArbz_JiClOiormrFGCe8Tyry8jg6jKiRxXBIA2RpUfkQQMbKKbawhkp_xkistL_RFzlxUUzyUwws-PCY4CJleVTy9mmw8NKx5xRLV9rt78Oge_mLGs0OyUVf4MatBjGbYvOpceRLXGH3C0GB36EODLTTUDyRTwOlbdekC-eph9Z4CQAd5XK5Hu1NyR-2CscuA5OM75oMaZAChELvizE_hN1nfhOUiGtNvMH6c_rn5MBrvo4LjUEiPKZYDfzmvwKuDW7oQi7hDzR8sHN1M6WS_7q1ndHzY4c8BxkYejCDpr4MhlXPbr698Ghy_IRWzSdiiD7rDv3UwN7E4TC8ZfHDsCacqAicwUha8xFmBQxkFr7nX_V1yWKfGeyv.CnBz526n92gtQOGnbtL9Uw`;
-  const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
-
   const data = {
     access_token,
     id_token,
@@ -48,7 +46,7 @@ const loginWithApi = async () => {
           try {
             const extension = await getInstances.json();
             const uuid = extension[0].uuid;
-
+            cacheUuid = uuid;
             try {
               const fetchList = await fetch(
                 `https://ssp-backend.dev.ringplan.com/instances/${uuid}/bulks/extensions`,
@@ -80,6 +78,52 @@ const loginWithApi = async () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  let modal = document.getElementById("select-extension");
+  let editModal = document.getElementById("edit-modal");
+  let closeEdit = document.getElementById("close-edit");
+  let nameInput = document.getElementById("name-edit");
+  let numberBtn = document.getElementById("active-number");
+
+  closeEdit.onclick = () => {
+    modal.classList.add("grid");
+    modal.classList.remove("hidden");
+    editModal.classList.add("hidden");
+    editModal.classList.remove("grid");
+  };
+
+  const getAvailableNumbers = async () => {
+    try {
+      const numbers = await fetch(
+        `https://ssp-backend.dev.ringplan.com/instances/${cacheUuid}/bulks/extensions/available-ids`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: id_token,
+          },
+        }
+      );
+
+      if (numbers.ok) {
+        let data = await numbers.json();
+        availableNumbers = [...data];
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editExtension = async (id, activeNumber, name) => {
+    modal.classList.remove("grid");
+    modal.classList.add("hidden");
+    editModal.classList.remove("hidden");
+    editModal.classList.add("grid");
+
+    await getAvailableNumbers();
+    console.log(availableNumbers, "available");
+    nameInput.placeholder = name;
+    numberBtn.children[0].innerText = activeNumber;
+  };
+
   loginWithApi()
     .then((res) => {
       console.log(res, "res");
@@ -89,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .finally(() => {
       console.log(extensionsList);
-      let modal = document.getElementById("select-extension");
+
       modal.classList.remove("hidden");
       modal.classList.add("grid");
       let extensionsWrapper = document.getElementById("extension-list");
@@ -114,7 +158,12 @@ document.addEventListener("DOMContentLoaded", () => {
                   ${item.data.extension}
                 </label>
               </div>
-              <div class="cursor-pointer">
+              <div
+                id="edit-ext-${item._id}" 
+                data-caller-id="${item.location?.callerid}"
+                data-name="${item.data.name}"
+                class="cursor-pointer"
+              >
                 <img src="/images/edit.svg"/>
               </div>
             </div>     
@@ -129,6 +178,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       inputs.forEach((input) => {
+        let editBtn = input.parentNode.parentNode.querySelector(
+          `#edit-ext-${input.id}`
+        );
+        editBtn.addEventListener("click", function () {
+          editExtension(input.id, this.dataset.callerId, this.dataset.name);
+        });
         input.addEventListener("change", function () {
           saveBtn.disabled = false;
         });
@@ -138,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const checkedInput = inputs.find((input) => input.checked);
         const id = checkedInput.id;
         const activeExtension = extensionsList.find((item) => item._id === id);
-        console.log(activeExtension, "activeExt");
         window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}`;
       };
     });
