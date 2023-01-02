@@ -180,38 +180,24 @@ window.onload = function () {
     cname = getCookie("cname") || "",
     domain = getCookie("domain") || "";
 
-  if (
-    window.location.search.length > 1 &&
-    window.location.search.toLowerCase().indexOf("user=") > -1 &&
-    window.location.search.toLowerCase().indexOf("pass=") > -1
-  ) {
-    let query_params = window.location.search.split("&");
-    for (var i = 0; i < query_params.length; i++) {
-      if (query_params[i].toLowerCase().indexOf("user=") > -1) {
-        uname = query_params[i].split("=")[1];
-      } else if (query_params[i].toLowerCase().indexOf("pass=") > -1) {
-        pass = query_params[i].split("=")[1];
-      } else if (query_params[i].toLowerCase().indexOf("cname=") > -1) {
-        cname = query_params[i].split("=")[1].replace("%20", " ");
-      } else if (query_params[i].toLowerCase().indexOf("domain=") > -1) {
-        domain = query_params[i].split("=")[1];
-      }
-    }
-  }
-
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
   let cnameInput = document.getElementById("user_cname");
-  let domainInput = document.getElementById("user_domain");
 
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
+
+  if (params.user) {
+    uname = params.user;
+  }
+  if (params.pass) {
+    pass = params.pass;
+  }
 
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
     password.value = pass;
     cnameInput.value = cname;
-    domainInput.value = domain;
     updateUI();
   }
 };
