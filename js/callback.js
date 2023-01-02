@@ -19,62 +19,108 @@ const loginWithApi = async () => {
     key,
   };
 
-  const response = await fetch(
-    "https://b2clogin.dev.ringplan.com/api/user/store",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  try {
+    const response = await fetch(
+      "https://b2clogin.dev.ringplan.com/api/user/store",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
-  if (response.ok) {
-    try {
-      const getInstances = await fetch(
-        "https://ssp-backend.dev.ringplan.com/system/instances",
-        {
-          headers: {
-            Authorization: data.id_token,
-          },
-        }
-      );
+    if (response.ok) {
+      try {
+        const getInstances = await fetch(
+          "https://ssp-backend.dev.ringplan.com/system/instances",
+          {
+            headers: {
+              Authorization: data.id_token,
+            },
+          }
+        );
 
-      console.log(getInstances, "getexts");
+        console.log(getInstances, "getexts");
 
-      if (getInstances.ok) {
-        try {
-          const extension = await getInstances.json();
-          const uuid = extension[0].uuid;
-
+        if (getInstances.ok) {
           try {
-            const fetchList = await fetch(
-              `https://ssp-backend.dev.ringplan.com/instances/${uuid}/bulks/extensions`,
-              {
-                headers: {
-                  Authorization: data.id_token,
-                },
-              }
-            );
+            const extension = await getInstances.json();
+            const uuid = extension[0].uuid;
 
-            if (fetchList.ok) {
-              const list = await fetchList.json();
-              console.log(list, "list");
+            try {
+              const fetchList = await fetch(
+                `https://ssp-backend.dev.ringplan.com/instances/${uuid}/bulks/extensions`,
+                {
+                  headers: {
+                    Authorization: data.id_token,
+                  },
+                }
+              );
+
+              if (fetchList.ok) {
+                const list = await fetchList.json();
+                return (extensionsList = [...list]);
+              }
+            } catch (error) {
+              console.log(error.message, "error");
             }
           } catch (error) {
-            console.log(error.message, "error");
+            console.log(error.message, "error getting instances");
           }
-        } catch (error) {
-          console.log(error.message, "error getting instances");
         }
+      } catch (e) {
+        console.log(e.message);
       }
-    } catch (e) {
-      console.log(e.message);
     }
+  } catch (error) {
+    console.log(error.message, "error");
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  loginWithApi();
+  loginWithApi()
+    .then((res) => {
+      console.log(res, "res");
+    })
+    .catch((error) => {
+      console.log(error, "error");
+    })
+    .finally(() => {
+      console.log(extensionsList);
+      let modal = document.getElementById("select-extension");
+      modal.classList.remove("hidden");
+      modal.classList.add("grid");
+      let extensionsWrapper = document.getElementById("extension-list");
+      let html = extensionsList
+        .map((item) => {
+          return `
+            <div class="flex justify-between items-center">
+              <div class="flex gap-2 items-center">
+                <input
+                  class="peer input-ext"
+                  type="radio"
+                  id=${item._id}
+                  value=${item.data.extension}
+                  name="extension"
+                />
+                <label
+                  for=${item._id}
+                  class="text-sm relative font-medium pl-10 duration-200 ease-in transition-colors
+                  select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
+                  "
+                >
+                  ${item.data.extension}
+                </label>
+              </div>
+              <div class="cursor-pointer">
+                <img src="/images/edit.svg"/>
+              </div>
+            </div>     
+        `;
+        })
+        .join(" ");
+      extensionsWrapper.innerHTML = html;
+    });
 });

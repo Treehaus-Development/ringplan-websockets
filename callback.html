@@ -1,13 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ringplan</title>
-</head>
-<body>
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/callback.css"/>
+  </head>
+  <body>
     <h1>Redirecting to dashboard, please wait....</h1>
+    <div
+      id="select-extension"
+      tabindex="-1"
+      class="fixed hidden top-0 w-full h-full place-content-center 
+      bg-modal left-0 right-0 p-4 overflow-x-hidden 
+      overflow-y-auto z-[999] md:inset-0 h-modal md:h-full"
+    >
+      <div class="relative w-full h-full min-w-72 max-w-md md:h-auto">
+        <div class="relative bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-medium mb-4">Select Extensions</h2>
+          <form id="extension-list" class="overflow-auto max-h-90 flex flex-col gap-2"></form>
+          <div class="flex gap-3 justify-center mt-4">
+            <button
+              id="logout-confirm"
+              type="button"
+              class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center px-8 py-2 text-center mr-2"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./js/extensions.js"></script>
     <script src="./js/callback.js"></script>
-</body>
+  </body>
 </html>
