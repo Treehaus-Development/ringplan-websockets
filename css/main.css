@@ -1545,6 +1545,10 @@ video {
   --tw-ring-color: rgb(233 236 239 / var(--tw-ring-opacity));
 }
 
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
 .peer:checked ~ .peer-checked\:text-\[\#3B9EF7\] {
   --tw-text-opacity: 1;
   color: rgb(59 158 247 / var(--tw-text-opacity));

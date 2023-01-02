@@ -122,5 +122,24 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .join(" ");
       extensionsWrapper.innerHTML = html;
+
+      const saveBtn = document.getElementById("save");
+      const inputs = [].slice.call(
+        document.getElementById("extension-list").querySelectorAll("input")
+      );
+
+      inputs.forEach((input) => {
+        input.addEventListener("change", function () {
+          saveBtn.disabled = false;
+        });
+      });
+
+      saveBtn.onclick = () => {
+        const checkedInput = inputs.find((input) => input.checked);
+        const id = checkedInput.id;
+        const activeExtension = extensionsList.find((item) => item._id === id);
+        console.log(activeExtension, "activeExt");
+        window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}`;
+      };
     });
 });
