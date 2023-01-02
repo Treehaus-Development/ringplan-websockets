@@ -83,6 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let closeEdit = document.getElementById("close-edit");
   let nameInput = document.getElementById("name-edit");
   let numberBtn = document.getElementById("active-number");
+  let numberList = document.getElementById("number-list");
+
+  numberBtn.onclick = () => {
+    numberList.classList.toggle("hidden");
+  };
 
   closeEdit.onclick = () => {
     modal.classList.add("grid");
@@ -122,6 +127,15 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(availableNumbers, "available");
     nameInput.placeholder = name;
     numberBtn.children[0].innerText = activeNumber;
+    const html = availableNumbers
+      .map((number) => {
+        return `
+        <div class="ease-in duration-250 p-3 transition-colors hover:bg-gray-100" >${number}</div>
+      `;
+      })
+      .join(" ");
+
+    numberList.innerHTML = html;
   };
 
   loginWithApi()
