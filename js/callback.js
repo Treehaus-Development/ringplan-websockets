@@ -3,12 +3,13 @@ const cookiesObj = Object.fromEntries(
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
-const id_token =
-  cookiesObj.id_token ||
-  `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjNpUDRvM2cyZHpQOFQxcXJYWjFZQXNzN1dhY19zSmNpcldkaGRiRDBqa1EifQ.eyJleHAiOjE2NzI2OTEwNDcsIm5iZiI6MTY3MjY4NzQ0NywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9kZXZyaW5ncGxhbi5iMmNsb2dpbi5jb20vZTdiZmZlNmEtN2M5ZC00ODY0LThmYmYtNmIzNmVjMjJkODExL3YyLjAvIiwic3ViIjoiNjQzZThjZmItZDBhZC00YTY1LWJjYjktYThkZTkxNzc4YTgwIiwiYXVkIjoiZGQwN2U1NTUtZTFiNi00ZTViLWJhOGItYjUyZDJhZmVkOWI4IiwiYWNyIjoiYjJjXzFhX3NpZ25pbm9ubHkiLCJpYXQiOjE2NzI2ODc0NDcsImF1dGhfdGltZSI6MTY3MjY4NzQ0NiwiZ2l2ZW5fbmFtZSI6IkRlZXAiLCJmYW1pbHlfbmFtZSI6IkNoYW5kIiwiZXh0ZW5zaW9uX2NvbXBhbnkiOiJTdGFydHhsYWJzIFRlY2hub2xvZ2llcyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJlN2JmZmU2YS03YzlkLTQ4NjQtOGZiZi02YjM2ZWMyMmQ4MTEiLCJhdF9oYXNoIjoibHRFWjBXY3NaTWk1NlNuOTZZUkhTdyJ9.iwhBi5BC6NwzvOs7OOhTXwYOH_DF6WP_RydIc_ntEaQ2E2j51ZZntdc0Eqta4_tgnEZaYWPcqF3kW49gOK7-Ltu5jGIuv47QWLNRYgnGf6rzIXUYxCIK7pL43XByiTdF6SsZVGYnmjb5BBHdtHD7an8jyl3g9wgZPPGsbCBCFFPccv3dEXHoIGjw40uwEfrqcgU29cFL-0vAFT-y6TPYL6fHvX1YNO86vKFLdF8UZJvXg40-c0JpYVFhzoXKX5bAjeoBedYt6UUfWZIRiVwsX2k55u1iKUbM5F9HCW-TsTwjFEQkyP-CGXW8br8LHTV9UUV-xwDZfXsUgm85b-TfHA`;
+const id_token = cookiesObj.id_token;
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
+
+const userApi = getLoginUrl();
+const backendApi = getBackendUrl();
 
 const loginWithApi = async () => {
   const data = {
@@ -18,27 +19,21 @@ const loginWithApi = async () => {
   };
 
   try {
-    const response = await fetch(
-      "https://b2clogin.dev.ringplan.com/api/user/store",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+    const response = await fetch(`${userApi}/api/user/store`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
     if (response.ok) {
       try {
-        const getInstances = await fetch(
-          "https://ssp-backend.dev.ringplan.com/system/instances",
-          {
-            headers: {
-              Authorization: data.id_token,
-            },
-          }
-        );
+        const getInstances = await fetch(`${backendApi}/system/instances`, {
+          headers: {
+            Authorization: data.id_token,
+          },
+        });
 
         console.log(getInstances, "getexts");
 
@@ -49,7 +44,7 @@ const loginWithApi = async () => {
             cacheUuid = uuid;
             try {
               const fetchList = await fetch(
-                `https://ssp-backend.dev.ringplan.com/instances/${uuid}/bulks/extensions`,
+                `${backendApi}/instances/${uuid}/bulks/extensions`,
                 {
                   headers: {
                     Authorization: data.id_token,
@@ -99,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const getAvailableNumbers = async () => {
     try {
       const numbers = await fetch(
-        `https://ssp-backend.dev.ringplan.com/instances/${cacheUuid}/bulks/extensions/available-ids`,
+        `${backendApi}/instances/${cacheUuid}/bulks/extensions/available-ids`,
         {
           method: "POST",
           headers: {
