@@ -42,3 +42,16 @@ const getBackendUrl = () => {
   }
   return url;
 };
+
+const getServerUrl = () => {
+  let url = "";
+
+  if (isDev || isLocalhost) {
+    url = "m.dev.ringplan.com";
+  }
+  if (isProd) {
+    url = "sip.ringplan.com";
+  }
+
+  return url;
+};

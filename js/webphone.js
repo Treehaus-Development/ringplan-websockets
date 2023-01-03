@@ -194,6 +194,10 @@ window.onload = function () {
     pass = params.pass;
   }
 
+  if (params.domain) {
+    userDomain.value = params.domain;
+  }
+
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
     password.value = pass;
@@ -203,7 +207,8 @@ window.onload = function () {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  $("#my-container").webphone(["sip.ringplan.com"]);
+  const serverUrl = getServerUrl();
+  $("#my-container").webphone([serverUrl]);
 
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
