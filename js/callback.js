@@ -104,6 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       }
     );
+    console.log(data, "data");
     closeEditModal();
   };
 
@@ -240,6 +241,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("extension-list").querySelectorAll("input")
       );
 
+      inputs[0].checked = true;
+
       inputs.forEach((input) => {
         let editBtn = input.parentNode.parentNode.querySelector(
           `#edit-ext-${input.id}`
@@ -247,9 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
         editBtn.addEventListener("click", function () {
           prevActiveNumber = this.dataset.callerId;
           editExtension(input.id, this.dataset.callerId, this.dataset.name);
-        });
-        input.addEventListener("change", function () {
-          saveBtn.disabled = false;
         });
       });
 
