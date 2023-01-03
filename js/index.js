@@ -6,11 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location = "/webphone.html";
   };
   ringplanBtn.onclick = () => {
-    window.location = "https://my.ringplan.com"
+    const loginUrl = getLoginUrl();
+    const backUrl = getGoBackUrl();
+    window.location = `${loginUrl}/login?back=${backUrl}`;
   };
-  logoContainer.addEventListener("animationend", (e) => {
-    let img = logoContainer.querySelector("img")
-    img.src = "/images/ringplan-green.svg"
-  })
-});
 
+  logoContainer.addEventListener("animationend", (e) => {
+    let img = logoContainer.querySelector("img");
+    img.src = "/images/ringplan-green.svg";
+  });
+});

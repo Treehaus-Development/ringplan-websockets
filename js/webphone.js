@@ -18,7 +18,7 @@ async function login() {
       async () => {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-        sessionStorage.setItem("user", user.value)
+        sessionStorage.setItem("user", user.value);
         if (params.error) {
           urlSearchParams.delete("error");
           history.pushState({}, "", window.location.pathname);
@@ -38,13 +38,13 @@ const logout = async () => {
   $("#my-container").webphone.logout();
   $("#login-content").removeClass("hidden");
   $("#my-container").removeClass("px-2 md:px-4 lg:px-6 py-6");
-  let container = document.getElementById("my-container")
-  let dialpadContent = document.getElementById("dialpad-content")
-  dialpadContent.classList.add('hidden')
-  dialpadContent.innerHTML = ""
-  dialpadContent.appendChild(container)
+  let container = document.getElementById("my-container");
+  let dialpadContent = document.getElementById("dialpad-content");
+  dialpadContent.classList.add("hidden");
+  dialpadContent.innerHTML = "";
+  dialpadContent.appendChild(container);
 
-  sessionStorage.clear()
+  sessionStorage.clear();
 
   setCookie("user_id", "", 1);
   setCookie("secret", "", 1);
@@ -162,7 +162,7 @@ async function updateUI() {
       sidebar.classList.toggle("-translate-x-full");
     };
   } catch (error) {
-    document.getElementById("dialpad-content").classList.add('hidden')
+    document.getElementById("dialpad-content").classList.add("hidden");
     document.getElementById("login-content").classList.remove("hidden");
     document.getElementById("loading-progress").classList.remove("grid");
     document.getElementById("loading-progress").classList.add("hidden");
@@ -175,52 +175,36 @@ window.onload = function () {
   let userDomain = document.getElementById("user_domain");
 
   userDomain.value = "zraytechnoloDoobh.ringplan.com";
-
-  // check later document referrer to show or hide the select extensions menu
-
   let uname = getCookie("user_id") || "",
     pass = getCookie("secret") || "",
     cname = getCookie("cname") || "",
     domain = getCookie("domain") || "";
 
-  if (
-    window.location.search.length > 1 &&
-    window.location.search.toLowerCase().indexOf("user=") > -1 &&
-    window.location.search.toLowerCase().indexOf("pass=") > -1
-  ) {
-    let query_params = window.location.search.split("&");
-    for (var i = 0; i < query_params.length; i++) {
-      if (query_params[i].toLowerCase().indexOf("user=") > -1) {
-        uname = query_params[i].split("=")[1];
-      } else if (query_params[i].toLowerCase().indexOf("pass=") > -1) {
-        pass = query_params[i].split("=")[1];
-      } else if (query_params[i].toLowerCase().indexOf("cname=") > -1) {
-        cname = query_params[i].split("=")[1].replace("%20", " ");
-      } else if (query_params[i].toLowerCase().indexOf("domain=") > -1) {
-        domain = query_params[i].split("=")[1];
-      }
-    }
-  }
-
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
   let cnameInput = document.getElementById("user_cname");
-  let domainInput = document.getElementById("user_domain");
 
   const urlSearchParams = new URLSearchParams(window.location.search);
   const params = Object.fromEntries(urlSearchParams.entries());
+
+  if (params.user) {
+    uname = params.user;
+  }
+  if (params.pass) {
+    pass = params.pass;
+  }
 
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
     password.value = pass;
     cnameInput.value = cname;
-    domainInput.value = domain;
     updateUI();
   }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
   $("#my-container").webphone(["sip.ringplan.com"]);
+
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
   let loginBtn = document.getElementById("login-btn");
