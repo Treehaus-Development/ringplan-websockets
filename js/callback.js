@@ -68,6 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let numberBtn = document.getElementById("active-number");
   let numberList = document.getElementById("number-list");
   let saveEdit = document.getElementById("save-edit");
+  let callerInfo = document.getElementById("caller-info");
+
   numberBtn.onclick = () => {
     numberList.classList.toggle("hidden");
   };
@@ -181,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nameInput.value = name;
     prevName = name;
     numberBtn.children[0].innerText = activeNumber;
+    callerInfo.innerHTML = `Caller ID: “${name}” &lt;${activeNumber}&gt;`;
     saveEdit.dataset.id = id;
     setSelectHtml(activeNumber);
     nameInput.oninput = (e) => {
