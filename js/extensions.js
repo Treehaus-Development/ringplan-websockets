@@ -547,6 +547,24 @@ let extensionsList = [
 ];
 
 let availableNumbers = [
-  814498, 759939, 588583, 229709, 863063, 632271, 349678, 798709, 887799,
-  710201, 545372, 680637,
+  {
+    callerid: '"anonymous" <anonymous>',
+    name: "anonymous",
+    number: "anonymous",
+  },
+  {
+    callerid: "<8583715106>",
+    name: "",
+    number: "8583715106",
+  },
+  {
+    callerid: "<8583715811>",
+    name: "",
+    number: "8583715811",
+  },
+  {
+    callerid: "<8583715812>",
+    name: "",
+    number: "8583715812",
+  },
 ];
