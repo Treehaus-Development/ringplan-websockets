@@ -5,7 +5,7 @@ let extensionsList = [
       description: "Deep Chand 1001",
       extension: 1001,
       id: 1001,
-      name: "Deep Chand",
+      name: "Deep Chanddddd",
       outboundcid: '"Startxlabs Technologies" <8583715106>',
       secret: "5F2B2A8B93B943969FC93233B8A3031B",
       voicemail: "default",
