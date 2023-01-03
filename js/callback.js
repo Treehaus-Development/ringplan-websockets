@@ -7,7 +7,7 @@ const id_token = cookiesObj.id_token;
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
-
+let prevActiveNumber;
 const userApi = getLoginUrl();
 const backendApi = getBackendUrl();
 
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let nameInput = document.getElementById("name-edit");
   let numberBtn = document.getElementById("active-number");
   let numberList = document.getElementById("number-list");
-
+  let saveEdit = document.getElementById("save-edit");
   numberBtn.onclick = () => {
     numberList.classList.toggle("hidden");
   };
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const getAvailableNumbers = async () => {
     try {
       const numbers = await fetch(
-        `${backendApi}/instances/${cacheUuid}/bulks/extensions/available-ids`,
+        `${backendApi}/instances/${cacheUuid}/bulks/dids/callerids`,
         {
           method: "POST",
           headers: {
@@ -112,6 +112,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  const handleSelectNumber = (number) => {
+    numberBtn.children[0].innerText = number;
+    setSelectHtml(number);
+    saveEdit.disabled = Number(number) === Number(prevActiveNumber);
+  };
+
+  const setSelectHtml = (activeNumber) => {
+    const html = availableNumbers
+      .map((item) => {
+        if (
+          !isNaN(Number(item.number)) &&
+          Number(item.number) !== Number(activeNumber)
+        ) {
+          return `
+      <div id=${
+        item.number
+      } class="ease-in number-item select-none duration-250 p-3
+       transition-colors hover:bg-gray-100" >${Number(item.number)}</div>
+    `;
+        }
+      })
+      .join(" ");
+
+    numberList.innerHTML = html;
+
+    numberList.querySelectorAll(".number-item").forEach((item) => {
+      item.addEventListener("click", (e) => {
+        handleSelectNumber(item.id);
+      });
+    });
+  };
+
   const editExtension = async (id, activeNumber, name) => {
     modal.classList.remove("grid");
     modal.classList.add("hidden");
@@ -119,18 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
     editModal.classList.add("grid");
 
     await getAvailableNumbers();
-    console.log(availableNumbers, "available");
     nameInput.placeholder = name;
     numberBtn.children[0].innerText = activeNumber;
-    const html = availableNumbers
-      .map((number) => {
-        return `
-        <div class="ease-in duration-250 p-3 transition-colors hover:bg-gray-100" >${number}</div>
-      `;
-      })
-      .join(" ");
 
-    numberList.innerHTML = html;
+    setSelectHtml(activeNumber);
+
+    console.log(numberList, "numberList");
   };
 
   loginWithApi()
@@ -191,6 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
           `#edit-ext-${input.id}`
         );
         editBtn.addEventListener("click", function () {
+          prevActiveNumber = this.dataset.callerId;
           editExtension(input.id, this.dataset.callerId, this.dataset.name);
         });
         input.addEventListener("change", function () {
