@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let numberList = document.getElementById("number-list");
   let saveEdit = document.getElementById("save-edit");
   let callerInfo = document.getElementById("caller-info");
-  let message = document.getElementById("message")
-  let spinner = document.getElementById("loading-spinner")
+  let message = document.getElementById("message");
+  let spinner = document.getElementById("loading-spinner");
   numberBtn.onclick = () => {
     numberList.classList.toggle("hidden");
   };
@@ -82,23 +82,23 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("hidden");
     editModal.classList.add("hidden");
     editModal.classList.remove("grid");
-    if(fromApi){
-      message.classList.remove('hidden')
-      message.classList.add('animate-fade-up')
-      if(isError){
-        message.innerText = 'Something went wrong.Try again'
-        message.classList.add('text-red-400')
+    if (fromApi) {
+      message.classList.remove("hidden");
+      message.classList.add("animate-fade-up");
+      if (isError) {
+        message.innerText = "Something went wrong.Try again";
+        message.classList.add("text-red-400");
       } else {
-        message.innerText = 'Successfully changed extension data'
-        message.classList.add('text-green-500')
+        message.innerText = "Successfully changed extension data";
+        message.classList.add("text-green-500");
       }
 
       setTimeout(() => {
-        message.classList.add('animate-fade-out')
+        message.classList.add("animate-fade-out");
         message.onanimationend = () => {
-          message.innerText = ''
-        }
-      }, 5000)
+          message.innerText = "";
+        };
+      }, 5000);
     }
   };
 
@@ -110,10 +110,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const extId = this.dataset.id;
     const name = nameInput.value;
     const callerId = numberBtn.children[0].innerText;
-    const locationId = this.dataset.location_id
-    spinner.classList.remove('hidden')
-    spinner.classList.add('inline')
-    saveEdit.querySelector("span").innerText = 'Loading...'
+    const locationId = this.dataset.location_id;
+    spinner.classList.remove("hidden");
+    spinner.classList.add("inline");
+    saveEdit.querySelector("span").innerText = "Loading...";
     const postData = await fetch(
       `${backendApi}/instances/${cacheUuid}/bulks/extensions/${extId}`,
       {
@@ -124,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           location_id: locationId,
           outbound_callerid: {
-            number: callerId
-          }
+            number: callerId,
+          },
         }),
         headers: {
           Authorization: id_token,
@@ -133,26 +133,28 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       }
     );
-    if(postData.ok){
+    if (postData.ok) {
       const res = await postData.json();
-      
-      extensionsList = [...extensionsList.map(ext => {
-        if(ext._id === res._id){
-          return {
-            ...ext,
-            ...res
+
+      extensionsList = [
+        ...extensionsList.map((ext) => {
+          if (ext._id === res._id) {
+            return {
+              ...ext,
+              ...res,
+            };
           }
-        }
-        return ext
-      })]
-      
+          return ext;
+        }),
+      ];
+
       closeEditModal(false, true);
     } else {
       closeEditModal(true, true);
     }
-    spinner.classList.add('hidden')
-    spinner.classList.remove('inline')
-    saveEdit.querySelector("span").innerText = 'Save'
+    spinner.classList.add("hidden");
+    spinner.classList.remove("inline");
+    saveEdit.querySelector("span").innerText = "Save";
   };
 
   const getAvailableNumbers = async () => {
@@ -229,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
     numberBtn.children[0].innerText = activeNumber;
     callerInfo.innerHTML = `Caller ID: “${name}” <br/> &lt;${activeNumber}&gt;`;
     saveEdit.dataset.id = id;
-    saveEdit.dataset.location_id = locationId
+    saveEdit.dataset.location_id = locationId;
     setSelectHtml(activeNumber);
     nameInput.oninput = (e) => {
       handleInputChange(e.target.value, name);
@@ -243,7 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let extensionsWrapper = document.getElementById("extension-list");
     let html = extensionsList
       .map((item) => {
-        if (!!item["qr-config"]) {
+        if (
+          !!item["qr-config"] &&
+          item?.["qr-config"].server &&
+          item?.["qr-config"].outbound_server
+        ) {
           return `
             <div class="flex justify-between items-center">
               <div class="flex gap-2 items-center">
@@ -292,7 +298,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       editBtn.addEventListener("click", function () {
         prevActiveNumber = this.dataset.callerId;
-        editExtension(input.id, this.dataset.callerId, this.dataset.name, this.dataset.location_id);
+        editExtension(
+          input.id,
+          this.dataset.callerId,
+          this.dataset.name,
+          this.dataset.location_id
+        );
       });
     });
 
