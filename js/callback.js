@@ -3,7 +3,7 @@ const cookiesObj = Object.fromEntries(
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
-const id_token = cookiesObj.id_token;
+const id_token = cookiesObj.id_token 
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
@@ -197,35 +197,37 @@ document.addEventListener("DOMContentLoaded", () => {
     let extensionsWrapper = document.getElementById("extension-list");
     let html = extensionsList
       .map((item) => {
-        return `
-          <div class="flex justify-between items-center">
-            <div class="flex gap-2 items-center">
-              <input
-                class="peer input-ext"
-                type="radio"
-                id=${item._id}
-                value=${item.data.extension}
-                name="extension"
-              />
-              <label
-                for=${item._id}
-                class="text-sm relative font-medium pl-10 duration-200 ease-in transition-colors
-                select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
-                "
+        if (!!item["qr-config"]) {
+          return `
+            <div class="flex justify-between items-center">
+              <div class="flex gap-2 items-center">
+                <input
+                  class="peer input-ext"
+                  type="radio"
+                  id=${item._id}
+                  value=${item.data.extension}
+                  name="extension"
+                />
+                <label
+                  for=${item._id}
+                  class="text-sm relative font-medium pl-10 duration-200 ease-in transition-colors
+                  select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
+                  "
+                >
+                  ${item.data.extension}
+                </label>
+              </div>
+              <div
+                id="edit-ext-${item._id}" 
+                data-caller-id="${item.location?.callerid}"
+                data-name="${item.data.name}"
+                class="cursor-pointer"
               >
-                ${item.data.extension}
-              </label>
-            </div>
-            <div
-              id="edit-ext-${item._id}" 
-              data-caller-id="${item.location?.callerid}"
-              data-name="${item.data.name}"
-              class="cursor-pointer"
-            >
-              <img src="/images/edit.svg"/>
-            </div>
-          </div>     
-      `;
+                <img src="/images/edit.svg"/>
+              </div>
+            </div>     
+        `;
+        }
       })
       .join(" ");
     extensionsWrapper.innerHTML = html;
@@ -251,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const checkedInput = inputs.find((input) => input.checked);
       const id = checkedInput.id;
       const activeExtension = extensionsList.find((item) => item._id === id);
-      window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}`;
+      window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}`;
     };
   };
 
