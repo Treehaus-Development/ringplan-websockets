@@ -5,11 +5,12 @@ const isProd = location.hostname === "webphone.ringplan.com";
 
 const getLoginUrl = () => {
   let url = "";
-  if (isDev || isLocalhost) {
+  if (isDev) {
     url = "https://b2clogin.dev.ringplan.com";
   }
+  // use production url on localhost because extension is not working on dev
 
-  if (isProd) {
+  if (isProd || isLocalhost) {
     url = "https://b2clogin.ringplan.com";
   }
 
@@ -34,11 +35,25 @@ const getGoBackUrl = () => {
 const getBackendUrl = () => {
   let url = "";
 
-  if (isDev || isLocalhost) {
+  if (isDev) {
     url = "https://ssp-backend.dev.ringplan.com";
   }
-  if (isProd) {
+  // use production url on localhost because extension is not working on dev
+  if (isProd || isLocalhost) {
     url = "https://ssp-backend.ringplan.com";
   }
+  return url;
+};
+
+const getServerUrl = () => {
+  let url = "";
+
+  if (isDev || isLocalhost) {
+    url = "m.dev.ringplan.com";
+  }
+  if (isProd) {
+    url = "sip.ringplan.com";
+  }
+
   return url;
 };

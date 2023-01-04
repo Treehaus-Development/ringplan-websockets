@@ -3,6 +3,9 @@ let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 
+const urlSearchParams = new URLSearchParams(window.location.search);
+const params = Object.fromEntries(urlSearchParams.entries());
+
 async function login() {
   let user = document.getElementById("user_id");
   let pwd = document.getElementById("user_pwd");
@@ -16,8 +19,6 @@ async function login() {
       cname.value,
       domain.value.length > 0 ? domain.value : null,
       async () => {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlSearchParams.entries());
         sessionStorage.setItem("user", user.value);
         if (params.error) {
           urlSearchParams.delete("error");
@@ -184,15 +185,20 @@ window.onload = function () {
   let password = document.getElementById("user_pwd");
   let cnameInput = document.getElementById("user_cname");
 
-  const urlSearchParams = new URLSearchParams(window.location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
-
   if (params.user) {
     uname = params.user;
   }
   if (params.pass) {
     pass = params.pass;
   }
+
+  /**
+   * 
+   * Change domain value from query params
+   */
+  // if (params.domain) {
+  //   userDomain.value = params.domain;
+  // }
 
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
@@ -203,7 +209,15 @@ window.onload = function () {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  $("#my-container").webphone(["sip.ringplan.com"]);
+  /**
+   * 
+   * Change outbound server value from query params
+   */
+  // let serverUrl = getServerUrl();
+  // if (params.outbound_server) {
+  //   serverUrl = params.outbound_server;
+  // }
+  $("#my-container").webphone(['sip.ringplan.com']);
 
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");
@@ -218,8 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUI();
   };
 
-  const urlSearchParams = new URLSearchParams(window.location.search);
-  const params = Object.fromEntries(urlSearchParams.entries());
   if (params.error) {
     $("#error-message").show();
     userId.value = "";
