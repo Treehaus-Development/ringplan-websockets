@@ -3,7 +3,9 @@ const cookiesObj = Object.fromEntries(
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
-const id_token = cookiesObj.id_token 
+const id_token =
+  cookiesObj.id_token ||
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI4NTM4MTUsIm5iZiI6MTY3MjgyNTAxNSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyODI1MDE1LCJhdXRoX3RpbWUiOjE2NzI4MjUwMTQsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiNjlCanF1UktCcnRyazM4QjNsWGt0dyJ9.M8iWNqqfDD5pIdTULp1Qv6wNSHFlT5GGePx5RMcc8Q3-MjxdNyfONpPhNMQCk0YECTJXvxPI0JViAgKMp4ID9NFNV1ETpA0UFxqx_EdUpDiLAmh56Fx_EeqjVAHx8yZJyub03q2myIJTOoQ4IRa84toI-oMAKg-g8_rYT9mHqsplUdAHGifIeuGvCl0T3jFqOkcdA5Pd2Bnd1cuelrH7ETk-ID11KhsKf3S7I5pjqaJjDKPoADutm7Boht8127OB9pyKHkE4lH-6I4cgutzofUSe8PGgGLbDzFc4gFtk3kNQ0CSLmY6cPZlnwTHNG-jRY_QDRG848rHs1BHRyj725g";
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
@@ -69,16 +71,35 @@ document.addEventListener("DOMContentLoaded", () => {
   let numberList = document.getElementById("number-list");
   let saveEdit = document.getElementById("save-edit");
   let callerInfo = document.getElementById("caller-info");
-
+  let message = document.getElementById("message");
+  let spinner = document.getElementById("loading-spinner");
   numberBtn.onclick = () => {
     numberList.classList.toggle("hidden");
   };
 
-  const closeEditModal = () => {
+  const closeEditModal = (isError, fromApi) => {
     modal.classList.add("grid");
     modal.classList.remove("hidden");
     editModal.classList.add("hidden");
     editModal.classList.remove("grid");
+    if (fromApi) {
+      message.classList.remove("hidden");
+      message.classList.add("animate-fade-up");
+      if (isError) {
+        message.innerText = "Something went wrong.Try again";
+        message.classList.add("text-red-400");
+      } else {
+        message.innerText = "Successfully changed extension data";
+        message.classList.add("text-green-500");
+      }
+
+      setTimeout(() => {
+        message.classList.add("animate-fade-out");
+        message.onanimationend = () => {
+          message.innerText = "";
+        };
+      }, 5000);
+    }
   };
 
   closeEdit.onclick = () => {
@@ -89,7 +110,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const extId = this.dataset.id;
     const name = nameInput.value;
     const callerId = numberBtn.children[0].innerText;
-    const data = await fetch(
+    const locationId = this.dataset.location_id;
+    spinner.classList.remove("hidden");
+    spinner.classList.add("inline");
+    saveEdit.querySelector("span").innerText = "Loading...";
+    const postData = await fetch(
       `${backendApi}/instances/${cacheUuid}/bulks/extensions/${extId}`,
       {
         method: "PATCH",
@@ -97,23 +122,45 @@ document.addEventListener("DOMContentLoaded", () => {
           data: {
             name,
           },
-          location: {
-            callerId,
+          location_id: locationId,
+          outbound_callerid: {
+            number: callerId,
           },
         }),
         headers: {
           Authorization: id_token,
+          "Content-Type": "application/json",
         },
       }
     );
-    console.log(data, "data");
-    closeEditModal();
+    if (postData.ok) {
+      const res = await postData.json();
+
+      extensionsList = [
+        ...extensionsList.map((ext) => {
+          if (ext._id === res._id) {
+            return {
+              ...ext,
+              ...res,
+            };
+          }
+          return ext;
+        }),
+      ];
+
+      closeEditModal(false, true);
+    } else {
+      closeEditModal(true, true);
+    }
+    spinner.classList.add("hidden");
+    spinner.classList.remove("inline");
+    saveEdit.querySelector("span").innerText = "Save";
   };
 
   const getAvailableNumbers = async () => {
     try {
       const numbers = await fetch(
-        `${backendApi}/instances/${cacheUuid}/bulks/dids/callerids`,
+        `${backendApi}/instances/${cacheUuid}/dids/callerids`,
         {
           headers: {
             Authorization: id_token,
@@ -171,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Number(prevActiveNumber) === Number(numberBtn.children[0].innerText);
   };
 
-  const editExtension = async (id, activeNumber, name) => {
+  const editExtension = async (id, activeNumber, name, locationId) => {
     modal.classList.remove("grid");
     modal.classList.add("hidden");
     editModal.classList.remove("hidden");
@@ -182,8 +229,9 @@ document.addEventListener("DOMContentLoaded", () => {
     nameInput.value = name;
     prevName = name;
     numberBtn.children[0].innerText = activeNumber;
-    callerInfo.innerHTML = `Caller ID: “${name}” &lt;${activeNumber}&gt;`;
+    callerInfo.innerHTML = `Caller ID: “${name}” <br/> &lt;${activeNumber}&gt;`;
     saveEdit.dataset.id = id;
+    saveEdit.dataset.location_id = locationId;
     setSelectHtml(activeNumber);
     nameInput.oninput = (e) => {
       handleInputChange(e.target.value, name);
@@ -197,7 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let extensionsWrapper = document.getElementById("extension-list");
     let html = extensionsList
       .map((item) => {
-        if (!!item["qr-config"]) {
+        if (
+          !!item["qr-config"] &&
+          item?.["qr-config"].server &&
+          item?.["qr-config"].outbound_server
+        ) {
           return `
             <div class="flex justify-between items-center">
               <div class="flex gap-2 items-center">
@@ -219,8 +271,9 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <div
                 id="edit-ext-${item._id}" 
-                data-caller-id="${item.location?.callerid}"
+                data-caller-id="${item.outbound_callerid?.number}"
                 data-name="${item.data.name}"
+                data-location_id="${item.location.id}"
                 class="cursor-pointer"
               >
                 <img src="/images/edit.svg"/>
@@ -245,7 +298,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
       editBtn.addEventListener("click", function () {
         prevActiveNumber = this.dataset.callerId;
-        editExtension(input.id, this.dataset.callerId, this.dataset.name);
+        editExtension(
+          input.id,
+          this.dataset.callerId,
+          this.dataset.name,
+          this.dataset.location_id
+        );
       });
     });
 

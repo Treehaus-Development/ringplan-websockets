@@ -20,7 +20,7 @@ module.exports = {
       transparent: colors.transparent,
       black: colors.black,
       white: colors.white,
-      'modal': 'rgba(0, 0, 0, 0.25);',
+      modal: "rgba(0, 0, 0, 0.25);",
       slate: {
         DEFAULT: colors.slate,
         50: "#f8fafc",
@@ -441,6 +441,7 @@ module.exports = {
       pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       bounce: "bounce 1s infinite",
       "fade-up": "fade-up 1.5s both",
+      "fade-out":"fade-out 1.5s both"
     },
     aspectRatio: {
       auto: "auto",
@@ -599,8 +600,8 @@ module.exports = {
       8: "8px",
     },
     boxShadow: {
-      'info':'6px 5px 7px 5px rgba(0, 0, 0, 0.1)',
-      'nav':'0px 2px 2px rgba(0, 0, 0, 0.1)',
+      info: "6px 5px 7px 5px rgba(0, 0, 0, 0.1)",
+      nav: "0px 2px 2px rgba(0, 0, 0, 0.1)",
       "soft-xxs": "0 1px 5px 1px #ddd",
       "soft-xs":
         "0 3px 5px -1px rgba(0,0,0,.09),0 2px 3px -1px rgba(0,0,0,.07)",
@@ -943,7 +944,7 @@ module.exports = {
       "5/6": "83.333333%",
       full: "100%",
       sidenav: "calc(100vh - 370px)",
-      main:'calc(100vh - 100px)',
+      main: "calc(100vh - 100px)",
       screen: "100vh",
       min: "min-content",
       max: "max-content",
@@ -961,10 +962,13 @@ module.exports = {
       full: "100%",
     }),
     keyframes: {
+      'fade-out': {
+        "0%": { opacity: "1" },
+        "100%": { opacity: "0" },
+      },
       "fade-up": {
         from: {
           opacity: "0",
-          transform: "translateY(100%)",
         },
         to: {
           opacity: "1",
