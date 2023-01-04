@@ -3,7 +3,7 @@ const cookiesObj = Object.fromEntries(
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
-const id_token = cookiesObj.id_token 
+const id_token = cookiesObj.id_token;
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
