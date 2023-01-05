@@ -1,4 +1,18 @@
 let prevActiveNumber;
+const statuses = Object.freeze({
+  available: "Available",
+  away: "Away",
+  do_not_disturb: "Do not disturb",
+});
+
+const additionalStatuses = Object.freeze({
+  in_a_meeting: "In a meeting",
+  on_a_call: "On a call",
+  lunch: "Lunch",
+  holiday: "Holiday",
+  afk: "AFK",
+});
+
 const userApi = getLoginUrl();
 const backendApi = getBackendUrl();
 let prevName;
@@ -89,6 +103,30 @@ const reDrawList = (data, editFn, isLoggedIn) => {
   });
 };
 
+const getUserStatus = async () => {
+  let activeExtension = localStorage.getItem("activeExtension");
+  if (activeExtension) {
+    let data = JSON.parse(activeExtension);
+    let userId = data.user.id;
+    console.log(userId);
+    const getStatusInfo = await fetch(
+      `${backendApi}/statuses/v2/users?user_id=${userId}`,
+      {
+        headers: {
+          Authorization: id_token,
+        },
+      }
+    );
+    if (getStatusInfo.ok) {
+      const data = await getStatusInfo.json();
+      return {
+        mainStatus: data[0].main_status.status,
+        additionalStatus: data[0].additional_status.status,
+      };
+    }
+  }
+};
+
 const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   let editModal = document.getElementById("edit-modal");
   let closeEdit = document.getElementById("close-edit");
@@ -104,6 +142,26 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   let callerInfo = document.getElementById("caller-info");
   let message = document.getElementById("message");
   let spinner = document.getElementById("loading-spinner");
+  let statusContainer = document.getElementById("status-container");
+  let statusList = document.getElementById("status-list");
+  let statusBar = document.getElementById("status-bar");
+  if (isLoggedIn) {
+    getUserStatus()
+      .then((data) => {
+        let mainStatus = data.mainStatus;
+        let additionalStatus = data.additionalStatus;
+        console.log(additionalStatus, "additionalStatus");
+        statusBar.querySelector("span").innerText = statuses[mainStatus];
+
+        statusContainer.onclick = () => {
+          statusList.classList.toggle("hidden");
+          statusList.classList.toggle("flex");
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   target.classList.remove("hidden");
   target.classList.add("grid");
