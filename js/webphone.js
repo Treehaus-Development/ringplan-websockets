@@ -36,15 +36,8 @@ async function login() {
 }
 
 const logout = async () => {
+  window.location = "/"
   $("#my-container").webphone.logout();
-  $("#login-content").removeClass("hidden");
-  $("#my-container").removeClass("px-2 md:px-4 lg:px-6 py-6");
-  let container = document.getElementById("my-container");
-  let dialpadContent = document.getElementById("dialpad-content");
-  dialpadContent.classList.add("hidden");
-  dialpadContent.innerHTML = "";
-  dialpadContent.appendChild(container);
-
   sessionStorage.clear();
 
   setCookie("user_id", "", 1);
