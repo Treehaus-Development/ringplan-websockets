@@ -10,15 +10,25 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI5MzEwOTksIm5iZiI6MTY3MjkwMjI5OSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTAyMjk5LCJhdXRoX3RpbWUiOjE2NzI5MDIyOTgsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiWkRrNjk1Y05mUHF3bWlOQXVremZvZyJ9.BDG1TXk1amBwiXH-LtbFaaIlpykYkXvcoJhob-3PhPC3XureR9nVAdW7AqKcLBOSdlrtEpDY4azOFgQlXnL5xRpxxqPx-gacQeJA-q6Iio9sTbAe0DnXlGEquOq_9YL0VoB9BBwrhZceAaIJWIb53K30zdFXato-Fa4Y5034dLud6fBL5L9xyg9XyNEzdLKsvby0fcweVu2vPW1XVJDwEgaME_9xNcILkbV2FJHwdeVC-QOSqjtzoRrNVv4q0mzz9-Zzi3QF9i3lcDPJTCdoXQlGizPz74P2iW8L8rHuyE8GJNhxsfzN2vHyTcjLSpSdqRJEPSK62FxCoQnPWs3jPQ";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI5NjE0MDgsIm5iZiI6MTY3MjkzMjYwOCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTMyNjA4LCJhdXRoX3RpbWUiOjE2NzI5MzI2MDcsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiMFE4ckZMeURrdU5FSDQ5Q0pxN0hNdyJ9.XBGFNZKPvOCaKOhQHMfFcptPwubZ-3DIyFwW9pRM-Vz688fbMQ44-t4HWQZMBfb47q5AES_C77QejGMSlYbauz6UNTMf35ZS0ChvSKLJbqapDHuyo4fKGrYb3R108wYxw2W0c8Qp1QC0ceVb_tzbfPECmXjELlw7VZREszPEWup25Mnk-EGyWdfbAVtnR04cKfuRVKoScflK-U8Ty1i2_mezqsUb6-cd4s680Bn96lm6FUQlwNjcTYDlfaacusvdLq4gNO0VXbU77l9y1G_kcWoA6HLLv5Oe2NJlwE8otNmFVWwviUahinkF289GUnAJSTMbh7WdEK-qZnsVsSiLYA";
 
-const reDrawList = (data, editFn) => {
+const reDrawList = (data, editFn, isLoggedIn) => {
   let extensionsWrapper = document.getElementById("extension-list");
-
+  if (isLoggedIn) {
+    extensionsWrapper.classList.add("pr-2");
+  }
   let html = data
     .map((item) => {
       return `
-              <div class="flex justify-between items-center">
+              <div 
+              class="flex 
+              justify-between 
+              ${
+                isLoggedIn
+                  ? "p-3 rounded-2.5 border cursor-pointer border-[#C7C7C7]"
+                  : ""
+              } 
+              items-center">
                 <div class="flex gap-2 items-center">
                   <input
                     class="peer input-ext"
@@ -29,7 +39,7 @@ const reDrawList = (data, editFn) => {
                   />
                   <label
                     for=${item._id}
-                    class="text-sm relative font-medium pl-10 duration-200 ease-in transition-colors
+                    class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
                     select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
                     "
                   >
@@ -57,10 +67,17 @@ const reDrawList = (data, editFn) => {
   inputs[0].checked = true;
 
   inputs.forEach((input) => {
-    let editBtn = input.parentNode.parentNode.querySelector(
-      `#edit-ext-${input.id}`
-    );
-    editBtn.addEventListener("click", function () {
+    let parentTop = input.parentNode.parentNode;
+    if (isLoggedIn) {
+      parentTop.addEventListener("click", (e) => {
+        if (e.target.localName === "input" || e.target.localName === "label")
+          return;
+        e.target.querySelector("input").checked = true;
+      });
+    }
+    let editBtn = parentTop.querySelector(`#edit-ext-${input.id}`);
+    editBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
       prevActiveNumber = this.dataset.callerId;
       editFn(
         input.id,
@@ -72,7 +89,7 @@ const reDrawList = (data, editFn) => {
   });
 };
 
-const triggerModalUpdates = (target, listValues) => {
+const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   let editModal = document.getElementById("edit-modal");
   let closeEdit = document.getElementById("close-edit");
   let nameInput = document.getElementById("name-edit");
@@ -90,10 +107,6 @@ const triggerModalUpdates = (target, listValues) => {
 
   target.classList.remove("hidden");
   target.classList.add("grid");
-
-  const inputs = [].slice.call(
-    document.getElementById("extension-list").querySelectorAll("input")
-  );
 
   const setSelectHtml = (activeNumber) => {
     const html = availableNumbers
@@ -176,7 +189,7 @@ const triggerModalUpdates = (target, listValues) => {
     };
   };
 
-  reDrawList(listValues, editExtension);
+  reDrawList(listValues, editExtension, isLoggedIn);
 
   closeEdit.onclick = () => {
     closeEditModal();
@@ -241,7 +254,7 @@ const triggerModalUpdates = (target, listValues) => {
     editModal.classList.add("hidden");
     editModal.classList.remove("grid");
     if (fromApi) {
-      reDrawList(listValues, editExtension);
+      reDrawList(listValues, editExtension, isLoggedIn);
       message.classList.remove("hidden");
       message.classList.add("animate-fade-up");
       if (isError) {

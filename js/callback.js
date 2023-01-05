@@ -50,7 +50,7 @@ const loginWithApi = async () => {
           if (fetchList.ok) {
             const list = await fetchList.json();
             return (extensionsList = [...list].filter((item) => {
-              return !!item["qr-config"] && !!item?.["qr-config"].server;
+              return !!item["qr-config"] && !!item["qr-config"].server;
             }));
           }
         } catch (error) {
