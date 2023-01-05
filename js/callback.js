@@ -1,10 +1,22 @@
+function setCookie(name,value,days) {
+  let expires = "";
+  if (days) {
+      let date = new Date();
+      date.setTime(date.getTime() + (days*24*60*60*1000));
+      expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "")  + expires + + `;domain=${location.hostname};path=/` ;
+}
+
+
 const cookiesObj = Object.fromEntries(
   document.cookie
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
 const id_token =
-  cookiesObj.id_token || 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI5MzEwOTksIm5iZiI6MTY3MjkwMjI5OSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTAyMjk5LCJhdXRoX3RpbWUiOjE2NzI5MDIyOTgsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiWkRrNjk1Y05mUHF3bWlOQXVremZvZyJ9.BDG1TXk1amBwiXH-LtbFaaIlpykYkXvcoJhob-3PhPC3XureR9nVAdW7AqKcLBOSdlrtEpDY4azOFgQlXnL5xRpxxqPx-gacQeJA-q6Iio9sTbAe0DnXlGEquOq_9YL0VoB9BBwrhZceAaIJWIb53K30zdFXato-Fa4Y5034dLud6fBL5L9xyg9XyNEzdLKsvby0fcweVu2vPW1XVJDwEgaME_9xNcILkbV2FJHwdeVC-QOSqjtzoRrNVv4q0mzz9-Zzi3QF9i3lcDPJTCdoXQlGizPz74P2iW8L8rHuyE8GJNhxsfzN2vHyTcjLSpSdqRJEPSK62FxCoQnPWs3jPQ'
+  cookiesObj.id_token ||
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI5MzEwOTksIm5iZiI6MTY3MjkwMjI5OSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTAyMjk5LCJhdXRoX3RpbWUiOjE2NzI5MDIyOTgsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiWkRrNjk1Y05mUHF3bWlOQXVremZvZyJ9.BDG1TXk1amBwiXH-LtbFaaIlpykYkXvcoJhob-3PhPC3XureR9nVAdW7AqKcLBOSdlrtEpDY4azOFgQlXnL5xRpxxqPx-gacQeJA-q6Iio9sTbAe0DnXlGEquOq_9YL0VoB9BBwrhZceAaIJWIb53K30zdFXato-Fa4Y5034dLud6fBL5L9xyg9XyNEzdLKsvby0fcweVu2vPW1XVJDwEgaME_9xNcILkbV2FJHwdeVC-QOSqjtzoRrNVv4q0mzz9-Zzi3QF9i3lcDPJTCdoXQlGizPz74P2iW8L8rHuyE8GJNhxsfzN2vHyTcjLSpSdqRJEPSK62FxCoQnPWs3jPQ";
 const access_token = cookiesObj.refresh_token;
 const key = "b6ae17b92f60d3110c2cDsI90!dK5!1P";
 let cacheUuid = "1c637229-52ba-56e3-a91f-ca10297eede1";
@@ -47,7 +59,9 @@ const loginWithApi = async () => {
 
           if (fetchList.ok) {
             const list = await fetchList.json();
-            return (extensionsList = [...list]);
+            return (extensionsList = [...list].filter((item) => {
+              return !!item["qr-config"] && !!item?.["qr-config"].server;
+            }));
           }
         } catch (error) {
           console.log(error.message, "error");
@@ -244,12 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let extensionsWrapper = document.getElementById("extension-list");
     let html = extensionsList
       .map((item) => {
-        if (
-          !!item["qr-config"] &&
-          item?.["qr-config"].server &&
-          item?.["qr-config"].outbound_server
-        ) {
-          return `
+        return `
             <div class="flex justify-between items-center">
               <div class="flex gap-2 items-center">
                 <input
@@ -272,14 +281,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 id="edit-ext-${item._id}" 
                 data-caller-id="${item.outbound_callerid?.number}"
                 data-name="${item.data.name}"
-                data-location_id="${item.location.id}"
+                data-location_id="${item.location?.id}"
                 class="cursor-pointer"
               >
                 <img src="/images/edit.svg"/>
               </div>
             </div>     
         `;
-        }
       })
       .join(" ");
     extensionsWrapper.innerHTML = html;
@@ -307,10 +315,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     saveBtn.onclick = () => {
-      localStorage.setItem('fromSSO', true)
+      setCookie("token", id_token, 1)
       const checkedInput = inputs.find((input) => input.checked);
       const id = checkedInput.id;
       const activeExtension = extensionsList.find((item) => item._id === id);
+      localStorage.setItem("fromSSO", true);
+      localStorage.setItem("extensions", JSON.stringify(extensionsList));
+      localStorage.setItem("activeExtension", JSON.stringify(activeExtension));
       window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}`;
     };
   };

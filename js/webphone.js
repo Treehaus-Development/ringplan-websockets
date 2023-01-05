@@ -48,7 +48,11 @@ const logout = async () => {
 };
 
 const handleOpenExtensions = () => {
-  console.log("e");
+  let list = localStorage.getItem("extensions");
+  if (list) {
+    let data = JSON.parse(list);
+    console.log(data, "data");
+  }
 };
 
 async function updateUI() {
