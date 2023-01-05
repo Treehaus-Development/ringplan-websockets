@@ -36,7 +36,8 @@ async function login() {
 }
 
 const logout = async () => {
-  window.location = "/"
+  localStorage.clear();
+  window.location = "/";
   $("#my-container").webphone.logout();
   sessionStorage.clear();
 
@@ -44,6 +45,10 @@ const logout = async () => {
   setCookie("secret", "", 1);
   setCookie("cname", "", 1);
   setCookie("domain", "", 1);
+};
+
+const handleOpenExtensions = () => {
+  console.log("e");
 };
 
 async function updateUI() {
@@ -89,6 +94,12 @@ async function updateUI() {
 
     extensionOpts.querySelector("span").innerText =
       sessionStorage.getItem("user") || getCookie("user_id");
+
+    if (isFromSSO) {
+      extensionOpts.addEventListener("click", handleOpenExtensions);
+    } else {
+      extensionOpts.querySelector("div:last-child").classList.add("hidden");
+    }
 
     const cancelLogout = () => {
       modal.classList.remove("grid");
@@ -186,12 +197,12 @@ window.onload = function () {
   }
 
   /**
-   * 
+   *
    * Change domain value from query params
    */
   if (params.domain) {
-    let domainValues = params.domain.split(".")
-    domainValues.shift()
+    let domainValues = params.domain.split(".");
+    domainValues.shift();
     let finalValue = domainValues.join(".");
     userDomain.value = finalValue;
   }
@@ -206,14 +217,14 @@ window.onload = function () {
 
 document.addEventListener("DOMContentLoaded", () => {
   /**
-   * 
+   *
    * Change outbound server value from query params
    */
   // let serverUrl = getServerUrl();
   // if (params.outbound_server) {
   //   serverUrl = params.outbound_server;
   // }
-  $("#my-container").webphone(['sip.ringplan.com']);
+  $("#my-container").webphone(["sip.ringplan.com"]);
 
   let userId = document.getElementById("user_id");
   let password = document.getElementById("user_pwd");

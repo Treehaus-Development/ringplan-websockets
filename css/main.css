@@ -731,8 +731,16 @@ video {
   margin-top: 1.125rem;
 }
 
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
+}
+
+.mb-0\.75 {
+  margin-bottom: 0.1875rem;
 }
 
 .box-border {
@@ -1299,6 +1307,18 @@ video {
 
 .pl-10 {
   padding-left: 2.5rem;
+}
+
+.pt-2 {
+  padding-top: 0.5rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
+}
+
+.pb-1\.4 {
+  padding-bottom: 0.35rem;
 }
 
 .text-center {

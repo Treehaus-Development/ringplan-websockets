@@ -307,6 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     saveBtn.onclick = () => {
+      localStorage.setItem('fromSSO', true)
       const checkedInput = inputs.find((input) => input.checked);
       const id = checkedInput.id;
       const activeExtension = extensionsList.find((item) => item._id === id);

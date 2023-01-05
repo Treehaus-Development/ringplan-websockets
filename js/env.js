@@ -2,7 +2,7 @@ const isLocalhost =
   location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const isDev = location.hostname === "webphone.dev.ringplan.com";
 const isProd = location.hostname === "webphone.ringplan.com";
-
+const isFromSSO = localStorage.getItem('fromSSO')
 const getLoginUrl = () => {
   let url = "";
   // if (isDev) {
