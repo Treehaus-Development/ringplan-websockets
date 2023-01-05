@@ -189,9 +189,12 @@ window.onload = function () {
    * 
    * Change domain value from query params
    */
-  // if (params.domain) {
-  //   userDomain.value = params.domain;
-  // }
+  if (params.domain) {
+    let domainValues = params.domain.split(".")
+    domainValues.shift()
+    let finalValue = domainValues.join(".");
+    userDomain.value = finalValue;
+  }
 
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
