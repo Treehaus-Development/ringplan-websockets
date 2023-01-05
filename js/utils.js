@@ -65,7 +65,7 @@ const reDrawList = (data, editFn, isLoggedIn) => {
                   data-caller-id="${item.outbound_callerid?.number}"
                   data-name="${item.data.name}"
                   data-location_id="${item.location?.id}"
-                  class="cursor-pointer"
+                  class="cursor-pointer select-none"
                 >
                   <img src="/images/edit.svg"/>
                 </div>
@@ -101,6 +101,53 @@ const reDrawList = (data, editFn, isLoggedIn) => {
       );
     });
   });
+};
+
+const buildStatusHtml = (data) => {
+  return Object.entries(data)
+    .map(([key, value], idx) => {
+      return `
+      <div class="px-6 py-4 flex justify-between ${
+        idx > 0 ? "border-t border-[#C7C7C7]" : ""
+      }">
+        <div class="flex gap-4">
+          <div class="w-6 h-6">
+            <img class="object-none" src="/images/status-icons/${key}.svg"/>
+          </div>
+          <span class="font-medium text-[#3C3C3C]">${value}</span>
+        </div>
+        
+                  <input
+                    class="peer input-ext"
+                    type="radio"
+                    id="${key}"
+                    value="${value}"
+                    name="extension"
+                  />
+                  <label
+                    for="${key}"
+                    class="text-sm label-item relative font-medium pl-4 
+                    duration-200 ease-in transition-colors
+                    select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
+                    "
+                  > 
+                  </label>
+               
+      </div>
+    `;
+    })
+    .join(" ");
+};
+
+const drawStatusList = (activeStatus) => {
+  let mainStatuses = document.getElementById("main-statuses");
+  let additionalWrapper = document.getElementById("additional-statuses");
+
+  let mainHtml = buildStatusHtml(statuses);
+  let additionalHtml = buildStatusHtml(additionalStatuses);
+
+  mainStatuses.innerHTML = mainHtml;
+  additionalWrapper.innerHTML = additionalHtml;
 };
 
 const getUserStatus = async () => {
@@ -150,7 +197,7 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
       .then((data) => {
         let mainStatus = data.mainStatus;
         let additionalStatus = data.additionalStatus;
-        console.log(additionalStatus, "additionalStatus");
+        drawStatusList(mainStatus);
         statusBar.querySelector("span").innerText = statuses[mainStatus];
 
         statusContainer.onclick = () => {
