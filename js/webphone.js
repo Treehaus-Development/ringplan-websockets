@@ -48,11 +48,23 @@ const logout = async () => {
 };
 
 const handleOpenExtensions = () => {
+  let closeBtn = document.getElementById("close-select");
+  let modal = document.getElementById("select-extension");
+  let extensionsWrapper = document.getElementById("extension-list");
+
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
   let list = localStorage.getItem("extensions");
   if (list) {
     let data = JSON.parse(list);
-    console.log(data, "data");
+    let html = makeExtensionsHtml(data)
+    extensionsWrapper.innerHTML = html
   }
+
+  closeBtn.onclick = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("grid");
+  };
 };
 
 async function updateUI() {
