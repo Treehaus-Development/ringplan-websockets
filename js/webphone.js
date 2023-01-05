@@ -50,15 +50,14 @@ const logout = async () => {
 const handleOpenExtensions = () => {
   let closeBtn = document.getElementById("close-select");
   let modal = document.getElementById("select-extension");
-  let extensionsWrapper = document.getElementById("extension-list");
 
   modal.classList.remove("hidden");
   modal.classList.add("grid");
   let list = localStorage.getItem("extensions");
   if (list) {
     let data = JSON.parse(list);
-    let html = makeExtensionsHtml(data)
-    extensionsWrapper.innerHTML = html
+    let isLoggedIn = true;
+    triggerModalUpdates(modal, data, isLoggedIn);
   }
 
   closeBtn.onclick = () => {
