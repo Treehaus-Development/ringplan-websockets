@@ -59,3 +59,18 @@
   filter: invert(62%) sepia(53%) saturate(6213%) hue-rotate(164deg)
     brightness(95%) contrast(103%);
 }
+
+#extension-list::-webkit-scrollbar-track {
+  background-color: #dddddd;
+  border-radius: 3px;
+}
+
+#extension-list::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 4px;
+}
+
+#extension-list::-webkit-scrollbar-thumb {
+  background-color: #9b9b9b;
+  border-radius: 4px;
+}
