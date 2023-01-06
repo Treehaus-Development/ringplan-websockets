@@ -173,6 +173,36 @@ const handleStatusChange = async (value, type, target) => {
   }
 };
 
+const insertAdditionalStatus = (item) => {
+  item.dataset.checked = true;
+  item.classList.add("items-center", "bg-zinc-100");
+  item.insertAdjacentHTML(
+    "beforeend",
+    `  
+       <button
+          type="button"
+          class=" text-gray-600 h-5 bg-transparent hover:bg-gray-200
+           hover:text-gray-900 rounded-lg text-sm inline-flex items-center"
+          id="delete-status"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+  `
+  );
+};
+
 const drawStatusList = (mainStatus, additionalStatus) => {
   let mainStatuses = document.getElementById("main-statuses");
   let additionalWrapper = document.getElementById("additional-statuses");
@@ -192,21 +222,54 @@ const drawStatusList = (mainStatus, additionalStatus) => {
       item.classList.remove("opacity-50", "!cursor-not-allowed");
       item.dataset.disabled = false;
     }
+    if (item.dataset.id === additionalStatus) {
+      insertAdditionalStatus(item);
+    }
     let type = item.parentElement.id.includes("main")
       ? "main_status"
       : "additional_status";
 
     item.addEventListener("click", (e) => {
       let target = e.target.closest(".status-list-item");
-      let key = target.dataset.id;
+      let value = target.dataset.checked === "true" ? null : target.dataset.id;
       e.stopPropagation();
       if (target.dataset.disabled === "true") return;
-      handleStatusChange(key, type, statusList).then((res) => {
+      handleStatusChange(value, type, statusList).then((res) => {
         document
           .getElementById("status-bar")
           .querySelector(
             "img"
           ).src = `/images/status-icons/${res.main_status}.svg`;
+        if (!!res.additional_status) {
+          if (item.dataset.id === res.additional_status) {
+            statusList
+              .querySelectorAll("#additional-statuses .status-list-item")
+              .forEach((el) => {
+                if (el.dataset.checked === "true") {
+                  el.dataset.checked = false;
+                  el.querySelector("#delete-status").remove();
+                  el.classList.remove("items-center", "bg-zinc-100");
+                }
+              });
+            insertAdditionalStatus(item);
+          }
+          document.querySelector("#additional-icon").classList.remove("hidden");
+          let additionalImg = document.querySelector("#additional-icon img");
+          if (additionalImg) {
+            additionalImg.src = `/images/status-icons/${res.additional_status}.svg`;
+          } else {
+            let newImg = document.createElement("img");
+            newImg.src = `/images/status-icons/${res.additional_status}.svg`;
+            document.querySelector("#additional-icon").appendChild(newImg);
+          }
+        } else {
+          document.querySelector("#additional-icon").classList.add("hidden");
+          if (item.dataset.checked === "true") {
+            item.querySelector("#delete-status").remove();
+            item.classList.remove("items-center", "bg-zinc-100");
+            item.dataset.checked = false;
+          }
+        }
         document.getElementById("status-bar").querySelector("span").innerText =
           statuses[res.main_status];
         statusList.querySelectorAll(".status-list-item").forEach((listItem) => {
@@ -285,8 +348,18 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
             let additionalStatus = data.additionalStatus;
             let img = document.createElement("img");
             img.src = `/images/status-icons/${mainStatus}.svg`;
+            let additionalImg = document.createElement("img");
+            additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
             statusBar.insertAdjacentElement("afterbegin", img);
             statusBar.querySelector("span").innerText = statuses[mainStatus];
+            if (!!additionalStatus) {
+              statusBar
+                .querySelector("#additional-icon")
+                .classList.remove("hidden");
+              statusBar
+                .querySelector("#additional-icon")
+                .appendChild(additionalImg);
+            }
             drawStatusList(mainStatus, additionalStatus);
 
             statusContainer.onclick = () => {
