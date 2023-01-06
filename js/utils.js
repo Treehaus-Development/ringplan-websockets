@@ -347,10 +347,13 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
             let mainStatus = data.mainStatus;
             let additionalStatus = data.additionalStatus;
             let img = document.createElement("img");
+            img.id = "main-icon";
             img.src = `/images/status-icons/${mainStatus}.svg`;
             let additionalImg = document.createElement("img");
             additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
-            statusBar.insertAdjacentElement("afterbegin", img);
+            if (!statusBar.querySelector("#main-icon")) {
+              statusBar.insertAdjacentElement("afterbegin", img);
+            }
             statusBar.querySelector("span").innerText = statuses[mainStatus];
             if (!!additionalStatus) {
               statusBar
