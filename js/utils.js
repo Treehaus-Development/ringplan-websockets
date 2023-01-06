@@ -24,10 +24,13 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzI5NjE0MDgsIm5iZiI6MTY3MjkzMjYwOCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTMyNjA4LCJhdXRoX3RpbWUiOjE2NzI5MzI2MDcsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiMFE4ckZMeURrdU5FSDQ5Q0pxN0hNdyJ9.XBGFNZKPvOCaKOhQHMfFcptPwubZ-3DIyFwW9pRM-Vz688fbMQ44-t4HWQZMBfb47q5AES_C77QejGMSlYbauz6UNTMf35ZS0ChvSKLJbqapDHuyo4fKGrYb3R108wYxw2W0c8Qp1QC0ceVb_tzbfPECmXjELlw7VZREszPEWup25Mnk-EGyWdfbAVtnR04cKfuRVKoScflK-U8Ty1i2_mezqsUb6-cd4s680Bn96lm6FUQlwNjcTYDlfaacusvdLq4gNO0VXbU77l9y1G_kcWoA6HLLv5Oe2NJlwE8otNmFVWwviUahinkF289GUnAJSTMbh7WdEK-qZnsVsSiLYA";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzMwMTc0NTcsIm5iZiI6MTY3Mjk4ODY1NywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTg4NjU3LCJhdXRoX3RpbWUiOjE2NzI5ODg2NTYsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiNTBmcTdhWi1uMTJkUVJtOHdzVlBKZyJ9.iOumDIXuI0Dy6URR5HRagAP6yN-qIg5Xn_-uJq1wubcuNHWkHBOPk-oxsHZ6Xey5T0AyTY7q0hyRx8u7nwE8U7R-m5A-VUCOkc6Cv25QGpSdZJystxJ7U78jJUQE85rIa1aNtbeH83IZ8hDThcGzISfwguCUQmGu20ti7y8wjLbT-BZdAiBcfbmMR0jS6HUsOgoXIlsbp6h_Dic8sbRZTj8RxpoIqz1MtjZ23yF0sh0-Sdtp2oJsAdWBfMJK2iwxgvyxIf0azOUPxfRpVvNMssFEPaGSvMY6NiNNJOykYmeLyw0tZ0kx9yigSUi5UNZh94-UBOZ6E_nrAJKm7uGkoA";
+let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
   let extensionsWrapper = document.getElementById("extension-list");
+  const saveBtn = document.getElementById("save");
+
   if (isLoggedIn) {
     extensionsWrapper.classList.add("pr-2");
   }
@@ -77,16 +80,27 @@ const reDrawList = (data, editFn, isLoggedIn) => {
   extensionsWrapper.innerHTML = html;
 
   const inputs = [].slice.call(extensionsWrapper.querySelectorAll("input"));
-
-  inputs[0].checked = true;
+  if (isLoggedIn) {
+    const vals = JSON.parse(activeExtension);
+    const activeInput = inputs.find((input) => input.id === vals._id);
+    activeInput.checked = true;
+    saveBtn.disabled = true;
+  } else {
+    inputs[0].checked = true;
+  }
 
   inputs.forEach((input) => {
     let parentTop = input.parentNode.parentNode;
     if (isLoggedIn) {
+      const vals = JSON.parse(activeExtension);
       parentTop.addEventListener("click", (e) => {
         if (e.target.localName === "input" || e.target.localName === "label")
           return;
         e.target.querySelector("input").checked = true;
+        saveBtn.disabled = e.target.querySelector("input").id === vals._id;
+      });
+      input.addEventListener("change", function (e) {
+        saveBtn.disabled = this.id === vals._id;
       });
     }
     let editBtn = parentTop.querySelector(`#edit-ext-${input.id}`);
@@ -112,7 +126,7 @@ const buildStatusHtml = (data) => {
       }">
         <div class="flex gap-4">
           <div class="w-6 h-6">
-            <img class="object-none" src="/images/status-icons/${key}.svg"/>
+            <img class="object-none w-full h-full" src="/images/status-icons/${key}.svg"/>
           </div>
           <span class="font-medium text-[#3C3C3C]">${value}</span>
         </div>
@@ -151,7 +165,6 @@ const drawStatusList = (activeStatus) => {
 };
 
 const getUserStatus = async () => {
-  let activeExtension = localStorage.getItem("activeExtension");
   if (activeExtension) {
     let data = JSON.parse(activeExtension);
     let userId = data.user.id;
