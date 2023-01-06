@@ -121,69 +121,119 @@ const buildStatusHtml = (data) => {
   return Object.entries(data)
     .map(([key, value], idx) => {
       return `
-      <div class="px-6 py-4 flex justify-between ${
-        idx > 0 ? "border-t border-[#C7C7C7]" : ""
-      }">
+      <div data-id="${key}" data-value="${value}" class="px-6 status-list-item 
+       py-4 flex justify-between ${idx > 0 ? "border-t border-[#C7C7C7]" : ""}">
         <div class="flex gap-4">
           <div class="w-6 h-6">
             <img class="object-none w-full h-full" src="/images/status-icons/${key}.svg"/>
           </div>
           <span class="font-medium text-[#3C3C3C]">${value}</span>
-        </div>
-        
-                  <input
-                    class="peer input-ext"
-                    type="radio"
-                    id="${key}"
-                    value="${value}"
-                    name="extension"
-                  />
-                  <label
-                    for="${key}"
-                    class="text-sm label-item relative font-medium pl-4 
-                    duration-200 ease-in transition-colors
-                    select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
-                    "
-                  > 
-                  </label>
-               
+        </div>               
       </div>
     `;
     })
     .join(" ");
 };
 
-const drawStatusList = (activeStatus) => {
+const handleStatusChange = async (value, type, target) => {
+  let sendData = {};
+
+  sendData = {
+    [type]: {
+      status: value,
+    },
+  };
+  if (type.includes("additional")) {
+    sendData[type] = {
+      ...sendData[type],
+      action: "set",
+      action_type: "manual",
+    };
+  }
+  console.log(sendData, "send");
+  target.classList.add("hidden");
+
+  const data = await fetch(`${backendApi}/status/v2/current-user`, {
+    method: "PATCH",
+    headers: {
+      Authorization: id_token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(sendData),
+  });
+  if (data.ok) {
+    const finalData = await data.json();
+    const { main_status, additional_status } = finalData;
+    return {
+      main_status: main_status.status,
+      additional_status: additional_status.status,
+    };
+  } else {
+    console.log("error", data);
+  }
+};
+
+const drawStatusList = () => {
   let mainStatuses = document.getElementById("main-statuses");
   let additionalWrapper = document.getElementById("additional-statuses");
+  let statusList = document.getElementById("status-list");
 
-  let mainHtml = buildStatusHtml(statuses);
-  let additionalHtml = buildStatusHtml(additionalStatuses);
+  let mainHtml = buildStatusHtml(statuses, "main");
+  let additionalHtml = buildStatusHtml(additionalStatuses, "additional");
 
   mainStatuses.innerHTML = mainHtml;
   additionalWrapper.innerHTML = additionalHtml;
+
+  statusList.querySelectorAll(".status-list-item").forEach((item) => {
+    let type = item.parentElement.id.includes("main")
+      ? "main_status"
+      : "additional_status";
+    item.addEventListener("click", (e) => {
+      let target = e.target.closest(".status-list-item");
+      let key = target.dataset.id;
+      e.stopPropagation();
+      handleStatusChange(key, type, statusList).then((res) => {
+        document
+          .getElementById("status-bar")
+          .querySelector(
+            "img"
+          ).src = `/images/status-icons/${res.main_status}.svg`;
+        document.getElementById("status-bar").querySelector("span").innerText =
+          statuses[res.main_status];
+      });
+    });
+  });
 };
 
-const getUserStatus = async () => {
-  if (activeExtension) {
-    let data = JSON.parse(activeExtension);
-    let userId = data.user.id;
-    console.log(userId);
-    const getStatusInfo = await fetch(
-      `${backendApi}/statuses/v2/users?user_id=${userId}`,
-      {
-        headers: {
-          Authorization: id_token,
-        },
-      }
-    );
-    if (getStatusInfo.ok) {
-      const data = await getStatusInfo.json();
-      return {
-        mainStatus: data[0].main_status.status,
-        additionalStatus: data[0].additional_status.status,
-      };
+const getUserStatus = async (id) => {
+  const getStatusInfo = await fetch(
+    `${backendApi}/statuses/v2/users?user_id=${id}`,
+    {
+      headers: {
+        Authorization: id_token,
+      },
     }
+  );
+  if (getStatusInfo.ok) {
+    const data = await getStatusInfo.json();
+    return {
+      mainStatus: data[0].main_status.status,
+      additionalStatus: data[0].additional_status.status,
+    };
+  }
+};
+
+const getAccount = async () => {
+  const accountInfo = await fetch(`${backendApi}/system/account`, {
+    headers: {
+      Authorization: id_token,
+    },
+  });
+  if (accountInfo.ok) {
+    const data = await accountInfo.json();
+    return data;
+  } else {
+    console.log("error retrieving account", accountInfo);
   }
 };
 
@@ -206,20 +256,29 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   let statusList = document.getElementById("status-list");
   let statusBar = document.getElementById("status-bar");
   if (isLoggedIn) {
-    getUserStatus()
-      .then((data) => {
-        let mainStatus = data.mainStatus;
-        let additionalStatus = data.additionalStatus;
-        drawStatusList(mainStatus);
-        statusBar.querySelector("span").innerText = statuses[mainStatus];
-
-        statusContainer.onclick = () => {
-          statusList.classList.toggle("hidden");
-          statusList.classList.toggle("flex");
-        };
+    getAccount()
+      .then((res) => {
+        return res.id;
       })
-      .catch((err) => {
-        console.log(err);
+      .then((id) => {
+        getUserStatus(id)
+          .then((data) => {
+            let mainStatus = data.mainStatus;
+            let additionalStatus = data.additionalStatus;
+            let img = document.createElement("img");
+            img.src = `/images/status-icons/${mainStatus}.svg`;
+            statusBar.insertAdjacentElement("afterbegin", img);
+            statusBar.querySelector("span").innerText = statuses[mainStatus];
+            drawStatusList();
+
+            statusContainer.onclick = () => {
+              statusList.classList.toggle("hidden");
+              statusList.classList.toggle("flex");
+            };
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
   }
 
