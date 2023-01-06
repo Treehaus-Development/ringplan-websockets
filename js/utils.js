@@ -24,7 +24,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzMwMTc0NTcsIm5iZiI6MTY3Mjk4ODY1NywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjcyOTg4NjU3LCJhdXRoX3RpbWUiOjE2NzI5ODg2NTYsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiNTBmcTdhWi1uMTJkUVJtOHdzVlBKZyJ9.iOumDIXuI0Dy6URR5HRagAP6yN-qIg5Xn_-uJq1wubcuNHWkHBOPk-oxsHZ6Xey5T0AyTY7q0hyRx8u7nwE8U7R-m5A-VUCOkc6Cv25QGpSdZJystxJ7U78jJUQE85rIa1aNtbeH83IZ8hDThcGzISfwguCUQmGu20ti7y8wjLbT-BZdAiBcfbmMR0jS6HUsOgoXIlsbp6h_Dic8sbRZTj8RxpoIqz1MtjZ23yF0sh0-Sdtp2oJsAdWBfMJK2iwxgvyxIf0azOUPxfRpVvNMssFEPaGSvMY6NiNNJOykYmeLyw0tZ0kx9yigSUi5UNZh94-UBOZ6E_nrAJKm7uGkoA";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzMwNTE4MTMsIm5iZiI6MTY3MzAyMzAxMywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjczMDIzMDEzLCJhdXRoX3RpbWUiOjE2NzMwMjMwMTIsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiZHpqQUd5Z08tN2V0TkxLTDVGSFNFdyJ9.uTVOptzOF3GY3ga29eOzAp3-ry8lkv4wR_TUS-V3XuGJvbveaPHhL2wnSlXswyLf3vHFHvRIiLVpo7XGVJULQq4g46X-xCsGi8HvBRyNvrq0aiRCTfjRMXUEvPFJ176HGAmORdTtrevpKKRe7tKjSIxLpcoWdUYj2ElBWoZbvJJKXlOboQXYvfcHQk1Xw18xumFc1E3BFvAFmGeWNMv69SLwGc2_GFhxWqSU7SZxUgBkI3Ejjn5dTlVd2X-KGaYGa2PPvnpNJsJciFZxf4Lrgkg_KaU3dTMuIcUt_0peNvH1q__Sskj3J52qwB1VOPVuI37EUGgoJ_c0nPilgacong";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -150,7 +150,6 @@ const handleStatusChange = async (value, type, target) => {
       action_type: "manual",
     };
   }
-  console.log(sendData, "send");
   target.classList.add("hidden");
 
   const data = await fetch(`${backendApi}/status/v2/current-user`, {
@@ -240,6 +239,11 @@ const drawStatusList = (mainStatus, additionalStatus) => {
           .querySelector(
             "img"
           ).src = `/images/status-icons/${res.main_status}.svg`;
+
+        document.querySelector(
+          "#status-badge"
+        ).src = `/images/status-icons/${res.main_status}.svg`;
+
         if (!!res.additional_status) {
           if (item.dataset.id === res.additional_status) {
             statusList
@@ -260,6 +264,7 @@ const drawStatusList = (mainStatus, additionalStatus) => {
           } else {
             let newImg = document.createElement("img");
             newImg.src = `/images/status-icons/${res.additional_status}.svg`;
+            newImg.id = "additional-img";
             document.querySelector("#additional-icon").appendChild(newImg);
           }
         } else {
@@ -351,6 +356,7 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
             img.src = `/images/status-icons/${mainStatus}.svg`;
             let additionalImg = document.createElement("img");
             additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
+            additionalImg.id = "additional-img";
             if (!statusBar.querySelector("#main-icon")) {
               statusBar.insertAdjacentElement("afterbegin", img);
             }
@@ -359,9 +365,11 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
               statusBar
                 .querySelector("#additional-icon")
                 .classList.remove("hidden");
-              statusBar
-                .querySelector("#additional-icon")
-                .appendChild(additionalImg);
+              if (!statusBar.querySelector("#additional-img")) {
+                statusBar
+                  .querySelector("#additional-icon")
+                  .appendChild(additionalImg);
+              }
             }
             drawStatusList(mainStatus, additionalStatus);
 
@@ -560,6 +568,6 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
     localStorage.setItem("fromSSO", true);
     localStorage.setItem("extensions", JSON.stringify(listValues));
     localStorage.setItem("activeExtension", JSON.stringify(activeExtension));
-    window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}`;
+    window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}&progress=true`;
   };
 };
