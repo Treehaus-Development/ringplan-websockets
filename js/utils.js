@@ -568,6 +568,6 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
     localStorage.setItem("fromSSO", true);
     localStorage.setItem("extensions", JSON.stringify(listValues));
     localStorage.setItem("activeExtension", JSON.stringify(activeExtension));
-    window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}`;
+    window.location = `/webphone.html?user=${activeExtension.data.extension}&pass=${activeExtension.data.secret}&domain=${activeExtension["qr-config"].server}&outbound_server=${activeExtension["qr-config"].outbound_server}&progress=true`;
   };
 };

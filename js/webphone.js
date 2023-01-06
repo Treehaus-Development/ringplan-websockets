@@ -233,6 +233,14 @@ window.onload = function () {
     let finalValue = domainValues.join(".");
     userDomain.value = finalValue;
   }
+  let loader = document.getElementById("loading-progress");
+  let loginContent = document.getElementById("login-content");
+  
+  if (params.progress) {
+    loginContent.classList.add("hidden");
+    loader.classList.remove("hidden");
+    loader.classList.add("grid");
+  }
 
   if (uname.length > 1 && pass.length > 1 && !params.error) {
     userId.value = uname;
