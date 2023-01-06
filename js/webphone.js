@@ -66,6 +66,29 @@ const handleOpenExtensions = () => {
   };
 };
 
+async function getCallHistory() {
+  let twoMonthBefore = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDay() - 50
+  ).toISOString();
+  console.log(twoMonthBefore);
+
+  const history = await fetch(
+    `${backendApi}/cdrs/v3/cdrs?from_date=${twoMonthBefore}&to_date=${new Date().toISOString()}&page=1&page_size=20
+  `,
+    {
+      headers: {
+        Authorization: id_token,
+      },
+    }
+  );
+  if (history.ok) {
+    const data = await history.json();
+    localStorage.setItem("call_history", JSON.stringify(data));
+  }
+}
+
 async function updateUI() {
   try {
     await login();
@@ -124,6 +147,8 @@ async function updateUI() {
             statusBadge.src = `/images/status-icons/${mainStatus}.svg`;
           });
         });
+
+      getCallHistory();
     } else {
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
@@ -142,7 +167,7 @@ async function updateUI() {
     settingsTab.onclick = () => {
       settingsTab.children[0].classList.remove("gap-5");
       settingsTab.children[0].classList.add(...activeClasses, "gap-16");
-      phoneTab.classList.remove(...activeClasses);
+      phoneTab.classList.remove(...activeClasses, 'gap-16');
       phoneTab.classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.add("grayscale");
       settingsTab.querySelector("img").classList.remove("grayscale");
@@ -159,7 +184,7 @@ async function updateUI() {
     phoneTab.onclick = () => {
       phoneTab.classList.remove("gap-5");
       phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses);
+      settingsTab.children[0].classList.remove(...activeClasses, 'gap-16');
       settingsTab.children[0].classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.remove("grayscale");
       settingsTab.querySelector("img").classList.add("grayscale");
@@ -235,7 +260,7 @@ window.onload = function () {
   }
   let loader = document.getElementById("loading-progress");
   let loginContent = document.getElementById("login-content");
-  
+
   if (params.progress) {
     loginContent.classList.add("hidden");
     loader.classList.remove("hidden");
