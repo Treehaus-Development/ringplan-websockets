@@ -67,8 +67,11 @@ const loginWithApi = async () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   let modal = document.getElementById("select-extension");
-
+  let loadingModal = document.getElementById("loading-progress");
+  
   const updateDom = () => {
+    loadingModal.classList.remove("grid");
+    loadingModal.classList.add("hidden");
     triggerModalUpdates(modal, extensionsList);
   };
 

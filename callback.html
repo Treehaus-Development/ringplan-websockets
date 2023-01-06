@@ -15,7 +15,22 @@
     <link rel="stylesheet" href="./css/callback.css" />
   </head>
   <body>
-    <h1>Redirecting to dashboard, please wait....</h1>
+    <div
+      id="loading-progress"
+      tabindex="-1"
+      class="fixed grid top-0 w-full h-full
+       place-content-center place-items-center bg-white left-0 right-0 overflow-x-hidden 
+       overflow-y-auto z-[999] md:inset-0 h-modal md:h-full gap-5"
+    >
+      <h1 class="text-xl text-gray-700">Redirecting to dashboard, please wait...</h1>
+      <div class="w-16 h-16">
+        <img
+          class="animate-spin w-full h-full object-contain"
+          src="./images/loader.svg"
+        />
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
     <div
       id="select-extension"
       tabindex="-1"
