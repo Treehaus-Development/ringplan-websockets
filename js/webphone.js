@@ -110,8 +110,20 @@ async function updateUI() {
     extensionOpts.querySelector("span").innerText =
       sessionStorage.getItem("user") || getCookie("user_id");
 
+    let statusBadge = document.querySelector("#status-badge");
+
     if (isFromSSO) {
       extensionOpts.addEventListener("click", handleOpenExtensions);
+      getAccount()
+        .then((res) => {
+          return res.id;
+        })
+        .then((id) => {
+          getUserStatus(id).then((data) => {
+            let mainStatus = data.mainStatus;
+            statusBadge.src = `/images/status-icons/${mainStatus}.svg`;
+          });
+        });
     } else {
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
@@ -230,7 +242,7 @@ window.onload = function () {
   }
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", (e) => {
   /**
    *
    * Change outbound server value from query params

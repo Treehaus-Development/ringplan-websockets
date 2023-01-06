@@ -150,7 +150,6 @@ const handleStatusChange = async (value, type, target) => {
       action_type: "manual",
     };
   }
-  console.log(sendData, "send");
   target.classList.add("hidden");
 
   const data = await fetch(`${backendApi}/status/v2/current-user`, {
@@ -240,6 +239,11 @@ const drawStatusList = (mainStatus, additionalStatus) => {
           .querySelector(
             "img"
           ).src = `/images/status-icons/${res.main_status}.svg`;
+
+        document.querySelector(
+          "#status-badge"
+        ).src = `/images/status-icons/${res.main_status}.svg`;
+
         if (!!res.additional_status) {
           if (item.dataset.id === res.additional_status) {
             statusList
@@ -260,6 +264,7 @@ const drawStatusList = (mainStatus, additionalStatus) => {
           } else {
             let newImg = document.createElement("img");
             newImg.src = `/images/status-icons/${res.additional_status}.svg`;
+            newImg.id = "additional-img";
             document.querySelector("#additional-icon").appendChild(newImg);
           }
         } else {
@@ -351,6 +356,7 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
             img.src = `/images/status-icons/${mainStatus}.svg`;
             let additionalImg = document.createElement("img");
             additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
+            additionalImg.id = "additional-img";
             if (!statusBar.querySelector("#main-icon")) {
               statusBar.insertAdjacentElement("afterbegin", img);
             }
@@ -359,9 +365,11 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
               statusBar
                 .querySelector("#additional-icon")
                 .classList.remove("hidden");
-              statusBar
-                .querySelector("#additional-icon")
-                .appendChild(additionalImg);
+              if (!statusBar.querySelector("#additional-img")) {
+                statusBar
+                  .querySelector("#additional-icon")
+                  .appendChild(additionalImg);
+              }
             }
             drawStatusList(mainStatus, additionalStatus);
 
