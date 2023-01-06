@@ -173,25 +173,34 @@ const handleStatusChange = async (value, type, target) => {
   }
 };
 
-const drawStatusList = () => {
+const drawStatusList = (mainStatus, additionalStatus) => {
   let mainStatuses = document.getElementById("main-statuses");
   let additionalWrapper = document.getElementById("additional-statuses");
   let statusList = document.getElementById("status-list");
 
-  let mainHtml = buildStatusHtml(statuses, "main");
-  let additionalHtml = buildStatusHtml(additionalStatuses, "additional");
+  let mainHtml = buildStatusHtml(statuses);
+  let additionalHtml = buildStatusHtml(additionalStatuses);
 
   mainStatuses.innerHTML = mainHtml;
   additionalWrapper.innerHTML = additionalHtml;
 
   statusList.querySelectorAll(".status-list-item").forEach((item) => {
+    if (item.dataset.id === mainStatus) {
+      item.classList.add("opacity-50", "!cursor-not-allowed");
+      item.dataset.disabled = true;
+    } else {
+      item.classList.remove("opacity-50", "!cursor-not-allowed");
+      item.dataset.disabled = false;
+    }
     let type = item.parentElement.id.includes("main")
       ? "main_status"
       : "additional_status";
+
     item.addEventListener("click", (e) => {
       let target = e.target.closest(".status-list-item");
       let key = target.dataset.id;
       e.stopPropagation();
+      if (target.dataset.disabled === "true") return;
       handleStatusChange(key, type, statusList).then((res) => {
         document
           .getElementById("status-bar")
@@ -200,6 +209,15 @@ const drawStatusList = () => {
           ).src = `/images/status-icons/${res.main_status}.svg`;
         document.getElementById("status-bar").querySelector("span").innerText =
           statuses[res.main_status];
+        statusList.querySelectorAll(".status-list-item").forEach((listItem) => {
+          if (listItem.dataset.id === res.main_status) {
+            listItem.classList.add("opacity-50", "!cursor-not-allowed");
+            listItem.dataset.disabled = true;
+          } else {
+            listItem.classList.remove("opacity-50", "!cursor-not-allowed");
+            listItem.dataset.disabled = false;
+          }
+        });
       });
     });
   });
@@ -269,7 +287,7 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
             img.src = `/images/status-icons/${mainStatus}.svg`;
             statusBar.insertAdjacentElement("afterbegin", img);
             statusBar.querySelector("span").innerText = statuses[mainStatus];
-            drawStatusList();
+            drawStatusList(mainStatus, additionalStatus);
 
             statusContainer.onclick = () => {
               statusList.classList.toggle("hidden");
