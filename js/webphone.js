@@ -3,7 +3,8 @@ let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 
-const toggleCSSclasses = (el, ...cls) => cls.map(cl => el.classList.toggle(cl))
+const toggleCSSclasses = (el, ...cls) =>
+  cls.map((cl) => el.classList.toggle(cl));
 
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
@@ -68,6 +69,35 @@ const handleOpenExtensions = () => {
   };
 };
 
+const drawCallHistory = () => {
+  let historyListContainer = document.getElementById("history-list");
+  const list = localStorage.getItem("call_history")
+
+  if(list){
+    const listData = JSON.parse(list)
+    let html = listData.map(el => {
+      return `
+        <div 
+        class="flex justify-between select-none px-6 py-2 
+        items-center border-b border-[#D3D3D3]">
+          <div class="w-11 h-11">
+            <img src="/images/profile.svg"/>
+          </div>
+          <div class="flex flex-col gap-2">
+              <p class="text-[#232323]">${el.cdr.dst}</p>
+          </div>
+          <div class="cursor-pointer">
+            <img src="/images/options.svg"/>
+          </div>
+        </div>
+      `
+    }).join(" ")
+
+    historyListContainer.innerHTML = html
+  }
+
+};
+
 async function getCallHistory() {
   let beforeHistory = new Date(
     new Date().getFullYear(),
@@ -75,9 +105,15 @@ async function getCallHistory() {
     new Date().getDay() - 30
   ).toISOString();
 
+  if(isLocalhost){
+    drawCallHistory();
+  }
+
+
+
   try {
     const history = await fetch(
-      `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${getCookie(
+      `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&extension=${getCookie(
         "user_id"
       )}
     `,
@@ -89,6 +125,7 @@ async function getCallHistory() {
     );
     const data = await history.json();
     localStorage.setItem("call_history", JSON.stringify(data));
+    drawCallHistory();
   } catch (error) {
     if (isLocalhost) {
       localStorage.setItem("call_history", JSON.stringify(mockHistory));
@@ -133,7 +170,7 @@ async function updateUI() {
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
     let callHistoryContainer = document.getElementById("history-container");
-    let phoneSubMenu = document.getElementById("phone-submenu")
+    let phoneSubMenu = document.getElementById("phone-submenu");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -183,7 +220,7 @@ async function updateUI() {
       settingsTab.querySelector("img").classList.remove("grayscale");
       callHistoryTab.classList.remove(...activeClasses, "gap-16");
       callHistoryContainer.classList.add("hidden");
-      phoneSubMenu.classList.add('hidden')
+      phoneSubMenu.classList.add("hidden");
       subMenu.classList.remove("hidden");
       pageTitle.innerText = "Settings - Version Info";
       extensionOpts.classList.add("hidden");
@@ -199,10 +236,9 @@ async function updateUI() {
       phoneTab.classList.add(...activeClasses, "gap-16");
       settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
-      callHistoryContainer.classList.add("hidden");
       phoneTab.querySelector("img").classList.remove("grayscale");
       settingsTab.querySelector("img").classList.add("grayscale");
-      phoneSubMenu.classList.remove('hidden')
+      phoneSubMenu.classList.remove("hidden");
       subMenu.classList.add("hidden");
       pageTitle.innerText = "Phone";
       extensionOpts.classList.remove("hidden");
@@ -219,7 +255,7 @@ async function updateUI() {
       settingsTab.children[0].classList.add("gap-5", "font-medium");
       settingsTab.querySelector("img").classList.add("grayscale");
       subMenu.classList.add("hidden");
-      activeSubMenuClasses.map(cx => callHistoryTab.classList.toggle(cx))
+      activeSubMenuClasses.map((cx) => callHistoryTab.classList.toggle(cx));
     };
 
     logoutPopupTrigger.onclick = (e) => {
@@ -241,6 +277,11 @@ async function updateUI() {
 
     hamburgerBtn.onclick = () => {
       sidebar.classList.toggle("-translate-x-full");
+      if (sidebar.classList.contains("-translate-x-full")) {
+        callHistoryContainer.classList.remove("left-[252px]");
+      } else {
+        callHistoryContainer.classList.add("left-[252px]");
+      }
     };
   } catch (error) {
     document.getElementById("dialpad-content").classList.add("hidden");
