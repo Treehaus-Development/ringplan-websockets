@@ -3,6 +3,8 @@ let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 
+const toggleCSSclasses = (el, ...cls) => cls.map(cl => el.classList.toggle(cl))
+
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
 
@@ -73,20 +75,24 @@ async function getCallHistory() {
     new Date().getDay() - 30
   ).toISOString();
 
-  const history = await fetch(
-    `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${getCookie(
-      "user_id"
-    )}
-  `,
-    {
-      headers: {
-        Authorization: id_token,
-      },
-    }
-  );
-  if (history.ok) {
+  try {
+    const history = await fetch(
+      `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${getCookie(
+        "user_id"
+      )}
+    `,
+      {
+        headers: {
+          Authorization: id_token,
+        },
+      }
+    );
     const data = await history.json();
     localStorage.setItem("call_history", JSON.stringify(data));
+  } catch (error) {
+    if (isLocalhost) {
+      localStorage.setItem("call_history", JSON.stringify(mockHistory));
+    }
   }
 }
 
@@ -127,6 +133,7 @@ async function updateUI() {
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
     let callHistoryContainer = document.getElementById("history-container");
+    let phoneSubMenu = document.getElementById("phone-submenu")
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -174,6 +181,9 @@ async function updateUI() {
       phoneTab.classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.add("grayscale");
       settingsTab.querySelector("img").classList.remove("grayscale");
+      callHistoryTab.classList.remove(...activeClasses, "gap-16");
+      callHistoryContainer.classList.add("hidden");
+      phoneSubMenu.classList.add('hidden')
       subMenu.classList.remove("hidden");
       pageTitle.innerText = "Settings - Version Info";
       extensionOpts.classList.add("hidden");
@@ -189,8 +199,10 @@ async function updateUI() {
       phoneTab.classList.add(...activeClasses, "gap-16");
       settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
+      callHistoryContainer.classList.add("hidden");
       phoneTab.querySelector("img").classList.remove("grayscale");
       settingsTab.querySelector("img").classList.add("grayscale");
+      phoneSubMenu.classList.remove('hidden')
       subMenu.classList.add("hidden");
       pageTitle.innerText = "Phone";
       extensionOpts.classList.remove("hidden");
@@ -202,7 +214,12 @@ async function updateUI() {
     };
 
     callHistoryTab.onclick = () => {
-      callHistoryContainer.classList.remove("hidden");
+      callHistoryContainer.classList.toggle("hidden");
+      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
+      settingsTab.children[0].classList.add("gap-5", "font-medium");
+      settingsTab.querySelector("img").classList.add("grayscale");
+      subMenu.classList.add("hidden");
+      activeSubMenuClasses.map(cx => callHistoryTab.classList.toggle(cx))
     };
 
     logoutPopupTrigger.onclick = (e) => {
