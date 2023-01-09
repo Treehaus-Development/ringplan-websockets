@@ -67,15 +67,16 @@ const handleOpenExtensions = () => {
 };
 
 async function getCallHistory() {
-  let twoMonthBefore = new Date(
+  let beforeHistory = new Date(
     new Date().getFullYear(),
     new Date().getMonth(),
-    new Date().getDay() - 50
+    new Date().getDay() - 30
   ).toISOString();
-  console.log(twoMonthBefore);
 
   const history = await fetch(
-    `${backendApi}/cdrs/v3/cdrs?from_date=${twoMonthBefore}&to_date=${new Date().toISOString()}&page=1&page_size=20
+    `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${getCookie(
+      "user_id"
+    )}
   `,
     {
       headers: {
@@ -114,6 +115,7 @@ async function updateUI() {
     let extensionOpts = document.getElementById("extension-options");
     let phoneTab = document.getElementById("phone-tab");
     let settingsTab = document.getElementById("settings-tab");
+    let callHistoryTab = document.getElementById("call-history");
     let subMenu = document.getElementById("settings-submenu");
     let pageTitle = document.getElementById("page-title");
     let mainContainer = document.getElementById("main");
@@ -124,6 +126,7 @@ async function updateUI() {
     let logoutConfirm = document.getElementById("logout-confirm");
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
+    let callHistoryContainer = document.getElementById("history-container");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -167,7 +170,7 @@ async function updateUI() {
     settingsTab.onclick = () => {
       settingsTab.children[0].classList.remove("gap-5");
       settingsTab.children[0].classList.add(...activeClasses, "gap-16");
-      phoneTab.classList.remove(...activeClasses, 'gap-16');
+      phoneTab.classList.remove(...activeClasses, "gap-16");
       phoneTab.classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.add("grayscale");
       settingsTab.querySelector("img").classList.remove("grayscale");
@@ -184,7 +187,7 @@ async function updateUI() {
     phoneTab.onclick = () => {
       phoneTab.classList.remove("gap-5");
       phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses, 'gap-16');
+      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.remove("grayscale");
       settingsTab.querySelector("img").classList.add("grayscale");
@@ -196,6 +199,10 @@ async function updateUI() {
       settingsInfo.classList.add("hidden");
       settingsInfo.classList.remove("flex");
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
+    };
+
+    callHistoryTab.onclick = () => {
+      callHistoryContainer.classList.remove("hidden");
     };
 
     logoutPopupTrigger.onclick = (e) => {
