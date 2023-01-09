@@ -28,7 +28,7 @@
   transition: all 0.3s;
   box-sizing: border-box;
   float: left;
-  height: 3.1px;
+  height: 3px;
 }
 .diagonal.part-2 {
   transition: all 0.3s;
