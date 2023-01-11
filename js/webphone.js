@@ -69,6 +69,11 @@ const handleOpenExtensions = () => {
   };
 };
 
+const formatHistoryDate = (date) => {
+  let origDate = new Date(date).toLocaleString('en-us', {weekday:'short', month:'short', day:'2-digit'})
+  return origDate
+}
+
 const drawCallHistory = () => {
   let historyListContainer = document.getElementById("history-list");
   const list = localStorage.getItem("call_history")
@@ -76,17 +81,26 @@ const drawCallHistory = () => {
   if(list){
     const listData = JSON.parse(list)
     let html = listData.map(el => {
+      let formatedDate = formatHistoryDate(el.cdr.starttime)
       return `
         <div 
         class="flex justify-between select-none px-6 py-2 
         items-center border-b border-[#D3D3D3]">
-          <div class="w-11 h-11">
-            <img src="/images/profile.svg"/>
+          <div class="flex gap-4 items-center">
+            <div class="w-11 h-11">
+              <img src="/images/profile.svg"/>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-[#232323]">${el.cdr.pbx_cnam || el.cdr.src}</p>
+                <div class="flex items-center">
+                  <div class="w-5 h-5">
+                    <img src="/images/call-icons/canceled.svg"/>
+                  </div>
+                  <span class="text-[#A3A3A3]">${el.cdr.dst}, ${formatedDate}</span>
+                </div>
+            </div>
           </div>
-          <div class="flex flex-col gap-2">
-              <p class="text-[#232323]">${el.cdr.dst}</p>
-          </div>
-          <div class="cursor-pointer">
+          <div class="cursor-pointer" id="${el.id}">
             <img src="/images/options.svg"/>
           </div>
         </div>
@@ -308,6 +322,7 @@ window.onload = function () {
 
   if (params.user) {
     uname = params.user;
+    setCookie("user_id", uname)
   }
   if (params.pass) {
     pass = params.pass;
