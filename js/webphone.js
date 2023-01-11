@@ -70,60 +70,93 @@ const handleOpenExtensions = () => {
 };
 
 const formatHistoryDate = (date) => {
-  let origDate = new Date(date).toLocaleString('en-us', {weekday:'short', month:'short', day:'2-digit'})
-  return origDate
-}
+  let origDate = new Date(date).toLocaleString("en-us", {
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+  });
+  return origDate;
+};
+
+const generateAvatar = (text, foregroundColor, backgroundColor) => {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = 200;
+  canvas.height = 200;
+
+  let grd = context.createLinearGradient(0,0,200,0);
+  grd.addColorStop(0,"#07a2de");
+  grd.addColorStop(1,"#1dd3b3");
+
+  context.fillStyle = grd;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.font = "bold 100px Roboto";
+  context.fillStyle = foregroundColor;
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(text, canvas.width / 2, canvas.height / 1.8);
+
+  return canvas.toDataURL("image/png");
+};
 
 const drawCallHistory = () => {
   let historyListContainer = document.getElementById("history-list");
-  const list = localStorage.getItem("call_history")
+  const list = localStorage.getItem("call_history");
 
-  if(list){
-    const listData = JSON.parse(list)
-    let html = listData.map(el => {
-      let formatedDate = formatHistoryDate(el.cdr.starttime)
-      return `
+  if (list) {
+    const listData = JSON.parse(list);
+    let html = listData
+      .map((el) => {
+        let formatedDate = formatHistoryDate(el.cdr.starttime);
+        let acronym = el.cdr.pbx_cnam
+          ?.match(/(\b\S)?/g)
+          .join("")
+          .match(/(^\S|\S$)?/g)
+          .join("")
+          .toUpperCase();
+        console.log(acronym,"acronym");
+        return `
         <div 
         class="flex justify-between select-none px-6 py-2 
         items-center border-b border-[#D3D3D3]">
           <div class="flex gap-4 items-center">
             <div class="w-11 h-11">
-              <img src="/images/profile.svg"/>
+              <img class="rounded-full" src="${
+                el.cdr.pbx_cnam
+                  ? generateAvatar(acronym, "white", "#1dd3b3")
+                  : "/images/profile.svg"
+              }"/>
             </div>
             <div class="flex flex-col">
                 <p class="text-[#232323]">${el.cdr.pbx_cnam || el.cdr.src}</p>
-                <div class="flex items-center">
-                  <div class="w-5 h-5">
-                    <img src="/images/call-icons/canceled.svg"/>
-                  </div>
-                  <span class="text-[#A3A3A3]">${el.cdr.dst}, ${formatedDate}</span>
-                </div>
+                <span class="text-[#A3A3A3]">${
+                  el.cdr.dst
+                }, ${formatedDate}</span>
             </div>
           </div>
           <div class="cursor-pointer" id="${el.id}">
             <img src="/images/options.svg"/>
           </div>
         </div>
-      `
-    }).join(" ")
+      `;
+      })
+      .join(" ");
 
-    historyListContainer.innerHTML = html
+    historyListContainer.innerHTML = html;
   }
-
 };
 
 async function getCallHistory() {
   let beforeHistory = new Date(
     new Date().getFullYear(),
     new Date().getMonth(),
-    new Date().getDay() - 30
+    new Date().getDay() - 15
   ).toISOString();
 
-  if(isLocalhost){
+  if (isLocalhost) {
     drawCallHistory();
   }
-
-
 
   try {
     const history = await fetch(
@@ -322,7 +355,7 @@ window.onload = function () {
 
   if (params.user) {
     uname = params.user;
-    setCookie("user_id", uname)
+    setCookie("user_id", uname);
   }
   if (params.pass) {
     pass = params.pass;
