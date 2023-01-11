@@ -15,7 +15,6 @@ let beforeHistory = new Date(
   new Date().getDay() - 15
 ).toISOString();
 
-
 async function login() {
   let user = document.getElementById("user_id");
   let pwd = document.getElementById("user_pwd");
@@ -107,7 +106,7 @@ const generateAvatar = (text) => {
   return canvas.toDataURL("image/png");
 };
 
-const getDetailedCallHistory = async (src,dst) => {
+const getDetailedCallHistory = async (src, dst) => {
   try {
     const history = await fetch(
       `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${src}&dst=${dst}
@@ -120,45 +119,62 @@ const getDetailedCallHistory = async (src,dst) => {
     );
     if (history.ok) {
       const data = await history.json();
-      return data
+      return data;
     }
-  } catch(error){
-    return error
+  } catch (error) {
+    return error;
   }
-}
-
+};
 
 const drawDetailedLog = (data) => {
+  let callLogList = document.getElementById("call-log-list");
+  
+  let html = data
+    .map((el) => {
+      let formatedDate = formatHistoryDate(el.cdr.starttime);
+      return `
+        <div class="flex justify-between px-8 py-4 items-start"> 
+          <div class="flex flex-col gap-2">
+            <p class="text-[#565656]">${formatedDate}</p>
+            <span class="text-[#A5A5A5]">${el.cdr.dst}</span>
+          </div>
+          <span class="text-[#7A7A7A]">${el.cdr.duration} secs</span>
+        </div>
+  `;
+    })
+    .join(" ");
 
-  let callLogList = document.getElementById("call-log-list")
-
-}
+  callLogList.classList.remove('hidden')
+  callLogList.innerHTML = html
+};
 
 const openDetailedOptions = async (id) => {
   const list = localStorage.getItem("call_history");
-  let callDetailsContainer = document.getElementById("call-details")
-
-  let activeElem = document.querySelector(`[data-id="${id}"]`)
-  let destImg = document.getElementById("img-dest")
-  let activeImageSrc = activeElem.querySelector("img").src
-  destImg.src = activeImageSrc
-  let destNumber = document.getElementById("dest-number")
-  let goBack = document.getElementById("go-back")
-  let spinnerLoader = document.getElementById("spinner-loader")
+  let callDetailsContainer = document.getElementById("call-details");
+  let callLogList = document.getElementById("call-log-list");
+  let activeElem = document.querySelector(`[data-id="${id}"]`);
+  let destImg = document.getElementById("img-dest");
+  let activeImageSrc = activeElem.querySelector("img").src;
+  let destNumber = document.getElementById("dest-number");
+  let goBack = document.getElementById("go-back");
+  let spinnerLoader = document.getElementById("spinner-loader");
   const listData = JSON.parse(list);
   let activeItem = listData.find((el) => el.cdr.id === id);
-  destNumber.innerText = activeItem.cdr.src
-  console.log(activeItem, "activeitem");
-  callDetailsContainer.classList.remove('hidden')
-  callDetailsContainer.classList.add('flex')
-
+  destImg.src = activeImageSrc;
+  destNumber.innerText = activeItem.cdr.src;
+  callDetailsContainer.classList.remove("hidden");
+  callDetailsContainer.classList.add("flex");
+  callLogList.classList.add('hidden')
+  
   goBack.onclick = () => {
-    callDetailsContainer.classList.add('hidden')
-    callDetailsContainer.classList.remove('flex')
-  }
-  spinnerLoader.classList.remove('hidden')
-  spinnerLoader.classList.add('grid')
-  spinnerLoader.insertAdjacentHTML(`afterbegin`, ` 
+    callDetailsContainer.classList.add("hidden");
+    callDetailsContainer.classList.remove("flex");
+  };
+  spinnerLoader.classList.remove("hidden");
+  spinnerLoader.classList.add("grid");
+  spinnerLoader.insertAdjacentHTML(
+    `afterbegin`,
+    ` 
       <svg
       aria-hidden="true"
       role="status"
@@ -176,13 +192,17 @@ const openDetailedOptions = async (id) => {
         fill="currentColor"
       />
     </svg>
-  `)
-  const data = await getDetailedCallHistory(activeItem.cdr.src, activeItem.cdr.dst)
-  spinnerLoader.innerHTML = ''
-  spinnerLoader.classList.add('hidden')
-  spinnerLoader.classList.remove('grid')
+  `
+  );
+  const data = await getDetailedCallHistory(
+    activeItem.cdr.src,
+    activeItem.cdr.dst
+  );
+  spinnerLoader.innerHTML = "";
+  spinnerLoader.classList.add("hidden");
+  spinnerLoader.classList.remove("grid");
 
-  drawDetailedLog(data)
+  drawDetailedLog(data);
 };
 
 const drawCallHistory = () => {
@@ -247,7 +267,6 @@ const drawCallHistory = () => {
 };
 
 async function getCallHistory() {
-
   try {
     const history = await fetch(
       `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&extension=${getCookie(
