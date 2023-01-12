@@ -135,6 +135,18 @@ const buildStatusHtml = (data) => {
     .join(" ");
 };
 
+const patchStatus = async (data) => {
+  return fetch(`${backendApi}/status/v2/current-user`, {
+    method: "PATCH",
+    headers: {
+      Authorization: id_token,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+
 const handleStatusChange = async (value, type, target) => {
   let sendData = {};
 
@@ -152,15 +164,8 @@ const handleStatusChange = async (value, type, target) => {
   }
   target.classList.add("hidden");
 
-  const data = await fetch(`${backendApi}/status/v2/current-user`, {
-    method: "PATCH",
-    headers: {
-      Authorization: id_token,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(sendData),
-  });
-  if (data.ok) {
+  const data = await patchStatus(sendData);
+  if (data.ok) { 
     const finalData = await data.json();
     const { main_status, additional_status } = finalData;
     return {
