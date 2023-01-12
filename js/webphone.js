@@ -1,4 +1,4 @@
-let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7]`;
+let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7] active-tab`;
 let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
@@ -174,28 +174,32 @@ const openDetailedOptions = async (id) => {
   };
   spinnerLoader.classList.remove("hidden");
   spinnerLoader.classList.add("grid");
-  spinnerLoader.insertAdjacentHTML(
-    `afterbegin`,
-    ` 
-      <svg
-      aria-hidden="true"
-      role="status"
-      class="w-10 h-10 mr-3 text-[#00A2DD] animate-spin"
-      viewBox="0 0 100 101"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-        fill="#E5E7EB"
-      />
-      <path
-        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-        fill="currentColor"
-      />
-    </svg>
-  `
-  );
+
+  const loaderElement = document.createElement('div')
+  loaderElement.id = 'log-loader'
+  loaderElement.innerHTML = 
+  `<svg
+        aria-hidden="true"
+        role="status"
+        class="w-10 h-10 mr-3 text-[#00A2DD] animate-spin"
+        viewBox="0 0 100 101"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="#E5E7EB"
+        />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentColor"
+        />
+      </svg>`
+
+  if(!document.getElementById("log-loader")){
+    spinnerLoader.insertAdjacentElement('afterbegin', loaderElement)
+  }
+
   const data = await getDetailedCallHistory(
     activeItem.cdr.src,
     activeItem.cdr.dst
@@ -327,7 +331,6 @@ async function updateUI() {
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
     let callHistoryContainer = document.getElementById("history-container");
-    let phoneSubMenu = document.getElementById("phone-submenu");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -360,10 +363,25 @@ async function updateUI() {
     const cancelLogout = () => {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
-      pageTitle.innerText = "Settings - Version Info";
+      pageTitle.innerText = `Phone`
       settingsInfo.classList.remove("!hidden");
-      versionInfoBtn.classList.add(...activeSubMenuClasses);
+      phoneTab.classList.remove("gap-5");
+      phoneTab.classList.add(...activeClasses, "gap-16");
+      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
+      settingsTab.children[0].classList.add("gap-5", "font-medium");
+      phoneTab.querySelector("img").classList.remove("grayscale");
+      settingsTab.querySelector("img").classList.add("grayscale");
+
+      mainContainer.classList.remove("!bg-[#F2F2F2]");
+      settingsInfo.classList.add("hidden");
+      settingsInfo.classList.remove("flex");
+      mainWrapper.classList.remove("h-main", "grid", "place-items-center");
+      $("#my-container").removeClass('hidden')
+
+
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
+      mainWrapper.classList.add('grid')
+      mainWrapper.classList.remove('hidden')
     };
 
     // tabs functionality
@@ -371,15 +389,16 @@ async function updateUI() {
     settingsTab.onclick = () => {
       settingsTab.children[0].classList.remove("gap-5");
       settingsTab.children[0].classList.add(...activeClasses, "gap-16");
+
       phoneTab.classList.remove(...activeClasses, "gap-16");
       phoneTab.classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.add("grayscale");
       settingsTab.querySelector("img").classList.remove("grayscale");
-      callHistoryTab.classList.remove(...activeClasses, "gap-16", "flex");
-      callHistoryContainer.classList.add("hidden");
+      versionInfoBtn.classList.add(...activeSubMenuClasses);
 
-      phoneSubMenu.classList.add("hidden");
-      subMenu.classList.remove("hidden");
+      callHistoryContainer.classList.add("hidden");
+      callHistoryContainer.classList.remove("flex");
+
       pageTitle.innerText = "Settings - Version Info";
       extensionOpts.classList.add("hidden");
       $("#my-container").addClass("hidden");
@@ -387,6 +406,7 @@ async function updateUI() {
       settingsInfo.classList.remove("hidden");
       settingsInfo.classList.add("flex");
       mainWrapper.classList.add("h-main", "grid", "place-items-center");
+      activeSubMenuClasses.map((cx) => callHistoryTab.classList.remove(cx));
     };
 
     phoneTab.onclick = () => {
@@ -395,9 +415,9 @@ async function updateUI() {
       settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.remove("grayscale");
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
+
       settingsTab.querySelector("img").classList.add("grayscale");
-      phoneSubMenu.classList.remove("hidden");
-      subMenu.classList.add("hidden");
       pageTitle.innerText = "Phone";
       extensionOpts.classList.remove("hidden");
       $("#my-container").removeClass("hidden");
@@ -408,16 +428,30 @@ async function updateUI() {
     };
 
     callHistoryTab.onclick = () => {
+      phoneTab.classList.remove("gap-5");
+      phoneTab.classList.add(...activeClasses, "gap-16");
+      pageTitle.innerText = 'Phone'
+      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
+      extensionOpts.classList.remove("hidden");
+      settingsTab.children[0].classList.add("gap-5", "font-medium");
+      phoneTab.querySelector("img").classList.remove("grayscale");
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
+      settingsTab.querySelector("img").classList.add("grayscale");
       callHistoryContainer.classList.toggle("hidden");
       callHistoryContainer.classList.toggle("flex");
       settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
       settingsTab.querySelector("img").classList.add("grayscale");
-      subMenu.classList.add("hidden");
       activeSubMenuClasses.map((cx) => callHistoryTab.classList.toggle(cx));
     };
 
     logoutPopupTrigger.onclick = (e) => {
+      settingsTab.children[0].classList.remove("gap-5");
+      settingsTab.children[0].classList.add(...activeClasses, "gap-16");
+      phoneTab.classList.remove(...activeClasses, "gap-16");
+      phoneTab.classList.add("gap-5", "font-medium");
+      phoneTab.querySelector("img").classList.add("grayscale");
+      settingsTab.querySelector("img").classList.remove("grayscale");
       e.stopPropagation();
       modal.classList.remove("hidden");
       modal.classList.add("grid");
@@ -425,6 +459,8 @@ async function updateUI() {
       settingsInfo.classList.add("!hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
       logoutPopupTrigger.classList.add(...activeSubMenuClasses);
+      mainWrapper.classList.remove('grid')
+      mainWrapper.classList.add('hidden')
     };
 
     logoutConfirm.onclick = () => {
