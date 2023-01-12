@@ -3,9 +3,6 @@ let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 
-const toggleCSSclasses = (el, ...cls) =>
-  cls.map((cl) => el.classList.toggle(cl));
-
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
 
@@ -130,7 +127,7 @@ const getDetailedCallHistory = async (src, dst) => {
 
 const drawDetailedLog = (data) => {
   let callLogList = document.getElementById("call-log-list");
-  
+
   let html = data
     .map((el) => {
       let formatedDate = formatHistoryDate(el.cdr.starttime);
@@ -146,8 +143,8 @@ const drawDetailedLog = (data) => {
     })
     .join(" ");
 
-  callLogList.classList.remove('hidden')
-  callLogList.innerHTML = html
+  callLogList.classList.remove("hidden");
+  callLogList.innerHTML = html;
 };
 
 const openDetailedOptions = async (id) => {
@@ -166,8 +163,8 @@ const openDetailedOptions = async (id) => {
   destNumber.innerText = activeItem.cdr.src;
   callDetailsContainer.classList.remove("hidden");
   callDetailsContainer.classList.add("flex");
-  callLogList.classList.add('hidden')
-  
+  callLogList.classList.add("hidden");
+
   goBack.onclick = () => {
     callDetailsContainer.classList.add("hidden");
     callDetailsContainer.classList.remove("flex");
@@ -175,10 +172,9 @@ const openDetailedOptions = async (id) => {
   spinnerLoader.classList.remove("hidden");
   spinnerLoader.classList.add("grid");
 
-  const loaderElement = document.createElement('div')
-  loaderElement.id = 'log-loader'
-  loaderElement.innerHTML = 
-  `<svg
+  const loaderElement = document.createElement("div");
+  loaderElement.id = "log-loader";
+  loaderElement.innerHTML = `<svg
         aria-hidden="true"
         role="status"
         class="w-10 h-10 mr-3 text-[#00A2DD] animate-spin"
@@ -194,10 +190,10 @@ const openDetailedOptions = async (id) => {
           d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
           fill="currentColor"
         />
-      </svg>`
+      </svg>`;
 
-  if(!document.getElementById("log-loader")){
-    spinnerLoader.insertAdjacentElement('afterbegin', loaderElement)
+  if (!document.getElementById("log-loader")) {
+    spinnerLoader.insertAdjacentElement("afterbegin", loaderElement);
   }
 
   const data = await getDetailedCallHistory(
@@ -262,7 +258,28 @@ const drawCallHistory = () => {
       .querySelectorAll(".history-list-item")
       .forEach((item) => {
         item.addEventListener("click", () => {
-          openDetailedOptions(item.dataset.id);
+          historyListContainer
+            .querySelectorAll(".history-list-item")
+            .forEach((el) => {
+              el.classList.add("pointer-events-none");
+            });
+          openDetailedOptions(item.dataset.id)
+            .then((res) => {
+              console.log(res, "res");
+              historyListContainer
+                .querySelectorAll(".history-list-item")
+                .forEach((el) => {
+                  el.classList.remove("pointer-events-none");
+                });
+            })
+            .catch((err) => {
+              console.log(err, "err");
+              historyListContainer
+                .querySelectorAll(".history-list-item")
+                .forEach((el) => {
+                  el.classList.remove("pointer-events-none");
+                });
+            });
         });
       });
   }
@@ -363,7 +380,7 @@ async function updateUI() {
     const cancelLogout = () => {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
-      pageTitle.innerText = `Phone`
+      pageTitle.innerText = `Phone`;
       settingsInfo.classList.remove("!hidden");
       phoneTab.classList.remove("gap-5");
       phoneTab.classList.add(...activeClasses, "gap-16");
@@ -376,12 +393,11 @@ async function updateUI() {
       settingsInfo.classList.add("hidden");
       settingsInfo.classList.remove("flex");
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
-      $("#my-container").removeClass('hidden')
-
+      $("#my-container").removeClass("hidden");
 
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
-      mainWrapper.classList.add('grid')
-      mainWrapper.classList.remove('hidden')
+      mainWrapper.classList.add("grid");
+      mainWrapper.classList.remove("hidden");
     };
 
     // tabs functionality
@@ -430,7 +446,7 @@ async function updateUI() {
     callHistoryTab.onclick = () => {
       phoneTab.classList.remove("gap-5");
       phoneTab.classList.add(...activeClasses, "gap-16");
-      pageTitle.innerText = 'Phone'
+      pageTitle.innerText = "Phone";
       settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       extensionOpts.classList.remove("hidden");
       settingsTab.children[0].classList.add("gap-5", "font-medium");
@@ -459,8 +475,8 @@ async function updateUI() {
       settingsInfo.classList.add("!hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
       logoutPopupTrigger.classList.add(...activeSubMenuClasses);
-      mainWrapper.classList.remove('grid')
-      mainWrapper.classList.add('hidden')
+      mainWrapper.classList.remove("grid");
+      mainWrapper.classList.add("hidden");
     };
 
     logoutConfirm.onclick = () => {
