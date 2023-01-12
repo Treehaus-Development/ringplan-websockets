@@ -204,6 +204,17 @@ const openDetailedOptions = async (id) => {
   spinnerLoader.classList.add("hidden");
   spinnerLoader.classList.remove("grid");
 
+  let callBtn = document.getElementById("call-detail-btn")
+  let callHistoryContainer = document.getElementById("history-container");
+
+  callBtn.onclick = () => {
+    callHistoryContainer.classList.add('hidden')
+    callHistoryContainer.classList.remove('flex')
+    console.log(document.querySelector('.webphone-digits'), 'digits');
+    document.querySelector('.webphone-digits').innerText = activeItem.cdr.dst
+    document.getElementById("webphone-call-btn").click()
+  }
+
   drawDetailedLog(data);
 };
 
