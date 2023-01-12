@@ -80,6 +80,8 @@ const formatHistoryDate = (date) => {
     weekday: "short",
     month: "short",
     day: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
   });
   return origDate;
 };
@@ -133,7 +135,7 @@ const drawDetailedLog = (data) => {
     .map((el) => {
       let formatedDate = formatHistoryDate(el.cdr.starttime);
       return `
-        <div class="flex justify-between px-8 py-4 items-start"> 
+        <div class="flex justify-between select-none px-8 py-4 items-start"> 
           <div class="flex flex-col gap-2">
             <p class="text-[#565656]">${formatedDate}</p>
             <span class="text-[#A5A5A5]">${el.cdr.dst}</span>
@@ -228,7 +230,7 @@ const drawCallHistory = () => {
         return `
         <div 
         data-id="${el.cdr.id}" 
-        class="flex history-list-item justify-between select-none px-6 py-2 
+        class="flex history-list-item cursor-pointer justify-between select-none px-6 py-2 
         items-center border-b border-[#D3D3D3]">
           <div class="flex gap-4 items-center">
             <div class="w-11 h-11">
@@ -245,9 +247,6 @@ const drawCallHistory = () => {
                 }, ${formatedDate}</span>
             </div>
           </div>
-          <div class="cursor-pointer" id="btn-${el.cdr.id}">
-            <img src="/images/options.svg"/>
-          </div>
         </div>
       `;
       })
@@ -258,8 +257,7 @@ const drawCallHistory = () => {
     historyListContainer
       .querySelectorAll(".history-list-item")
       .forEach((item) => {
-        let optionsBtn = item.querySelector(`#btn-${item.dataset.id}`);
-        optionsBtn.addEventListener("click", () => {
+        item.addEventListener("click", () => {
           openDetailedOptions(item.dataset.id);
         });
       });
