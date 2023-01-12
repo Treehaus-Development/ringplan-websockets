@@ -1,6 +1,6 @@
 let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7] active-tab`;
 let activeClasses = classesStr.split(" ");
-let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
+let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 
 const urlSearchParams = new URLSearchParams(window.location.search);
@@ -348,7 +348,6 @@ async function updateUI() {
     let phoneTab = document.getElementById("phone-tab");
     let settingsTab = document.getElementById("settings-tab");
     let callHistoryTab = document.getElementById("call-history");
-    let subMenu = document.getElementById("settings-submenu");
     let pageTitle = document.getElementById("page-title");
     let mainContainer = document.getElementById("main");
     let settingsInfo = document.getElementById("settings-info");
@@ -359,6 +358,8 @@ async function updateUI() {
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
     let callHistoryContainer = document.getElementById("history-container");
+    let voiceMailTab = document.getElementById("voicemail-tab")
+    let voiceMailContainer = document.getElementById("voicemail-container")
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -388,6 +389,21 @@ async function updateUI() {
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
 
+
+    voiceMailTab.onclick = () => {
+      let activeTab = document.querySelector(".active-tab")
+      if (activeTab.id === "settings-tab"){
+        activeTab = activeTab.children[0]
+      }
+
+      activeTab.classList.remove(...activeClasses, "gap-16");
+      activeTab.classList.add("gap-5", "font-medium");
+      activeTab.querySelector("img").classList.add("grayscale");
+      voiceMailTab.classList.remove("gap-5");
+      voiceMailTab.classList.add(...activeClasses, "gap-16");
+      voiceMailTab.querySelector("img").classList.remove("grayscale");
+    }
+    
     const cancelLogout = () => {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
@@ -414,12 +430,20 @@ async function updateUI() {
     // tabs functionality
 
     settingsTab.onclick = () => {
+
+      let activeTab = document.querySelector(".active-tab")
+      if (activeTab.id === "settings-tab"){
+        activeTab = activeTab.children[0]
+      }
+  
+
+      activeTab.classList.remove(...activeClasses, "gap-16");
+      activeTab.classList.add("gap-5", "font-medium");
+      activeTab.querySelector("img").classList.add("grayscale");
+
+
       settingsTab.children[0].classList.remove("gap-5");
       settingsTab.children[0].classList.add(...activeClasses, "gap-16");
-
-      phoneTab.classList.remove(...activeClasses, "gap-16");
-      phoneTab.classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.add("grayscale");
       settingsTab.querySelector("img").classList.remove("grayscale");
       versionInfoBtn.classList.add(...activeSubMenuClasses);
 
@@ -437,14 +461,23 @@ async function updateUI() {
     };
 
     phoneTab.onclick = () => {
+      
+      let activeTab = document.querySelector(".active-tab")
+      if (activeTab.id === "settings-tab"){
+        activeTab = activeTab.children[0]
+      }
+  
+
+      activeTab.classList.remove(...activeClasses, "gap-16");
+      activeTab.classList.add("gap-5", "font-medium");
+      activeTab.querySelector("img").classList.add("grayscale");
+
+
       phoneTab.classList.remove("gap-5");
       phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
       phoneTab.querySelector("img").classList.remove("grayscale");
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
 
-      settingsTab.querySelector("img").classList.add("grayscale");
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       pageTitle.innerText = "Phone";
       extensionOpts.classList.remove("hidden");
       $("#my-container").removeClass("hidden");

@@ -36,7 +36,9 @@
       <ul>
         <li
           id="phone-tab"
-          class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-16 items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7]"
+          class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-16 
+          active-tab
+          items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7]"
         >
           <div>
             <img src="../images/phone.svg" />
@@ -52,6 +54,17 @@
           </li>
         </div>
       </ul>
+      
+        <li id="voicemail-tab"
+          class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-5 items-center
+           font-bold bg-white"
+        >
+          <div>
+            <img class="grayscale" src="../images/voicemail.svg" />
+          </div>
+          <span>Voicemail</span>
+        </li>
+      
       <ul id="settings-tab">
         <li
           class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-5 items-center font-bold bg-white"
@@ -140,6 +153,36 @@
       <img src="/images/dialer.svg" class="w-full h-full object-cover" />
     </div>
   </div>
+    </div>
+  </div>  
+</aside>
+<aside
+  id="voicemail-container"
+  class="ease-nav-brand hidden fixed 
+  bottom-0 top-[162px] lg:top-[66px] z-990 w-full
+  items-center
+   border-0 bg-[#fafafa] p-0 antialiased 
+   transition-transform duration-200 shadow-md left-[252px]
+   "
+>
+  <div
+    class="pt-4 basis-[30%] h-full bg-white block w-auto max-h-screen"
+  >
+    <span class="font-medium text-xl ml-10">Filter</span>
+    <div class="flex-col overflow-y-auto max-h-120 mt-2 hidden" id="voicemail-list"></div>
+    <div id="voicemail-list-loader" class="w-full h-full grid place-items-center">
+    </div>
+  </div>
+  <div 
+  id="voicemail-details" 
+  class="hidden basis-[50%] flex-col relative h-full">
+    <div class="flex flex-col gap-5 py-10 items-center">
+      <img class="w-28 h-18 rounded-full" id="img-voicemail" />
+      <span id="voicemail-number" class="text-[#232323]">+24163527192</span>
+    </div>
+    <div class="flex flex-col px-6">
+      <div id="voicemail-loader" class="w-full h-40 hidden place-items-center"></div>  
+    </div>
     </div>
   </div>  
 </aside>
