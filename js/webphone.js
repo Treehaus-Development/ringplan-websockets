@@ -125,6 +125,27 @@ const getDetailedCallHistory = async (src, dst) => {
   }
 };
 
+const setActiveTab = (ele) => {
+  ele.classList.remove("gap-5");
+  ele.classList.add(...activeClasses, "gap-16");
+  ele.querySelector("img").classList.remove("grayscale");
+};
+
+const removeActiveTab = () => {
+  let ele = document.querySelector(".active-tab");
+  let activeContainer = document.querySelector(".active-container");
+  if (ele.id === "settings-tab") {
+    ele = ele.children[0];
+  }
+
+  activeContainer.classList.remove("active-container", "flex");
+  activeContainer.classList.add("hidden");
+
+  ele.classList.remove(...activeClasses, "gap-16");
+  ele.classList.add("gap-5", "font-medium");
+  ele.querySelector("img").classList.add("grayscale");
+};
+
 const drawDetailedLog = (data) => {
   let callLogList = document.getElementById("call-log-list");
 
@@ -196,12 +217,14 @@ const openDetailedOptions = async (id) => {
   }
 
   let callBtn = document.getElementById("call-detail-btn");
-  let callHistoryContainer = document.getElementById("history-container");
+  let myContainer = document.getElementById("my-container");
 
   callBtn.onclick = () => {
-    callHistoryContainer.classList.add("hidden");
-    callHistoryContainer.classList.remove("flex");
-    console.log(document.querySelector(".webphone-digits"), "digits");
+    removeActiveTab();
+    setActiveTab(document.getElementById("phone-tab"));
+    myContainer.classList.remove("hidden");
+    myContainer.classList.add("flex", "active-container");
+
     document.querySelector(".webphone-digits").innerText = activeItem.cdr.dst;
     document.getElementById("webphone-call-btn").click();
   };
@@ -386,52 +409,25 @@ async function updateUI() {
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
 
-
     const cancelLogout = () => {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
+
       pageTitle.innerText = `Phone`;
       settingsInfo.classList.remove("!hidden");
-      phoneTab.classList.remove("gap-5");
-      phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.remove("grayscale");
-      settingsTab.querySelector("img").classList.add("grayscale");
+
+      removeActiveTab();
+      setActiveTab(phoneTab);
 
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      settingsInfo.classList.add("hidden");
-      settingsInfo.classList.remove("flex", 'active-container');
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
+      extensionOpts.classList.remove("hidden");
 
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
       mainWrapper.classList.add("grid");
       mainWrapper.classList.remove("hidden");
-    };
-
-    // tabs functionality
-
-    const removeActiveTab = () => {
-      let ele = document.querySelector(".active-tab");
-      let activeContainer = document.querySelector(".active-container")
-      if (ele.id === "settings-tab") {
-        ele = ele.children[0];
-      }
-
-      activeContainer.classList.remove('active-container', 'flex')
-      activeContainer.classList.add('hidden')
-
-      ele.classList.remove(...activeClasses, "gap-16");
-      ele.classList.add("gap-5", "font-medium");
-      ele.querySelector("img").classList.add("grayscale");
-    };
-
-    const setActiveTab = (ele) => {
-      ele.classList.remove("gap-5");
-      ele.classList.add(...activeClasses, "gap-16");
-      ele.querySelector("img").classList.remove("grayscale");
     };
 
     settingsTab.onclick = function () {
@@ -445,7 +441,7 @@ async function updateUI() {
 
       mainContainer.classList.add("!bg-[#F2F2F2]");
       settingsInfo.classList.remove("hidden");
-      settingsInfo.classList.add("flex", 'active-container');
+      settingsInfo.classList.add("flex", "active-container");
       mainWrapper.classList.add("h-main", "grid", "place-items-center");
     };
 
@@ -467,9 +463,9 @@ async function updateUI() {
         getCallHistory();
         this.dataset.shouldFetch = "false";
       }
-     
-      removeActiveTab()
-      setActiveTab(this)      
+
+      removeActiveTab();
+      setActiveTab(this);
       callHistoryContainer.classList.remove("hidden");
       callHistoryContainer.classList.add("flex", "active-container");
 
@@ -478,22 +474,21 @@ async function updateUI() {
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
     };
 
-    voiceMailTab.onclick = function(){
-      removeActiveTab()
-      setActiveTab(this)
+    voiceMailTab.onclick = function () {
+      removeActiveTab();
+      setActiveTab(this);
       pageTitle.innerText = "Voicemail";
       extensionOpts.classList.add("hidden");
-      voiceMailContainer.classList.remove('hidden')
-      voiceMailContainer.classList.add('flex', 'active-container')
+      voiceMailContainer.classList.remove("hidden");
+      voiceMailContainer.classList.add("flex", "active-container");
     };
 
-
     logoutPopupTrigger.onclick = (e) => {
-      removeActiveTab()
-      setActiveTab(settingsTab.children[0])
+      removeActiveTab();
+      setActiveTab(settingsTab.children[0]);
       e.stopPropagation();
       modal.classList.remove("hidden");
-      modal.classList.add("grid");
+      modal.classList.add("grid", "active-container");
       pageTitle.innerText = "Settings - Logout";
       settingsInfo.classList.add("!hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);

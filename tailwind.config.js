@@ -945,7 +945,7 @@ module.exports = {
       full: "100%",
       sidenav: "calc(100vh - 370px)",
       main: "calc(100vh - 100px)",
-      container: "calc(100vh - 95px)",
+      container: "calc(99vh - 100px)",
       screen: "100vh",
       min: "min-content",
       max: "max-content",
