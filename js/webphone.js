@@ -252,14 +252,27 @@ const openDetailedOptions = async (id) => {
 };
 
 
-const openVoicemailDetails = (data, id) => {
+const openVoicemailDetails = async (data, id) => {
   let voiceMailDetails = document.getElementById("voicemail-details")
+  let audioDest = document.getElementById("audio-dest")
   const activeItem = data.find(item => item._id === id)
   console.log(activeItem,"activeItem");
   voiceMailDetails.classList.remove('hidden')
   voiceMailDetails.classList.add('flex')
   voiceMailDetails.querySelector("#voicemail-number").innerText = activeItem.extension_source
   voiceMailDetails.querySelector("#voicemail-message span").innerText = activeItem.source_representation_name
+  audioDest.innerHTML = ""
+  let audio = document.createElement('audio')
+  audio.className = "fc-media"
+  audio.id = activeItem.voicemail_file.id
+  audio.controls = true
+  audio.name = activeItem.voicemail_file.name
+  audio.preload = "auto"
+  const source = document.createElement('source')
+  source.src= activeItem.voicemail_file.link
+  audio.appendChild(source)
+  audioDest.insertAdjacentElement('afterbegin', audio)
+  audioPlayer.init()
 }
 
 const drawVoicemails = () => {

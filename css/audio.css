@@ -1,0 +1,84 @@
+.mejs__currenttime {
+  display: none;
+}
+
+.mejs__controls {
+  position: relative;
+}
+.mejs__container,
+.mejs__controls {
+  background: white !important;
+}
+
+.mejs__playpause-button {
+  background-color: #3fa9f5;
+  border-radius: 100%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.mejs__time-rail {
+  display: flex;
+  order: 1;
+  padding-top: 13px;
+}
+
+.mejs__time {
+  color: #555555;
+  font-size: 14px;
+  display: flex;
+  user-select: none;
+  order: 2;
+}
+.mejs__time-current {
+  background: #3b9ef7;
+  height: 4px;
+}
+.mejs__time-hovered {
+  /* background: #e7e0ec;
+   */
+   pointer-events: none;
+}
+.mejs__time-loaded {
+  height: 4px;
+}
+.mejs__volume-button {
+  position: absolute;
+  top: 50px;
+}
+.mejs__volume-button button {
+  background-image: url("../images/speaker.svg");
+  background-size: contain;
+  width: 31px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.mejs__horizontal-volume-slider {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+}
+
+.mejs__time-slider {
+  height: 4px;
+  border-radius: 4px;
+  background: #d1e4ff;
+}
+
+.mejs__time-handle {
+  transition: 0.3s ease;
+  border-radius: 100%;
+  border: 10px solid #3b9ef7;
+  top: -8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.mejs__time-float{
+    background: white;
+}
+.mejs__time-handle-content {
+    display: none !important;
+}
