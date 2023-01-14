@@ -30,7 +30,7 @@ xmlns="http://www.w3.org/2000/svg"
 </svg>`;
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
-let checkedIds = []
+let checkedIds = [];
 let isBulkEdit = false;
 
 let beforeHistory = new Date(
@@ -337,6 +337,106 @@ const openDetailedOptions = async (id) => {
   drawDetailedLog(data);
 };
 
+const showErrorToast = (err) => {
+  let errorToast = document.getElementById("toast-error");
+  errorToast.classList.remove("animate-fade-out");
+  errorToast.classList.add("animate-fade-up");
+  errorToast.querySelector("span").innerText =
+    err?.message || "Something went wrong, please try again";
+  setTimeout(() => {
+    errorToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    errorToast.querySelector("span").innerText = "";
+  }, 4500);
+};
+
+const showSuccessToast = (isBulk) => {
+  let successToast = document.getElementById("toast-success");
+  successToast.classList.remove("animate-fade-out");
+  successToast.classList.add("animate-fade-up");
+  successToast.querySelector("span").innerText = `Voicemail${
+    isBulk ? "s" : ""
+  } deleted successfully`;
+  setTimeout(() => {
+    successToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    successToast.querySelector("span").innerText = "";
+  }, 4500);
+};
+
+const bulkUpdateVoicemailsRead = async (bool) => {
+  try {
+    let values = await fetch(`${backendApi}/voicemail/messages/bulk-update`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ listened: bool, message_ids: checkedIds }),
+    });
+
+    const item = await values.json();
+    return item;
+  } catch (err) {
+    return err;
+  }
+};
+
+const bulkDeleteVoicemails = async () => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/bulk-delete`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message_ids: checkedIds }),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+};
+
+const handleBulkActions = async (action, listItems) => {
+  if (action !== "delete") {
+    bulkUpdateVoicemailsRead(action === "read")
+      .then((res) => {
+        console.log(res, "res");
+        document.body.click();
+
+        const newData = listItems.map((item) => {
+          const newItem = res.find((el) => el.message_id === item._id);
+          return newItem
+            ? {
+                ...item,
+                listened: action === "read",
+              }
+            : item;
+        });
+        drawVoicemails(newData);
+      })
+      .catch((err) => {
+        console.log(err, "error");
+      });
+  } else {
+    bulkDeleteVoicemails()
+      .then((res) => {
+        const newData = listItems.filter(
+          (item) => !checkedIds.includes(item._id)
+        );
+        showSuccessToast(true);
+        drawVoicemails(newData);
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        showErrorToast(err);
+      });
+  }
+};
+
 const openVoicemailDetails = async (data, id, isListened) => {
   if (isListened === "false") {
     setVoicemailListened(id)
@@ -351,8 +451,7 @@ const openVoicemailDetails = async (data, id, isListened) => {
             }
             return item;
           });
-          localStorage.setItem("voicemails", JSON.stringify(newData));
-          drawVoicemails();
+          drawVoicemails(newData);
         }
       })
       .catch((err) => {
@@ -362,8 +461,6 @@ const openVoicemailDetails = async (data, id, isListened) => {
   let voiceMailDetails = document.getElementById("voicemail-details");
   let voiceMailSubmenu = document.getElementById("voicemail-submenu");
   let deleteVoicemailBtn = document.getElementById("delete-voicemail-btn");
-  let successToast = document.getElementById("toast-success");
-  let errorToast = document.getElementById("toast-error");
   let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
   let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
   let audioDest = document.getElementById("audio-dest");
@@ -396,36 +493,13 @@ const openVoicemailDetails = async (data, id, isListened) => {
       });
     });
 
-  const showErrorToast = (err) => {
-    errorToast.classList.remove("animate-fade-out");
-    errorToast.classList.add("animate-fade-up");
-    errorToast.querySelector("span").innerText =
-      err?.message || "Something went wrong, please try again";
-    setTimeout(() => {
-      errorToast.classList.add("animate-fade-out");
-    }, 3000);
-    setTimeout(() => {
-      errorToast.querySelector("span").innerText = "";
-    }, 4500);
-  };
-
   deleteVoicemailBtn.onclick = () => {
     deleteVoicemail(id)
       .then((res) => {
         if (res.ok) {
-          successToast.classList.remove("animate-fade-out");
-          successToast.classList.add("animate-fade-up");
-          successToast.querySelector("span").innerText =
-            "Voicemail deleted successfully";
-          setTimeout(() => {
-            successToast.classList.add("animate-fade-out");
-          }, 3000);
-          setTimeout(() => {
-            successToast.querySelector("span").innerText = "";
-          }, 4500);
+          showSuccessToast();
           const newData = [...data].filter((item) => item._id !== id);
-          localStorage.setItem("voicemails", JSON.stringify(newData));
-          drawVoicemails();
+          drawVoicemails(newData);
           voiceMailDetails.classList.remove("flex");
           voiceMailDetails.classList.add("hidden");
         } else {
@@ -474,24 +548,23 @@ function handleVoiceMailActions(id, activeItem) {
   }, 4500);
 }
 
-const drawVoicemails = () => {
+const drawVoicemails = (values) => {
   let voiceMailLoader = document.getElementById("voicemail-list-loader");
   let voiceMailList = document.getElementById("voicemail-list");
   let bulkSelect = document.getElementById("select_all");
   let actionMenu = document.getElementById("action-menu");
+  let actionGroup = document.getElementById("action-group");
+
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
 
   document.addEventListener("click", toggleVoicemailOpts);
 
-  const list = localStorage.getItem("voicemails");
-  if (list) {
-    const listData = JSON.parse(list);
-    let html = listData
-      .map((item) => {
-        let formatedDate = formatHistoryDate(item.time_received, true);
+  let html = values
+    .map((item) => {
+      let formatedDate = formatHistoryDate(item.time_received, true);
 
-        return `
+      return `
       <div 
         data-id="${item._id}" 
         data-listened="${item.listened}"
@@ -521,52 +594,61 @@ const drawVoicemails = () => {
           </div>
         </div>
       `;
-      })
-      .join(" ");
+    })
+    .join(" ");
 
-    if (listData.length === 0) {
-      document.getElementById("empty-voicemail").classList.remove("hidden");
-      document.getElementById("empty-voicemail").innerText =
-        "No data found for your extension";
-    }
+  if (values.length === 0) {
+    document.getElementById("empty-voicemail").classList.remove("hidden");
+    document.getElementById("empty-voicemail").innerText =
+      "No data found for your extension";
+  }
 
-    voiceMailList.classList.remove("hidden");
-    voiceMailList.classList.add("flex");
+  voiceMailList.classList.remove("hidden");
+  voiceMailList.classList.add("flex");
 
-    voiceMailList.innerHTML = html;
+  voiceMailList.innerHTML = html;
 
-    voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
-      item.addEventListener("click", function (e) {
-        if(isBulkEdit){
-          if(checkedIds.includes(this.dataset.id)){
-            checkedIds = checkedIds.filter(item => item !== this.dataset.id)
-            item.querySelector("input").checked = false
-          } else {
-            item.querySelector("input").checked = true
-            checkedIds.push(this.dataset.id)
-          }
-          if(checkedIds.length > 0){
-            actionMenu.classList.remove("hidden");
-          } else {
-            actionMenu.classList.add("hidden");
-          }
+  voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      if (isBulkEdit) {
+        if (checkedIds.includes(this.dataset.id)) {
+          checkedIds = checkedIds.filter((item) => item !== this.dataset.id);
+          item.querySelector("input").checked = false;
         } else {
-          openVoicemailDetails(listData, this.dataset.id, this.dataset.listened);
+          item.querySelector("input").checked = true;
+          checkedIds.push(this.dataset.id);
         }
+        if (checkedIds.length > 0) {
+          actionMenu.classList.remove("hidden");
+        } else {
+          actionMenu.classList.add("hidden");
+        }
+      } else {
+        openVoicemailDetails(values, this.dataset.id, this.dataset.listened);
+      }
+    });
+  });
+
+  actionGroup.querySelectorAll("li").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.stopPropagation();
+      handleBulkActions(item.dataset.action, values).then((res) => {
+        actionMenu.classList.add("hidden");
+        bulkSelect.checked = false;
       });
     });
+  });
 
-    bulkSelect.onchange = (e) => {
-      isBulkEdit = e.target.checked
-      voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
-        if (e.target.checked) { 
-          item.querySelector("input").parentNode.classList.remove('hidden')
-        } else {
-          item.querySelector("input").parentNode.classList.add('hidden')
-        }
-      });
-    };
-  }
+  bulkSelect.onchange = (e) => {
+    isBulkEdit = e.target.checked;
+    voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+      if (e.target.checked) {
+        item.querySelector("input").parentNode.classList.remove("hidden");
+      } else {
+        item.querySelector("input").parentNode.classList.add("hidden");
+      }
+    });
+  };
 };
 
 const drawCallHistory = () => {
@@ -690,12 +772,12 @@ async function getVoicemails() {
     if (history.ok) {
       const data = await history.json();
       localStorage.setItem("voicemails", JSON.stringify(data));
-      drawVoicemails();
+      drawVoicemails(data);
     }
   } catch (error) {
     if (isLocalhost) {
       localStorage.setItem("voicemails", JSON.stringify(mockHistory));
-      drawVoicemails();
+      drawVoicemails(mockHistory);
     }
   }
 }
