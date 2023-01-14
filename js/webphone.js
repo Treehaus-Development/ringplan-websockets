@@ -30,6 +30,8 @@ xmlns="http://www.w3.org/2000/svg"
 </svg>`;
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
+let checkedIds = []
+let isBulkEdit = false;
 
 let beforeHistory = new Date(
   new Date().getFullYear(),
@@ -179,6 +181,22 @@ const deleteVoicemail = async (id) => {
   }
 };
 
+const setVoicemailListened = async (id) => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ listened: true }),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+};
+
 const getDetailedCallHistory = async (src, dst) => {
   try {
     const history = await fetch(
@@ -201,6 +219,7 @@ const getDetailedCallHistory = async (src, dst) => {
 
 const toggleVoicemailOpts = (e) => {
   let voiceMailSubmenu = document.getElementById("voicemail-submenu");
+  let actionGroup = document.getElementById("action-group");
   if (
     e.target.parentNode.id === "voicemail-options" ||
     e.target.id === "voicemail-options"
@@ -210,6 +229,15 @@ const toggleVoicemailOpts = (e) => {
   } else {
     voiceMailSubmenu.classList.remove("flex");
     voiceMailSubmenu.classList.add("hidden");
+  }
+
+  if (
+    e.target.parentNode.id === "action-trigger" ||
+    e.target.id === "action-trigger"
+  ) {
+    actionGroup.classList.toggle("hidden");
+  } else {
+    actionGroup.classList.add("hidden");
   }
 };
 
@@ -309,7 +337,28 @@ const openDetailedOptions = async (id) => {
   drawDetailedLog(data);
 };
 
-const openVoicemailDetails = async (data, id) => {
+const openVoicemailDetails = async (data, id, isListened) => {
+  if (isListened === "false") {
+    setVoicemailListened(id)
+      .then((res) => {
+        if (res.ok) {
+          const newData = [...data].map((item) => {
+            if (item._id === id) {
+              return {
+                ...item,
+                listened: true,
+              };
+            }
+            return item;
+          });
+          localStorage.setItem("voicemails", JSON.stringify(newData));
+          drawVoicemails();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   let voiceMailDetails = document.getElementById("voicemail-details");
   let voiceMailSubmenu = document.getElementById("voicemail-submenu");
   let deleteVoicemailBtn = document.getElementById("delete-voicemail-btn");
@@ -428,7 +477,8 @@ function handleVoiceMailActions(id, activeItem) {
 const drawVoicemails = () => {
   let voiceMailLoader = document.getElementById("voicemail-list-loader");
   let voiceMailList = document.getElementById("voicemail-list");
-
+  let bulkSelect = document.getElementById("select_all");
+  let actionMenu = document.getElementById("action-menu");
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
 
@@ -445,8 +495,13 @@ const drawVoicemails = () => {
       <div 
         data-id="${item._id}" 
         data-listened="${item.listened}"
-        class="flex voicemail-list-item cursor-pointer justify-between select-none px-6 py-2 
+        class="flex voicemail-list-item cursor-pointer relative justify-between select-none px-6 py-2 
         items-center border-b border-[#D3D3D3]">
+          <div class="absolute top-2 right-2 hidden">
+            <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100
+            border-gray-300 rounded focus:ring-blue-500
+            focus:ring-2" />
+          </div>
           <div class="flex gap-4 items-start w-full">
             <div class="w-14 h-14">
               <img class="rounded-full" src="/images/profile.svg"/>
@@ -482,9 +537,35 @@ const drawVoicemails = () => {
 
     voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
       item.addEventListener("click", function (e) {
-        openVoicemailDetails(listData, this.dataset.id);
+        if(isBulkEdit){
+          if(checkedIds.includes(this.dataset.id)){
+            checkedIds = checkedIds.filter(item => item !== this.dataset.id)
+            item.querySelector("input").checked = false
+          } else {
+            item.querySelector("input").checked = true
+            checkedIds.push(this.dataset.id)
+          }
+          if(checkedIds.length > 0){
+            actionMenu.classList.remove("hidden");
+          } else {
+            actionMenu.classList.add("hidden");
+          }
+        } else {
+          openVoicemailDetails(listData, this.dataset.id, this.dataset.listened);
+        }
       });
     });
+
+    bulkSelect.onchange = (e) => {
+      isBulkEdit = e.target.checked
+      voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+        if (e.target.checked) { 
+          item.querySelector("input").parentNode.classList.remove('hidden')
+        } else {
+          item.querySelector("input").parentNode.classList.add('hidden')
+        }
+      });
+    };
   }
 };
 

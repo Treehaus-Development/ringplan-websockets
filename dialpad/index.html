@@ -204,11 +204,45 @@
         <div
           class="pt-4 basis-[40%] bg-white block w-auto max-h-screen"
         >
-        <div class="flex justify-center w-full items-center gap-3">
-          <img src="../images/filters.svg"/>
-          <span class="font-medium text-xl">Filter</span>
-          <div class="w-4 h-4">
-            <img src="../images/arrow-down.svg" />
+        <div class="flex justify-between min-h-10 px-6 w-full items-center gap-3">
+          <div class="flex items-center gap-3">
+            <input id="select_all" type="checkbox" 
+            class="w-4 h-4 text-blue-600 bg-gray-100
+             border-gray-300 rounded focus:ring-blue-500
+              focus:ring-2 ">
+            <label for="select_all" class="ml-2 text-sm font-medium select-none
+             text-gray-900 ">Bulk select</label>
+             <div class="relative hidden" id="action-menu">
+               <button id="action-trigger"
+               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4
+                focus:outline-none focus:ring-blue-300 font-medium rounded-lg 
+                text-sm px-3 py-2 text-center gap-2 flex items-center" 
+                type="button">Actions
+                <img class="w-4 brightness-100 invert" src="../images/arrow-down.svg" />
+               </button>
+               <div id="action-group" class="z-10 
+               bg-white divide-y absolute w-36 divide-gray-100 rounded
+                shadow hidden">
+                 <ul class="py-1 text-sm text-gray-700">
+                   <li data-action="delete">
+                     <span class="block cursor-pointer px-4 py-2 hover:bg-gray-100">Delete</span>
+                   </li>
+                   <li data-action="read">
+                     <span class="block cursor-pointer px-4 py-2 hover:bg-gray-100">Mark read</span>
+                   </li>
+                   <li data-action="unread">
+                     <span class="block cursor-pointer px-4 py-2 hover:bg-gray-100">Mark unread</span>
+                   </li>
+                 </ul>
+               </div>
+             </div>
+          </div>
+          <div class="flex gap-3 items-center">
+            <img src="../images/filters.svg"/>
+            <span class="font-medium text-xl">Filter</span>
+            <div class="w-4 h-4">
+              <img src="../images/arrow-down.svg" />
+            </div>
           </div>
         </div>
           <div class="flex-col overflow-y-auto max-h-full mt-2 hidden" id="voicemail-list"></div>
