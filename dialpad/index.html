@@ -214,12 +214,37 @@
           <div class="flex-col overflow-y-auto max-h-full mt-2 hidden" id="voicemail-list"></div>
           <div id="voicemail-list-loader" class="w-full h-full grid place-items-center">
           </div>
+          <p id="empty-voicemail" class="hidden text-center mt-14 text-[#3C3C3C]"></span>
         </div>
         <div 
         id="voicemail-details" 
         class="hidden flex-1 flex-col relative h-full">
-        <div class="absolute right-4 top-4 cursor-pointer" id="voicemail-options">
-          <img src="../images/options.svg" />
+        
+          <div 
+             class="absolute right-4 top-4 cursor-pointer" 
+             id="voicemail-options">
+            <img src="../images/options.svg" />
+          </div>
+          <div class="hidden absolute right-16 flex-col min-w-36" id="voicemail-submenu">
+            <div id="copy-link" class="py-3 px-1 duration-200 
+            ease-in transition-colors
+            hover:bg-gray-300 voicemail-submenu-item
+            cursor-pointer shadow bg-white">
+              <span class="text-xs font-medium">Copy Link</span>
+            </div>
+            <div id="copy-text" class="py-3 px-1 duration-200 
+            ease-in transition-colors voicemail-submenu-item
+            hover:bg-gray-300
+            cursor-pointer shadow bg-white">
+              <span class="text-xs font-medium">Copy Text</span>
+            </div>
+            <div id="share-email" class="py-3 px-1 duration-200 
+            ease-in transition-colors voicemail-submenu-item
+            hover:bg-gray-300
+            cursor-pointer shadow bg-white">
+              <span class="text-xs font-medium">Share Via Email</span>
+          </div>
+          
         </div>
           <div class="flex flex-col py-6 items-center">
             <div class="flex flex-col items-center w-full justify-center gap-1">
@@ -269,7 +294,7 @@
             rounded mt-10 bg-[#F9F9F9] shadow-box py-5 px-6">
               <span class="text-[#555555] text-lg leading-7.5"></span>
             </div>
-            <div id="audio-dest" class="mt-5"></div>
+            <div id="audio-dest" class="mt-10"></div>
           </div>
         </div>
       </div> 
@@ -307,5 +332,20 @@
         </button>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="toast-success" class="absolute flex-row-reverse justify-center
+ left-1/2 top-10 flex opacity-0 items-center 
+w-full max-w-64 p-4 mb-4 bg-white
+ rounded-lg shadow" role="alert">
+ <span class="ml-3 text-sm font-normal text-gray-600"></span>
+ <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200">
+      <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" 
+      viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+        clip-rule="evenodd">
+        </path>
+      </svg>
   </div>
 </div>

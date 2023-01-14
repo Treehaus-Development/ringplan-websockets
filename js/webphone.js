@@ -2,6 +2,15 @@ let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 
 let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
+
+function copyToClipboard(text) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val(text).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+
 const svgLoader = `<svg
 aria-hidden="true"
 role="status"
@@ -96,16 +105,18 @@ const formatHistoryDate = (date, isVoicemail) => {
     hour: "numeric",
     minute: "numeric",
   });
-  if(isVoicemail){
-    origDate = new Date(date).toLocaleString("en-us", {
-      weekday: "short",
-      month: "2-digit",
-      year:"2-digit",
-      day: "2-digit",
-      hour: "numeric",
-      minute: "numeric",
-    }).replace(/\//g, '-').replace(/,/, '');
-    
+  if (isVoicemail) {
+    origDate = new Date(date)
+      .toLocaleString("en-us", {
+        weekday: "short",
+        month: "2-digit",
+        year: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+      })
+      .replace(/\//g, "-")
+      .replace(/,/, "");
   }
   return origDate;
 };
@@ -152,10 +163,28 @@ const getDetailedCallHistory = async (src, dst) => {
   }
 };
 
+const toggleVoicemailOpts = (e) => {
+  let voiceMailSubmenu = document.getElementById("voicemail-submenu");
+  if (
+    e.target.parentNode.id === "voicemail-options" ||
+    e.target.id === "voicemail-options"
+  ) {
+    voiceMailSubmenu.classList.toggle("hidden");
+    voiceMailSubmenu.classList.toggle("flex");
+  } else {
+    voiceMailSubmenu.classList.remove("flex");
+    voiceMailSubmenu.classList.add("hidden");
+  }
+};
+
 const setActiveTab = (ele) => {
   ele.classList.remove("gap-5");
   ele.classList.add(...activeClasses, "gap-16");
   ele.querySelector("img").classList.remove("grayscale");
+  let voiceMailContainer = document.getElementById("voicemail-container");
+  if (!voiceMailContainer.classList.contains("active-container")) {
+    document.removeEventListener("click", toggleVoicemailOpts);
+  }
 };
 
 const removeActiveTab = () => {
@@ -251,44 +280,85 @@ const openDetailedOptions = async (id) => {
   drawDetailedLog(data);
 };
 
-
 const openVoicemailDetails = async (data, id) => {
-  let voiceMailDetails = document.getElementById("voicemail-details")
-  let audioDest = document.getElementById("audio-dest")
-  const activeItem = data.find(item => item._id === id)
-  console.log(activeItem,"activeItem");
-  voiceMailDetails.classList.remove('hidden')
-  voiceMailDetails.classList.add('flex')
-  voiceMailDetails.querySelector("#voicemail-number").innerText = activeItem.extension_source
-  voiceMailDetails.querySelector("#voicemail-message span").innerText = activeItem.source_representation_name
-  audioDest.innerHTML = ""
-  let audio = document.createElement('audio')
-  audio.className = "fc-media"
-  audio.id = activeItem.voicemail_file.id
-  audio.controls = true
-  audio.name = activeItem.voicemail_file.name
-  audio.preload = "auto"
-  const source = document.createElement('source')
-  source.src= activeItem.voicemail_file.link
-  audio.appendChild(source)
-  audioDest.insertAdjacentElement('afterbegin', audio)
-  audioPlayer.init()
+  let voiceMailDetails = document.getElementById("voicemail-details");
+  let voiceMailSubmenu = document.getElementById("voicemail-submenu");
+
+  let audioDest = document.getElementById("audio-dest");
+  const activeItem = data.find((item) => item._id === id);
+  voiceMailDetails.classList.remove("hidden");
+  voiceMailDetails.classList.add("flex");
+  voiceMailDetails.querySelector("#voicemail-number").innerText =
+    activeItem.extension_source;
+  voiceMailDetails.querySelector("#voicemail-message span").innerText =
+    activeItem.source_representation_name;
+  audioDest.innerHTML = "";
+  let audio = document.createElement("audio");
+  audio.className = "fc-media";
+  audio.id = activeItem.voicemail_file.id;
+  audio.controls = true;
+  audio.name = activeItem.voicemail_file.name;
+  audio.preload = "auto";
+  const source = document.createElement("source");
+  source.src = activeItem.voicemail_file.link;
+  audio.appendChild(source);
+  audioDest.insertAdjacentElement("afterbegin", audio);
+  audioPlayer.init();
+
+  voiceMailSubmenu
+    .querySelectorAll(".voicemail-submenu-item")
+    .forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleVoiceMailActions(item.id, activeItem);
+      });
+    });
+};
+
+function handleVoiceMailActions(id, activeItem) {
+  let successToast = document.getElementById("toast-success");
+  if (id.includes("link")) {
+    copyToClipboard(activeItem.voicemail_file.link);
+    successToast.classList.remove("animate-fade-out");
+    successToast.classList.add("animate-fade-up");
+    successToast.querySelector("span").innerText = "Link copied successfully";
+  } else if (id.includes("text")) {
+    copyToClipboard(activeItem.source_representation_name);
+    successToast.classList.remove("animate-fade-out");
+    successToast.classList.add("animate-fade-up");
+    successToast.querySelector("span").innerText = "Text copied successfully";
+  } else {
+    window.location.href = `mailto:${activeItem.voicemail_email}`;
+    successToast.click();
+    return;
+  }
+
+  successToast.click();
+  setTimeout(() => {
+    successToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    successToast.querySelector("span").innerText = "";
+  }, 4500);
 }
 
 const drawVoicemails = () => {
   let voiceMailLoader = document.getElementById("voicemail-list-loader");
   let voiceMailList = document.getElementById("voicemail-list");
 
-  voiceMailLoader.classList.add('hidden')
-  voiceMailLoader.classList.remove('grid')
+  voiceMailLoader.classList.add("hidden");
+  voiceMailLoader.classList.remove("grid");
+
+  document.addEventListener("click", toggleVoicemailOpts);
 
   const list = localStorage.getItem("voicemails");
   if (list) {
     const listData = JSON.parse(list);
-    let html = listData.map(item => {
-      let formatedDate = formatHistoryDate(item.time_received, true);
+    let html = listData
+      .map((item) => {
+        let formatedDate = formatHistoryDate(item.time_received, true);
 
-      return `
+        return `
       <div 
         data-id="${item._id}" 
         data-listened="${item.listened}"
@@ -301,7 +371,9 @@ const drawVoicemails = () => {
             <div class="flex flex-col w-full gap-2">
               <div class="flex justify-between w-full">
                 <p class="text-[#232323]">${item.extension_source}</p>
-                <div class="w-3.5 h-3.5 rounded-full bg-[#6FC316] ${!item.listened ? "block" : "hidden"}"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#6FC316] ${
+                  !item.listened ? "block" : "hidden"
+                }"></div>
               </div>
               <div class="flex justify-between w-full">
                 <p class="text-[#4D4D4D]">${item.source_representation_name}</p>
@@ -310,23 +382,27 @@ const drawVoicemails = () => {
             </div>
           </div>
         </div>
-      `
-    }).join(" ")
-
-    voiceMailList.classList.remove('hidden')
-    voiceMailList.classList.add('flex')
-
-    voiceMailList.innerHTML = html
-
-    voiceMailList.querySelectorAll(".voicemail-list-item").forEach(item => {
-      item.addEventListener('click', function(e){
-        console.log(this,"this");
-        openVoicemailDetails(listData,this.dataset.id)
+      `;
       })
-    })
+      .join(" ");
+
+    if (listData.length === 0) {
+      document.getElementById("empty-voicemail").classList.remove("hidden");
+      document.getElementById("empty-voicemail").innerText =
+        "No data found for your extension";
+    }
+
+    voiceMailList.classList.remove("hidden");
+    voiceMailList.classList.add("flex");
+
+    voiceMailList.innerHTML = html;
+
+    voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+      item.addEventListener("click", function (e) {
+        openVoicemailDetails(listData, this.dataset.id);
+      });
+    });
   }
-
-
 };
 
 const drawCallHistory = () => {
@@ -387,7 +463,6 @@ const drawCallHistory = () => {
             });
           openDetailedOptions(item.dataset.id)
             .then((res) => {
-              console.log(res, "res");
               historyListContainer
                 .querySelectorAll(".history-list-item")
                 .forEach((el) => {
@@ -451,7 +526,6 @@ async function getVoicemails() {
     if (history.ok) {
       const data = await history.json();
       localStorage.setItem("voicemails", JSON.stringify(data));
-      console.log(data, "data");
       drawVoicemails();
     }
   } catch (error) {
@@ -524,6 +598,8 @@ async function updateUI() {
           });
         });
     } else {
+      callHistoryTab.remove();
+      voiceMailTab.remove();
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
 
@@ -572,7 +648,6 @@ async function updateUI() {
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
     };
 
@@ -597,8 +672,8 @@ async function updateUI() {
       const loaderElement = document.createElement("div");
       loaderElement.id = "voicemail-loader";
       loaderElement.innerHTML = svgLoader;
-    
-      if (!document.getElementById("log-loader")) {
+
+      if (!document.getElementById("voicemail-loader")) {
         voiceMailLoader.insertAdjacentElement("afterbegin", loaderElement);
       }
 
@@ -609,6 +684,7 @@ async function updateUI() {
       removeActiveTab();
       setActiveTab(this);
       pageTitle.innerText = "Voicemail";
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       extensionOpts.classList.add("hidden");
       voiceMailContainer.classList.remove("hidden");
       voiceMailContainer.classList.add("flex", "active-container");
