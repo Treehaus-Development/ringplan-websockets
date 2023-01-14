@@ -37,30 +37,26 @@
   height: 4px;
 }
 .mejs__time-hovered {
-  /* background: #e7e0ec;
-   */
    pointer-events: none;
 }
 .mejs__time-loaded {
   height: 4px;
+  background: none;
 }
 .mejs__volume-button {
   position: absolute;
   top: 50px;
+  width: 45px;
 }
 .mejs__volume-button button {
   background-image: url("../images/speaker.svg");
   background-size: contain;
+  filter: invert(0.5);
   width: 31px;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-.mejs__horizontal-volume-slider {
-  position: absolute;
-  top: 50px;
-  left: 50px;
-}
 
 .mejs__time-slider {
   height: 4px;
@@ -82,3 +78,25 @@
 .mejs__time-handle-content {
     display: none !important;
 }
+
+.mejs__horizontal-volume-total{
+    height: 4px;
+    background: #E7E0EC;
+    width: 271px;
+}
+
+.mejs__horizontal-volume-current {
+    background: #3B9EF7;
+    transition: 0.3s ease;
+}
+
+.mejs__horizontal-volume-handle{
+    transition: 0.3s ease;
+}
+
+.mejs__horizontal-volume-slider {
+    position: absolute;
+    top: 50px;
+    left: 64px;
+  }
+  
