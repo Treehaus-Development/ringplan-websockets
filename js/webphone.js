@@ -37,6 +37,17 @@ let beforeHistory = new Date(
   new Date().getDay() - 15
 ).toISOString();
 
+function makeCall(num) {
+  let myContainer = document.getElementById("my-container");
+  removeActiveTab();
+  setActiveTab(document.getElementById("phone-tab"));
+  myContainer.classList.remove("hidden");
+  myContainer.classList.add("flex", "active-container");
+
+  document.querySelector(".webphone-digits").innerText = num;
+  document.getElementById("webphone-call-btn").click();
+}
+
 async function login() {
   let user = document.getElementById("user_id");
   let pwd = document.getElementById("user_pwd");
@@ -141,6 +152,31 @@ const generateAvatar = (text) => {
   context.fillText(text, canvas.width / 2, canvas.height / 1.8);
 
   return canvas.toDataURL("image/png");
+};
+
+function shareEmail(email, link) {
+  let mailLink =
+    "mailto:" +
+    encodeURIComponent(email) +
+    "?subject=" +
+    encodeURIComponent("Voicemail") +
+    "&body=" +
+    encodeURIComponent(link);
+  window.location.href = mailLink;
+}
+
+const deleteVoicemail = async (id) => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: id_token,
+      },
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
 };
 
 const getDetailedCallHistory = async (src, dst) => {
@@ -257,16 +293,9 @@ const openDetailedOptions = async (id) => {
   }
 
   let callBtn = document.getElementById("call-detail-btn");
-  let myContainer = document.getElementById("my-container");
 
   callBtn.onclick = () => {
-    removeActiveTab();
-    setActiveTab(document.getElementById("phone-tab"));
-    myContainer.classList.remove("hidden");
-    myContainer.classList.add("flex", "active-container");
-
-    document.querySelector(".webphone-digits").innerText = activeItem.cdr.dst;
-    document.getElementById("webphone-call-btn").click();
+    makeCall(activeItem.cdr.dst);
   };
 
   const data = await getDetailedCallHistory(
@@ -283,7 +312,11 @@ const openDetailedOptions = async (id) => {
 const openVoicemailDetails = async (data, id) => {
   let voiceMailDetails = document.getElementById("voicemail-details");
   let voiceMailSubmenu = document.getElementById("voicemail-submenu");
-
+  let deleteVoicemailBtn = document.getElementById("delete-voicemail-btn");
+  let successToast = document.getElementById("toast-success");
+  let errorToast = document.getElementById("toast-error");
+  let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
+  let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
   let audioDest = document.getElementById("audio-dest");
   const activeItem = data.find((item) => item._id === id);
   voiceMailDetails.classList.remove("hidden");
@@ -313,6 +346,56 @@ const openVoicemailDetails = async (data, id) => {
         handleVoiceMailActions(item.id, activeItem);
       });
     });
+
+  const showErrorToast = (err) => {
+    errorToast.classList.remove("animate-fade-out");
+    errorToast.classList.add("animate-fade-up");
+    errorToast.querySelector("span").innerText =
+      err?.message || "Something went wrong, please try again";
+    setTimeout(() => {
+      errorToast.classList.add("animate-fade-out");
+    }, 3000);
+    setTimeout(() => {
+      errorToast.querySelector("span").innerText = "";
+    }, 4500);
+  };
+
+  deleteVoicemailBtn.onclick = () => {
+    deleteVoicemail(id)
+      .then((res) => {
+        if (res.ok) {
+          successToast.classList.remove("animate-fade-out");
+          successToast.classList.add("animate-fade-up");
+          successToast.querySelector("span").innerText =
+            "Voicemail deleted successfully";
+          setTimeout(() => {
+            successToast.classList.add("animate-fade-out");
+          }, 3000);
+          setTimeout(() => {
+            successToast.querySelector("span").innerText = "";
+          }, 4500);
+          const newData = [...data].filter((item) => item._id !== id);
+          localStorage.setItem("voicemails", JSON.stringify(newData));
+          drawVoicemails();
+          voiceMailDetails.classList.remove("flex");
+          voiceMailDetails.classList.add("hidden");
+        } else {
+          showErrorToast();
+        }
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        showErrorToast(err);
+      });
+  };
+  callVoiceMailBtn.onclick = () => {
+    voiceMailDetails.classList.remove("flex");
+    voiceMailDetails.classList.add("hidden");
+    makeCall(activeItem.extension_source);
+  };
+  shareVoiceMailBtn.onclick = () => {
+    shareEmail(activeItem.voicemail_email, activeItem.voicemail_file.link);
+  };
 };
 
 function handleVoiceMailActions(id, activeItem) {
@@ -328,7 +411,7 @@ function handleVoiceMailActions(id, activeItem) {
     successToast.classList.add("animate-fade-up");
     successToast.querySelector("span").innerText = "Text copied successfully";
   } else {
-    window.location.href = `mailto:${activeItem.voicemail_email}`;
+    shareEmail(activeItem.voicemail_email, activeItem.voicemail_file.link);
     successToast.click();
     return;
   }
