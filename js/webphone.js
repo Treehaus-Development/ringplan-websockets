@@ -558,7 +558,9 @@ const drawVoicemails = (values) => {
   let bulkSelect = document.getElementById("select_all");
   let actionMenu = document.getElementById("action-menu");
   let actionGroup = document.getElementById("action-group");
-
+  let filterTrigger = document.getElementById("filter-trigger");
+  let filterModal = document.getElementById("filters-modal");
+  let closeFilter = document.getElementById('close-filter')
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
 
@@ -659,6 +661,16 @@ const drawVoicemails = (values) => {
       }
     });
   };
+
+  filterTrigger.onclick = () => {
+    filterModal.classList.remove("hidden");
+    filterModal.classList.add("flex");
+  };
+
+  closeFilter.onclick = () => {
+    filterModal.classList.add("hidden");
+    filterModal.classList.remove("flex");
+  }
 };
 
 const drawCallHistory = () => {
