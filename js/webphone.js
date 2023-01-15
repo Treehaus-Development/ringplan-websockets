@@ -2,6 +2,9 @@ let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 
 let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
+let isFilterMode = false;
+let currentFilter;
+let filteredItems = [];
 
 function copyToClipboard(text) {
   var $temp = $("<input>");
@@ -561,6 +564,13 @@ const drawVoicemails = (values) => {
   let filterTrigger = document.getElementById("filter-trigger");
   let filterModal = document.getElementById("filters-modal");
   let closeFilter = document.getElementById("close-filter");
+  let filterExtList = document.getElementById("filter-ext-list");
+  let filterExtTrigger = document.getElementById("filter-ext-trigger");
+  let applyFilters = document.getElementById("apply-filters");
+  let simpleFilters = document.getElementById("simple-filters");
+  let clearFilters = document.getElementById("clear-filters");
+  let fromDate = document.getElementById("start_date");
+  let toDate = document.getElementById("end_date");
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
 
@@ -611,6 +621,10 @@ const drawVoicemails = (values) => {
 
   voiceMailList.classList.remove("hidden");
   voiceMailList.classList.add("flex");
+  if (values.length > 0) {
+    document.getElementById("settings-filters").classList.remove("hidden");
+    document.getElementById("settings-filters").classList.add("flex");
+  }
 
   voiceMailList.innerHTML = html;
 
@@ -637,6 +651,30 @@ const drawVoicemails = (values) => {
           item
         );
       }
+    });
+  });
+
+  simpleFilters.querySelectorAll("div").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      if (item.dataset.filter === "today") {
+        item.nextElementSibling.classList.remove(
+          "!text-blue-500",
+          "!border-blue-500",
+          "filter-selected"
+        );
+      } else {
+        item.previousElementSibling.classList.remove(
+          "!text-blue-500",
+          "!border-blue-500",
+          "filter-selected"
+        );
+      }
+      item.classList.toggle("filter-selected");
+      item.classList.toggle("!text-blue-500");
+      item.classList.toggle("!border-blue-500");
+      currentFilter = item.dataset.filter;
+      fromDate.value = "";
+      toDate.value = "";
     });
   });
 
@@ -670,6 +708,108 @@ const drawVoicemails = (values) => {
     document
       .querySelector(".datepicker-main")
       .classList.add("overflow-y-auto", "max-h-62.5");
+  };
+
+  const extNums = [
+    ...new Map(values.map((item) => [item["extension_soure"], item])).values(),
+  ];
+
+  filterModal.onclick = () => {
+    filterExtList.classList.add("hidden");
+    filterExtList.classList.remove("flex");
+  };
+
+  let extList = extNums
+    .map((item) => {
+      return `
+      <div data-ext=${item.extension_source}  class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500">
+      <label for="${item._id}">${item.extension_source}</label>
+          <input id="${item._id}" type="checkbox" />
+      </div>
+    `;
+    })
+    .join(" ");
+
+  filterExtList.insertAdjacentHTML("beforeend", extList);
+  filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.stopPropagation();
+
+      if (this.querySelector("input").id === "ext_all") {
+        this.querySelector("input").checked =
+          !this.querySelector("input").checked;
+        filterExtList.querySelectorAll("input").forEach((input) => {
+          input.checked = item.querySelector("input").checked;
+        });
+        if (!filterExtList.querySelector("#ext_all").checked) {
+          filteredItems = [];
+        } else {
+          filteredItems = [...values].map(el => el.extension_source);
+        }
+      } else {
+        this.querySelector("input").checked =
+          !this.querySelector("input").checked;
+        
+        if (filteredItems.find((el) => el === this.dataset.ext)) {
+          filteredItems = filteredItems.filter(
+            (el) => el !== this.dataset.ext
+          );
+
+          if (filteredItems.length === 0) {
+            document.querySelector("#ext_all").checked = false;
+          }
+        } else {
+          filteredItems.push(Number(this.dataset.ext));
+        }
+      }
+
+      filterExtTrigger.querySelector("span").innerText =
+        document.getElementById("ext_all").checked
+          ? "All"
+          : filteredItems.length;
+
+      applyFilters.disabled = filteredItems.length === 0;
+    });
+  });
+
+  applyFilters.onclick = () => {
+    console.log(filteredItems,"filtered");
+    let from = new Date(fromDate.value);
+    let to = new Date(toDate.value);
+    if (from && to) {
+      let isExtensionFilter = filteredItems.length > 0
+      let filteredData = [...values].filter((item) => {
+        let itemDate = new Date(item.time_received).getTime()
+        let extSource = isExtensionFilter ? filteredItems.includes(item.extension_source) : true
+        
+        return (
+          itemDate >= from.getTime() &&
+          itemDate <= to.getTime() && extSource
+        );
+      });
+      console.log(filteredData);
+    }
+  };
+
+  clearFilters.onclick = () => {
+    fromDate.value = "";
+    toDate.value = "";
+    filteredItems = [];
+    filterExtTrigger.querySelector("span").innerText = "All";
+    document
+      .querySelector(".filter-selected")
+      .classList.remove(
+        "!text-blue-500",
+        "!border-blue-500",
+        "filter-selected"
+      );
+    currentFilter = null;
+  };
+
+  filterExtTrigger.onclick = (e) => {
+    e.stopPropagation();
+    filterExtList.classList.toggle("hidden");
+    filterExtList.classList.toggle("flex");
   };
 
   closeFilter.onclick = () => {
