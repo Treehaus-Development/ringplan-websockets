@@ -437,8 +437,9 @@ const handleBulkActions = async (action, listItems) => {
   }
 };
 
-const openVoicemailDetails = async (data, id, isListened) => {
+const openVoicemailDetails = async (data, id, isListened, target) => {
   if (isListened === "false") {
+    target.classList.add("pointer-events-none");
     setVoicemailListened(id)
       .then((res) => {
         if (res.ok) {
@@ -456,6 +457,9 @@ const openVoicemailDetails = async (data, id, isListened) => {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        target.classList.remove("pointer-events-none");
       });
   }
   let voiceMailDetails = document.getElementById("voicemail-details");
@@ -624,7 +628,12 @@ const drawVoicemails = (values) => {
           actionMenu.classList.add("hidden");
         }
       } else {
-        openVoicemailDetails(values, this.dataset.id, this.dataset.listened);
+        openVoicemailDetails(
+          values,
+          this.dataset.id,
+          this.dataset.listened,
+          item
+        );
       }
     });
   });
@@ -633,6 +642,7 @@ const drawVoicemails = (values) => {
     item.addEventListener("click", function (e) {
       e.stopPropagation();
       handleBulkActions(item.dataset.action, values).then((res) => {
+        isBulkEdit = false;
         actionMenu.classList.add("hidden");
         bulkSelect.checked = false;
       });
