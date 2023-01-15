@@ -316,7 +316,9 @@
 
     <div
       id="filters-modal"
-      class="fixed hidden top-0 w-full h-full justify-center bg-modal left-0 right-0 overflow-x-hidden overflow-y-auto z-50 md:inset-0 h-modal md:h-full"
+      class="fixed hidden top-0 
+      w-full h-full justify-center bg-modal left-0 
+      right-0 overflow-x-hidden overflow-y-auto z-50 md:inset-0 h-modal md:h-full"
     >
       <div class="relative w-full mt-10 h-full max-w-md md:h-auto">
         <div class="relative bg-white rounded-lg shadow px-4 py-2">
@@ -365,6 +367,7 @@
                   <div class="flex flex-col gap-1">
                     <label class="font-medium text-[#3C3C3C]">From</label>
                     <input
+                      id="start_date"
                       name="start"
                       type="text"
                       class="bg-white placeholder-[#9E9E9E] border
@@ -379,6 +382,7 @@
                     <label class="font-medium text-[#3C3C3C]">To</label>
 
                     <input
+                      id="end_date"
                       name="end"
                       type="text"
                       class="bg-white placeholder-[#9E9E9E] border border-gray-300 text-gray-900

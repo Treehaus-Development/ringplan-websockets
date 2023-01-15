@@ -90,7 +90,7 @@
 }
 
 .rounded-lg {
-  border-radius: 0.5rem; /* 8px */
+  border-radius: 0.5rem;
 }
 
 .bg-gray-200 {
@@ -98,11 +98,15 @@
 }
 
 .rounded-l-lg {
-  border-top-left-radius: 0.5rem; /* 8px */
+  border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
 }
 
 .leading-9{
-  line-height: 2.25rem; /* 36px */
+  line-height: 2.25rem;
 
+}
+
+.datepicker-cell.selected{
+  background-color: #83d929 !important;
 }

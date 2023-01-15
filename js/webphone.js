@@ -560,7 +560,7 @@ const drawVoicemails = (values) => {
   let actionGroup = document.getElementById("action-group");
   let filterTrigger = document.getElementById("filter-trigger");
   let filterModal = document.getElementById("filters-modal");
-  let closeFilter = document.getElementById('close-filter')
+  let closeFilter = document.getElementById("close-filter");
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
 
@@ -662,15 +662,20 @@ const drawVoicemails = (values) => {
     });
   };
 
+  let datePicker = document.querySelector(".datepicker-dropdown");
   filterTrigger.onclick = () => {
     filterModal.classList.remove("hidden");
     filterModal.classList.add("flex");
+    datePicker.classList.add("shadow");
+    document
+      .querySelector(".datepicker-main")
+      .classList.add("overflow-y-auto", "max-h-62.5");
   };
 
   closeFilter.onclick = () => {
     filterModal.classList.add("hidden");
     filterModal.classList.remove("flex");
-  }
+  };
 };
 
 const drawCallHistory = () => {
