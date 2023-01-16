@@ -342,7 +342,7 @@
             <span class="sr-only">Close modal</span>
           </button>
           <main class="p-4">
-            <div class="flex gap-2" id="simple-filters">
+            <div class="flex gap-3" id="simple-filters">
               <div
                 data-filter="today"
                 class="rounded-2.5 border font-medium 
@@ -352,10 +352,16 @@
                 Today
               </div>
               <div
-                data-filter="7days"
+                data-filter="7"
                 class="rounded-2.5 border font-medium w-32 cursor-pointer py-1 text-center text-lg text-[#3C3C3C] border-[#B7B7B7]"
               >
                 Last 7 days
+              </div>
+              <div
+                data-filter="30"
+                class="rounded-2.5 border font-medium w-32 cursor-pointer py-1 text-center text-lg text-[#3C3C3C] border-[#B7B7B7]"
+              >
+                Last 30 days
               </div>
             </div>
             <div
@@ -372,6 +378,7 @@
                       id="start_date"
                       name="start"
                       type="text"
+                      
                       class="bg-white placeholder-[#9E9E9E] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       placeholder="DD/MM/YYYY"
                     />
@@ -382,6 +389,7 @@
                     <input
                       id="end_date"
                       name="end"
+                      
                       type="text"
                       class="bg-white placeholder-[#9E9E9E] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                       placeholder="DD/MM/YYYY"
@@ -397,20 +405,15 @@
               >
                 Extensions
                 <div class="flex gap-2 items-center">
-                  <span class="font-medium text-sm">All</span>
+                  <span class="font-medium text-sm"></span>
                   <img class="w-4 h-4" src="/images/arrow-down.svg" />
                 </div>
               </div>
               <div
                 id="filter-ext-list"
-                class="absolute shadow-box border-t rounded-2.5 w-full bg-white top-16 gap-2 z-50 left-0 hidden flex-col"
+                class="absolute overflow-y-auto max-h-64 shadow-box border-t rounded-2.5 w-full
+                 bg-white top-16 gap-2 z-50 left-0 hidden flex-col"
               >
-                <div
-                  class="flex cursor-pointer filter-ext-item p-4 justify-between border-b border-gray-500"
-                >
-                  <label for="ext_all">Select All</label>
-                  <input type="checkbox" name="ext_all" id="ext_all" />
-                </div>
               </div>
             </div>
             <div class="flex justify-between mt-4">

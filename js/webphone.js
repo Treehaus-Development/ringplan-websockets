@@ -4,7 +4,15 @@ let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
 let isFilterMode = false;
 let currentFilter;
-let filteredItems = [];
+let filteredExtension;
+
+function dateFormat(date) {
+  let year = date.getFullYear();
+  let month = (1 + date.getMonth()).toString().padStart(2, "0");
+  let day = date.getDate().toString().padStart(2, "0");
+
+  return month + "/" + day + "/" + year;
+}
 
 function copyToClipboard(text) {
   var $temp = $("<input>");
@@ -656,25 +664,17 @@ const drawVoicemails = (values) => {
 
   simpleFilters.querySelectorAll("div").forEach((item) => {
     item.addEventListener("click", (e) => {
-      if (item.dataset.filter === "today") {
-        item.nextElementSibling.classList.remove(
-          "!text-blue-500",
-          "!border-blue-500",
-          "filter-selected"
-        );
-      } else {
-        item.previousElementSibling.classList.remove(
-          "!text-blue-500",
-          "!border-blue-500",
-          "filter-selected"
+      let finalFrom = dateFormat(new Date());
+      let finalTo = dateFormat(new Date());
+      if (item.dataset.filter === "7" || item.dataset.filter === "30") {
+        finalFrom = dateFormat(
+          new Date(
+            Date.now() - Number(item.dataset.filter) * 24 * 60 * 60 * 1000
+          )
         );
       }
-      item.classList.toggle("filter-selected");
-      item.classList.toggle("!text-blue-500");
-      item.classList.toggle("!border-blue-500");
-      currentFilter = item.dataset.filter;
-      fromDate.value = "";
-      toDate.value = "";
+      fromDate.value = finalFrom;
+      toDate.value = finalTo;
     });
   });
 
@@ -710,21 +710,33 @@ const drawVoicemails = (values) => {
       .classList.add("overflow-y-auto", "max-h-62.5");
   };
 
-  const extNums = [
-    ...new Map(values.map((item) => [item["extension_soure"], item])).values(),
-  ];
-
   filterModal.onclick = () => {
     filterExtList.classList.add("hidden");
     filterExtList.classList.remove("flex");
   };
 
-  let extList = extNums
+  let extensions = JSON.parse(localStorage.getItem("extensions"));
+
+  let extList = extensions
     .map((item) => {
       return `
-      <div data-ext=${item.extension_source}  class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500">
-      <label for="${item._id}">${item.extension_source}</label>
-          <input id="${item._id}" type="checkbox" />
+      <div data-ext=${item.data.id}  
+      class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500">
+      <input
+                    class="peer input-ext"
+                    type="radio"
+                    id=${item._id}
+                    value=${item.data.extension}
+                    name="extension"
+                  />
+                  <label
+                    for=${item._id}
+                    class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+                    select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
+                    "
+                  >
+                    ${item.data.extension}
+                  </label>
       </div>
     `;
     })
@@ -735,75 +747,28 @@ const drawVoicemails = (values) => {
     item.addEventListener("click", function (e) {
       e.stopPropagation();
 
-      if (this.querySelector("input").id === "ext_all") {
-        this.querySelector("input").checked =
-          !this.querySelector("input").checked;
-        filterExtList.querySelectorAll("input").forEach((input) => {
-          input.checked = item.querySelector("input").checked;
-        });
-        if (!filterExtList.querySelector("#ext_all").checked) {
-          filteredItems = [];
-        } else {
-          filteredItems = [...values].map(el => el.extension_source);
-        }
-      } else {
-        this.querySelector("input").checked =
-          !this.querySelector("input").checked;
-        
-        if (filteredItems.find((el) => el === this.dataset.ext)) {
-          filteredItems = filteredItems.filter(
-            (el) => el !== this.dataset.ext
-          );
-
-          if (filteredItems.length === 0) {
-            document.querySelector("#ext_all").checked = false;
-          }
-        } else {
-          filteredItems.push(Number(this.dataset.ext));
-        }
-      }
-
-      filterExtTrigger.querySelector("span").innerText =
-        document.getElementById("ext_all").checked
-          ? "All"
-          : filteredItems.length;
-
-      applyFilters.disabled = filteredItems.length === 0;
+      this.querySelector("input").checked =
+        !this.querySelector("input").checked;
+      filteredItem = Number(this.dataset.ext);
+      filterExtTrigger.querySelector("span").innerText = filteredItem;
     });
   });
 
   applyFilters.onclick = () => {
-    console.log(filteredItems,"filtered");
-    let from = new Date(fromDate.value);
-    let to = new Date(toDate.value);
+    let from = fromDate.value;
+    let to = toDate.value;
     if (from && to) {
-      let isExtensionFilter = filteredItems.length > 0
-      let filteredData = [...values].filter((item) => {
-        let itemDate = new Date(item.time_received).getTime()
-        let extSource = isExtensionFilter ? filteredItems.includes(item.extension_source) : true
-        
-        return (
-          itemDate >= from.getTime() &&
-          itemDate <= to.getTime() && extSource
-        );
-      });
-      console.log(filteredData);
+      console.log(from, 'from');
+      console.log(to,"to");
+      console.log(filteredItem,"filteredItem");
     }
   };
 
   clearFilters.onclick = () => {
     fromDate.value = "";
     toDate.value = "";
-    filteredItems = [];
-    filterExtTrigger.querySelector("span").innerText = "All";
-    document
-      .querySelector(".filter-selected")
-      .classList.remove(
-        "!text-blue-500",
-        "!border-blue-500",
-        "filter-selected"
-      );
-    currentFilter = null;
+    filteredItem = null;
+    filterExtTrigger.querySelector("span").innerText = "";
   };
 
   filterExtTrigger.onclick = (e) => {
