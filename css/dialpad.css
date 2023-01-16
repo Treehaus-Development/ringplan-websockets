@@ -1,4 +1,5 @@
-#logout-confirm {
+#logout-confirm,
+#apply-filters {
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 
@@ -73,4 +74,39 @@
 #extension-list::-webkit-scrollbar-thumb {
   background-color: #9b9b9b;
   border-radius: 4px;
+}
+
+.text-gray-900 {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
+}
+
+.grid-cols-7 {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.w-64 {
+  width: 16rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.bg-gray-200 {
+  background-color: rgb(229 231 235);
+}
+
+.rounded-l-lg {
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.leading-9{
+  line-height: 2.25rem;
+
+}
+
+.datepicker-cell.selected{
+  background-color: #83d929 !important;
 }

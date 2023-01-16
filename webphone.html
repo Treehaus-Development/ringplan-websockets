@@ -5,25 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Ringplan WebPhone</title>
+
     <link rel="stylesheet" href="./css/webphone.css" type="text/css" />
     <link rel="stylesheet" href="./css/main.css" />
     <link rel="stylesheet" href="./css/dialpad.css" />
     <link rel="stylesheet" href="./css/callback.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.7/mediaelementplayer.min.css"
+    />
+    <link rel="stylesheet" href="./css/audio.css" />
     <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
+      integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     ></script>
     <script
       type="text/javascript"
       src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.7/mediaelement-and-player.min.js"></script>
   </head>
 
   <body
     class="m-0 !font-body antialiased font-normal text-base leading-default"
   >
     <div id="dialpad-content">
-      <div id="my-container" class="justify-center flex items-center"></div>
+      <div
+        id="my-container"
+        class="justify-center flex items-center active-container"
+      ></div>
     </div>
     <div id="login-content">
       <div
@@ -276,11 +288,158 @@
         </div>
       </div>
     </div>
+    <div
+      id="toast-error"
+      class="absolute flex-row-reverse justify-center left-1/2 top-10 flex opacity-0 items-center w-full max-w-fit p-4 mb-4 bg-white rounded-lg shadow"
+      role="alert"
+    >
+      <span class="ml-3 text-sm font-normal text-gray-600"></span>
+      <div
+        class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="sr-only">Error icon</span>
+      </div>
+    </div>
+
+    <div
+      id="filters-modal"
+      class="fixed hidden top-0 w-full h-full justify-center bg-modal left-0 right-0 overflow-x-hidden overflow-y-auto z-50 md:inset-0 h-modal md:h-full"
+    >
+      <div class="relative w-full mt-10 h-full max-w-md md:h-auto">
+        <div class="relative bg-white rounded-lg shadow px-4 py-2">
+          <h2 class="text-lg font-medium">Filters</h2>
+          <button
+            type="button"
+            class="absolute top-1 right-2 text-gray-600 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+            id="close-filter"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <main class="p-4">
+            <div class="flex gap-3" id="simple-filters">
+              <div
+                data-filter="today"
+                class="rounded-2.5 border font-medium w-32 py-1 cursor-pointer text-center text-lg text-[#3C3C3C] border-[#B7B7B7]"
+              >
+                Today
+              </div>
+              <div
+                data-filter="7"
+                class="rounded-2.5 border font-medium w-32 cursor-pointer py-1 text-center text-lg text-[#3C3C3C] border-[#B7B7B7]"
+              >
+                Last 7 days
+              </div>
+              <div
+                data-filter="30"
+                class="rounded-2.5 border font-medium w-32 cursor-pointer py-1 text-center text-lg text-[#3C3C3C] border-[#B7B7B7]"
+              >
+                Last 30 days
+              </div>
+            </div>
+            <div
+              class="mt-6 w-full px-2 py-4 rounded-2.5 border border-[#B7B7B7]"
+            >
+              <div class="text-center font-bold text-[#3C3C3C]">
+                Custom range
+              </div>
+              <div class="mt-4 flex gap-8">
+                <div date-rangepicker class="flex items-center gap-3">
+                  <div class="flex flex-col gap-1">
+                    <label class="font-medium text-[#3C3C3C]">From</label>
+                    <input
+                      id="start_date"
+                      name="start"
+                      type="text"
+                      class="bg-white placeholder-[#9E9E9E] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      placeholder="DD/MM/YYYY"
+                    />
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-medium text-[#3C3C3C]">To</label>
+
+                    <input
+                      id="end_date"
+                      name="end"
+                      type="text"
+                      class="bg-white placeholder-[#9E9E9E] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                      placeholder="DD/MM/YYYY"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="relative w-full inline-block">
+              <div
+                id="filter-ext-trigger"
+                class="mt-4 flex items-center cursor-pointer rounded-2.5 border justify-between p-3 border-[#B7B7B7]"
+              >
+                Extensions
+                <div class="flex gap-2 items-center">
+                  <span class="font-medium text-sm"></span>
+                  <img class="w-4 h-4" src="/images/arrow-down.svg" />
+                </div>
+              </div>
+              <div
+                id="filter-ext-list"
+                class="absolute overflow-y-auto max-h-64 shadow-box border-t rounded-2.5 w-full bg-white top-16 gap-2 z-50 left-0 hidden flex-col"
+              ></div>
+            </div>
+            <div class="flex justify-between mt-4">
+              <button
+                id="clear-filters"
+                type="button"
+                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg font-medium px-8 py-2 hover:text-gray-900 focus:z-10"
+              >
+                Clear filters
+              </button>
+              <button
+                id="apply-filters"
+                type="button"
+                class="text-white focus:ring-4 focus:outline-none font-medium 
+                rounded-lg inline-flex disabled:opacity-50 
+                items-center px-8 py-2 gap-2 text-center mr-2"
+              >
+              
+                Apply
+              </button>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.2/datepicker.min.js"></script>
     <script src="./js/env.js"></script>
     <script src="./js/mockdata.js"></script>
     <script src="./js/utils.js"></script>
-    <script src="../lib/websbc-client.js"></script>
-    <script src="../lib/webphone-plugin.js"></script>
+    <script src="./lib/websbc-client.js"></script>
+    <script src="./lib/webphone-plugin.js"></script>
+    <script src="./js/audio.js"></script>
     <script src="./js/webphone.js"></script>
   </body>
 </html>

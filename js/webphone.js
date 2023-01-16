@@ -1,16 +1,65 @@
 let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 border-[#3B9EF7] active-tab`;
 let activeClasses = classesStr.split(" ");
-let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54]`;
+let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
+let isFilterMode = false;
+let currentFilter;
+let filteredItem;
 
+function dateFormat(date) {
+  let year = date.getFullYear();
+  let month = (1 + date.getMonth()).toString().padStart(2, "0");
+  let day = date.getDate().toString().padStart(2, "0");
+
+  return month + "/" + day + "/" + year;
+}
+
+function copyToClipboard(text) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val(text).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+
+const svgLoader = `<svg
+aria-hidden="true"
+role="status"
+class="w-10 h-10 mr-3 text-[#00A2DD] animate-spin"
+viewBox="0 0 100 101"
+fill="none"
+xmlns="http://www.w3.org/2000/svg"
+>
+<path
+  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+  fill="#E5E7EB"
+/>
+<path
+  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+  fill="currentColor"
+/>
+</svg>`;
 const urlSearchParams = new URLSearchParams(window.location.search);
 const params = Object.fromEntries(urlSearchParams.entries());
+let checkedIds = [];
+let isBulkEdit = false;
 
 let beforeHistory = new Date(
   new Date().getFullYear(),
   new Date().getMonth(),
   new Date().getDay() - 15
 ).toISOString();
+
+function makeCall(num) {
+  let myContainer = document.getElementById("my-container");
+  removeActiveTab();
+  setActiveTab(document.getElementById("phone-tab"));
+  myContainer.classList.remove("hidden");
+  myContainer.classList.add("flex", "active-container");
+
+  document.querySelector(".webphone-digits").innerText = num;
+  document.getElementById("webphone-call-btn").click();
+}
 
 async function login() {
   let user = document.getElementById("user_id");
@@ -72,7 +121,7 @@ const handleOpenExtensions = () => {
   };
 };
 
-const formatHistoryDate = (date) => {
+const formatHistoryDate = (date, isVoicemail) => {
   let origDate = new Date(date).toLocaleString("en-us", {
     weekday: "short",
     month: "short",
@@ -80,6 +129,19 @@ const formatHistoryDate = (date) => {
     hour: "numeric",
     minute: "numeric",
   });
+  if (isVoicemail) {
+    origDate = new Date(date)
+      .toLocaleString("en-us", {
+        weekday: "short",
+        month: "2-digit",
+        year: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+      })
+      .replace(/\//g, "-")
+      .replace(/,/, "");
+  }
   return origDate;
 };
 
@@ -105,6 +167,47 @@ const generateAvatar = (text) => {
   return canvas.toDataURL("image/png");
 };
 
+function shareEmail(email, link) {
+  let mailLink =
+    "mailto:" +
+    encodeURIComponent(email) +
+    "?subject=" +
+    encodeURIComponent("Voicemail") +
+    "&body=" +
+    encodeURIComponent(link);
+  window.location.href = mailLink;
+}
+
+const deleteVoicemail = async (id) => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: id_token,
+      },
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+};
+
+const setVoicemailListened = async (id) => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/${id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ listened: true }),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+};
+
 const getDetailedCallHistory = async (src, dst) => {
   try {
     const history = await fetch(
@@ -125,6 +228,55 @@ const getDetailedCallHistory = async (src, dst) => {
   }
 };
 
+const toggleVoicemailOpts = (e) => {
+  let voiceMailSubmenu = document.getElementById("voicemail-submenu");
+  let actionGroup = document.getElementById("action-group");
+  if (
+    e.target.parentNode.id === "voicemail-options" ||
+    e.target.id === "voicemail-options"
+  ) {
+    voiceMailSubmenu.classList.toggle("hidden");
+    voiceMailSubmenu.classList.toggle("flex");
+  } else {
+    voiceMailSubmenu.classList.remove("flex");
+    voiceMailSubmenu.classList.add("hidden");
+  }
+
+  if (
+    e.target.parentNode.id === "action-trigger" ||
+    e.target.id === "action-trigger"
+  ) {
+    actionGroup.classList.toggle("hidden");
+  } else {
+    actionGroup.classList.add("hidden");
+  }
+};
+
+const setActiveTab = (ele) => {
+  ele.classList.remove("gap-5");
+  ele.classList.add(...activeClasses, "gap-16");
+  ele.querySelector("img").classList.remove("grayscale");
+  let voiceMailContainer = document.getElementById("voicemail-container");
+  if (!voiceMailContainer.classList.contains("active-container")) {
+    document.removeEventListener("click", toggleVoicemailOpts);
+  }
+};
+
+const removeActiveTab = () => {
+  let ele = document.querySelector(".active-tab");
+  let activeContainer = document.querySelector(".active-container");
+  if (ele.id === "settings-tab") {
+    ele = ele.children[0];
+  }
+
+  activeContainer.classList.remove("active-container", "flex");
+  activeContainer.classList.add("hidden");
+
+  ele.classList.remove(...activeClasses, "gap-16");
+  ele.classList.add("gap-5", "font-medium");
+  ele.querySelector("img").classList.add("grayscale");
+};
+
 const drawDetailedLog = (data) => {
   let callLogList = document.getElementById("call-log-list");
 
@@ -133,9 +285,8 @@ const drawDetailedLog = (data) => {
       let formatedDate = formatHistoryDate(el.cdr.starttime);
       return `
         <div class="flex justify-between select-none px-8 py-4 items-start"> 
-          <div class="flex flex-col gap-2">
+          <div>
             <p class="text-[#565656]">${formatedDate}</p>
-            <span class="text-[#A5A5A5]">${el.cdr.dst}</span>
           </div>
           <span class="text-[#7A7A7A]">${el.cdr.duration} secs</span>
         </div>
@@ -160,7 +311,7 @@ const openDetailedOptions = async (id) => {
   const listData = JSON.parse(list);
   let activeItem = listData.find((el) => el.cdr.id === id);
   destImg.src = activeImageSrc;
-  destNumber.innerText = activeItem.cdr.src;
+  destNumber.innerText = activeItem.cdr.dst;
   callDetailsContainer.classList.remove("hidden");
   callDetailsContainer.classList.add("flex");
   callLogList.classList.add("hidden");
@@ -174,27 +325,17 @@ const openDetailedOptions = async (id) => {
 
   const loaderElement = document.createElement("div");
   loaderElement.id = "log-loader";
-  loaderElement.innerHTML = `<svg
-        aria-hidden="true"
-        role="status"
-        class="w-10 h-10 mr-3 text-[#00A2DD] animate-spin"
-        viewBox="0 0 100 101"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-          fill="#E5E7EB"
-        />
-        <path
-          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentColor"
-        />
-      </svg>`;
+  loaderElement.innerHTML = svgLoader;
 
   if (!document.getElementById("log-loader")) {
     spinnerLoader.insertAdjacentElement("afterbegin", loaderElement);
   }
+
+  let callBtn = document.getElementById("call-detail-btn");
+
+  callBtn.onclick = () => {
+    makeCall(activeItem.cdr.dst);
+  };
 
   const data = await getDetailedCallHistory(
     activeItem.cdr.src,
@@ -204,18 +345,515 @@ const openDetailedOptions = async (id) => {
   spinnerLoader.classList.add("hidden");
   spinnerLoader.classList.remove("grid");
 
-  let callBtn = document.getElementById("call-detail-btn")
-  let callHistoryContainer = document.getElementById("history-container");
+  drawDetailedLog(data);
+};
 
-  callBtn.onclick = () => {
-    callHistoryContainer.classList.add('hidden')
-    callHistoryContainer.classList.remove('flex')
-    console.log(document.querySelector('.webphone-digits'), 'digits');
-    document.querySelector('.webphone-digits').innerText = activeItem.cdr.dst
-    document.getElementById("webphone-call-btn").click()
+const showErrorToast = (err) => {
+  let errorToast = document.getElementById("toast-error");
+  errorToast.classList.remove("animate-fade-out");
+  errorToast.classList.add("animate-fade-up");
+  errorToast.querySelector("span").innerText =
+    err?.message || "Something went wrong, please try again";
+  setTimeout(() => {
+    errorToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    errorToast.querySelector("span").innerText = "";
+  }, 4500);
+};
+
+const showSuccessToast = (isBulk) => {
+  let successToast = document.getElementById("toast-success");
+  successToast.classList.remove("animate-fade-out");
+  successToast.classList.add("animate-fade-up");
+  successToast.querySelector("span").innerText = `Voicemail${
+    isBulk ? "s" : ""
+  } deleted successfully`;
+  setTimeout(() => {
+    successToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    successToast.querySelector("span").innerText = "";
+  }, 4500);
+};
+
+const bulkUpdateVoicemailsRead = async (bool) => {
+  try {
+    let values = await fetch(`${backendApi}/voicemail/messages/bulk-update`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ listened: bool, message_ids: checkedIds }),
+    });
+
+    const item = await values.json();
+    return item;
+  } catch (err) {
+    return err;
+  }
+};
+
+const bulkDeleteVoicemails = async () => {
+  try {
+    let values = fetch(`${backendApi}/voicemail/messages/bulk-delete`, {
+      method: "PATCH",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message_ids: checkedIds }),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+};
+
+const handleBulkActions = async (action, listItems) => {
+  if (action !== "delete") {
+    bulkUpdateVoicemailsRead(action === "read")
+      .then((res) => {
+        console.log(res, "res");
+        document.body.click();
+
+        const newData = listItems.map((item) => {
+          const newItem = res.find((el) => el.message_id === item._id);
+          return newItem
+            ? {
+                ...item,
+                listened: action === "read",
+              }
+            : item;
+        });
+        drawVoicemails(newData);
+      })
+      .catch((err) => {
+        console.log(err, "error");
+      });
+  } else {
+    bulkDeleteVoicemails()
+      .then((res) => {
+        const newData = listItems.filter(
+          (item) => !checkedIds.includes(item._id)
+        );
+        showSuccessToast(true);
+        drawVoicemails(newData);
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        showErrorToast(err);
+      });
+  }
+};
+
+const openVoicemailDetails = async (data, id, isListened, target) => {
+  if (isListened === "false") {
+    target.classList.add("pointer-events-none");
+    setVoicemailListened(id)
+      .then((res) => {
+        if (res.ok) {
+          const newData = [...data].map((item) => {
+            if (item._id === id) {
+              return {
+                ...item,
+                listened: true,
+              };
+            }
+            return item;
+          });
+          drawVoicemails(newData);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        target.classList.remove("pointer-events-none");
+      });
+  }
+  let voiceMailDetails = document.getElementById("voicemail-details");
+  let voiceMailSubmenu = document.getElementById("voicemail-submenu");
+  let deleteVoicemailBtn = document.getElementById("delete-voicemail-btn");
+  let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
+  let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
+  let audioDest = document.getElementById("audio-dest");
+  const activeItem = data.find((item) => item._id === id);
+  voiceMailDetails.classList.remove("hidden");
+  voiceMailDetails.classList.add("flex");
+  voiceMailDetails.querySelector("#voicemail-number").innerText =
+    activeItem.extension_source;
+  voiceMailDetails.querySelector("#voicemail-message span").innerText =
+    activeItem.source_representation_name;
+  audioDest.innerHTML = "";
+  let audio = document.createElement("audio");
+  audio.className = "fc-media";
+  audio.id = activeItem.voicemail_file.id;
+  audio.controls = true;
+  audio.name = activeItem.voicemail_file.name;
+  audio.preload = "auto";
+  const source = document.createElement("source");
+  source.src = activeItem.voicemail_file.link;
+  audio.appendChild(source);
+  audioDest.insertAdjacentElement("afterbegin", audio);
+  audioPlayer.init();
+
+  voiceMailSubmenu
+    .querySelectorAll(".voicemail-submenu-item")
+    .forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleVoiceMailActions(item.id, activeItem);
+      });
+    });
+
+  deleteVoicemailBtn.onclick = () => {
+    deleteVoicemail(id)
+      .then((res) => {
+        if (res.ok) {
+          showSuccessToast();
+          const newData = [...data].filter((item) => item._id !== id);
+          drawVoicemails(newData);
+          voiceMailDetails.classList.remove("flex");
+          voiceMailDetails.classList.add("hidden");
+        } else {
+          showErrorToast();
+        }
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        showErrorToast(err);
+      });
+  };
+  callVoiceMailBtn.onclick = () => {
+    voiceMailDetails.classList.remove("flex");
+    voiceMailDetails.classList.add("hidden");
+    makeCall(activeItem.extension_source);
+  };
+  shareVoiceMailBtn.onclick = () => {
+    shareEmail(activeItem.voicemail_email, activeItem.voicemail_file.link);
+  };
+};
+
+function handleVoiceMailActions(id, activeItem) {
+  let successToast = document.getElementById("toast-success");
+  if (id.includes("link")) {
+    copyToClipboard(activeItem.voicemail_file.link);
+    successToast.classList.remove("animate-fade-out");
+    successToast.classList.add("animate-fade-up");
+    successToast.querySelector("span").innerText = "Link copied successfully";
+  } else if (id.includes("text")) {
+    copyToClipboard(activeItem.source_representation_name);
+    successToast.classList.remove("animate-fade-out");
+    successToast.classList.add("animate-fade-up");
+    successToast.querySelector("span").innerText = "Text copied successfully";
+  } else {
+    shareEmail(activeItem.voicemail_email, activeItem.voicemail_file.link);
+    successToast.click();
+    return;
   }
 
-  drawDetailedLog(data);
+  successToast.click();
+  setTimeout(() => {
+    successToast.classList.add("animate-fade-out");
+  }, 3000);
+  setTimeout(() => {
+    successToast.querySelector("span").innerText = "";
+  }, 4500);
+}
+
+const drawVoicemails = (values) => {
+  let voiceMailLoader = document.getElementById("voicemail-list-loader");
+  let voiceMailList = document.getElementById("voicemail-list");
+  let bulkSelect = document.getElementById("select_all");
+  let actionMenu = document.getElementById("action-menu");
+  let actionGroup = document.getElementById("action-group");
+  let filterTrigger = document.getElementById("filter-trigger");
+  let filterModal = document.getElementById("filters-modal");
+  let closeFilter = document.getElementById("close-filter");
+  let filterExtList = document.getElementById("filter-ext-list");
+  let filterExtTrigger = document.getElementById("filter-ext-trigger");
+  let applyFilters = document.getElementById("apply-filters");
+  let simpleFilters = document.getElementById("simple-filters");
+  let clearFilters = document.getElementById("clear-filters");
+  let fromDate = document.getElementById("start_date");
+  let toDate = document.getElementById("end_date");
+  voiceMailLoader.classList.add("hidden");
+  voiceMailLoader.classList.remove("grid");
+
+  document.addEventListener("click", toggleVoicemailOpts);
+
+  let html = values
+    .map((item) => {
+      let formatedDate = formatHistoryDate(item.time_received, true);
+
+      return `
+      <div 
+        data-id="${item._id}" 
+        data-listened="${item.listened}"
+        class="flex voicemail-list-item cursor-pointer relative justify-between select-none px-6 py-2 
+        items-center border-b border-[#D3D3D3]">
+          <div class="absolute top-2 right-2 hidden">
+            <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100
+            border-gray-300 rounded focus:ring-blue-500
+            focus:ring-2" />
+          </div>
+          <div class="flex gap-4 items-start w-full">
+            <div class="w-14 h-14">
+              <img class="rounded-full" src="/images/profile.svg"/>
+            </div>
+            <div class="flex flex-col w-full gap-2">
+              <div class="flex justify-between w-full">
+                <p class="text-[#232323]">${item.extension_source}</p>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#6FC316] ${
+                  !item.listened ? "block" : "hidden"
+                }"></div>
+              </div>
+              <div class="flex justify-between w-full">
+                <p class="text-[#4D4D4D]">${item.source_representation_name}</p>
+                <span class="text-sm text-[#939393]">${formatedDate}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    })
+    .join(" ");
+
+  if (values.length === 0) {
+    document.getElementById("empty-voicemail").classList.remove("hidden");
+    document.getElementById("empty-voicemail").innerText = isFilterMode
+      ? "You have no voicemails for selected filter"
+      : "No data found for your extension";
+  } else {
+    document.getElementById("empty-voicemail").classList.add("hidden");
+  }
+
+  voiceMailList.classList.remove("hidden");
+  voiceMailList.classList.add("flex");
+  if (values.length > 0) {
+    document.getElementById("settings-filters").classList.remove("hidden");
+    document.getElementById("settings-filters").classList.add("flex");
+  }
+
+  voiceMailList.innerHTML = html;
+
+  voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      if (isBulkEdit) {
+        if (checkedIds.includes(this.dataset.id)) {
+          checkedIds = checkedIds.filter((item) => item !== this.dataset.id);
+          item.querySelector("input").checked = false;
+        } else {
+          item.querySelector("input").checked = true;
+          checkedIds.push(this.dataset.id);
+        }
+        if (checkedIds.length > 0) {
+          actionMenu.classList.remove("hidden");
+        } else {
+          actionMenu.classList.add("hidden");
+        }
+      } else {
+        openVoicemailDetails(
+          values,
+          this.dataset.id,
+          this.dataset.listened,
+          item
+        );
+      }
+    });
+  });
+
+  simpleFilters.querySelectorAll("div").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      let finalFrom = dateFormat(new Date());
+      let finalTo = dateFormat(new Date());
+      if (item.dataset.filter === "7" || item.dataset.filter === "30") {
+        finalFrom = dateFormat(
+          new Date(
+            Date.now() - Number(item.dataset.filter) * 24 * 60 * 60 * 1000
+          )
+        );
+      }
+      fromDate.value = finalFrom;
+      toDate.value = finalTo;
+    });
+  });
+
+  actionGroup.querySelectorAll("li").forEach((item) => {
+    item.addEventListener("click", function (e) {
+      e.stopPropagation();
+      handleBulkActions(item.dataset.action, values).then((res) => {
+        isBulkEdit = false;
+        actionMenu.classList.add("hidden");
+        bulkSelect.checked = false;
+      });
+    });
+  });
+
+  bulkSelect.onchange = (e) => {
+    isBulkEdit = e.target.checked;
+    voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
+      if (e.target.checked) {
+        item.querySelector("input").parentNode.classList.remove("hidden");
+      } else {
+        item.querySelector("input").parentNode.classList.add("hidden");
+      }
+    });
+  };
+
+  let datePicker = document.querySelector(".datepicker-dropdown");
+  filterTrigger.onclick = () => {
+    filterModal.classList.remove("hidden");
+    filterModal.classList.add("flex");
+    datePicker.classList.add("shadow");
+    document
+      .querySelector(".datepicker-main")
+      .classList.add("overflow-y-auto", "max-h-62.5");
+    filterExtTrigger.querySelector("span").innerText = isFilterMode
+      ? filteredItem
+      : getCookie("user_id");
+  };
+
+  filterModal.onclick = () => {
+    filterExtList.classList.add("hidden");
+    filterExtList.classList.remove("flex");
+  };
+
+  let extensions = JSON.parse(localStorage.getItem("extensions"));
+
+  let extList = extensions
+    .map((item) => {
+      return `
+      <div data-ext=${item.data.id}  
+      class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500">
+      <input
+                    class="peer input-ext"
+                    type="radio"
+                    id=${item._id}
+                    value=${item.data.extension}
+                    name="extension_filter"
+                  />
+                  <label
+                    for=${item._id}
+                    class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+                    select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]
+                    "
+                  >
+                    ${item.data.extension}
+                  </label>
+      </div>
+    `;
+    })
+    .join(" ");
+
+  filterExtList.insertAdjacentHTML("beforeend", extList);
+  filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {
+    console.log(filteredItem, "filteredItem");
+    console.log(item.dataset.ext);
+    if (isFilterMode) {
+      document.querySelector(`input[value="${filteredItem}"]`).checked = true;
+    } else {
+      if (item.dataset.ext === getCookie("user_id")) {
+        item.querySelector("input").checked = true;
+      }
+    }
+    item.addEventListener("click", function (e) {
+      e.stopPropagation();
+      applyFilters.disabled =
+        this.dataset.ext === getCookie("user_id") &&
+        (!fromDate.value || !toDate.value);
+      this.querySelector("input").checked =
+        !this.querySelector("input").checked;
+      filteredItem = Number(this.dataset.ext);
+      filterExtTrigger.querySelector("span").innerText = filteredItem;
+    });
+  });
+
+  applyFilters.onclick = () => {
+    let baseVoicemailUrl = `${backendApi}/voicemail/messages`;
+    let searchParams = new URLSearchParams();
+    isFilterMode = true;
+
+    let from = fromDate.value;
+    let to = toDate.value;
+
+    if (from && to) {
+      searchParams.append(
+        "from_date",
+        new Date(from).toISOString().split("T")[0]
+      );
+      searchParams.append("to_date", new Date(to).toISOString().split("T")[0]);
+    }
+
+    searchParams.append(
+      "extension_destination",
+      filteredItem || getCookie("user_id")
+    );
+
+    let url = new URL(baseVoicemailUrl);
+    url.search = searchParams.toString();
+    applyFilters.disabled = true;
+
+    applyFilters.innerText = "Loading...";
+
+    applyFilters.insertAdjacentHTML(
+      `afterbegin`,
+      `
+    <svg 
+    id="apply-loading"
+    class="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    `
+    );
+
+    fetch(url, {
+      headers: {
+        Authorization: id_token,
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        filterModal.classList.add("hidden");
+        filterModal.classList.remove("flex");
+        drawVoicemails(data);
+      })
+      .finally(() => {
+        applyFilters.querySelector("#apply-loading").remove();
+        applyFilters.innerText = "Apply";
+      });
+  };
+
+  clearFilters.onclick = () => {
+    fromDate.value = "";
+    toDate.value = "";
+    filteredItem = null;
+    document.querySelector(
+      'input[name="extension_filter"]:checked'
+    ).checked = false;
+    filterExtList.querySelector(
+      `input[value="${getCookie("user_id")}"]`
+    ).checked = true;
+    isFilterMode = false;
+    filterExtTrigger.querySelector("span").innerText = getCookie("user_id");
+    getVoicemails(true);
+  };
+
+  filterExtTrigger.onclick = (e) => {
+    e.stopPropagation();
+    filterExtList.classList.toggle("hidden");
+    filterExtList.classList.toggle("flex");
+  };
+
+  closeFilter.onclick = () => {
+    filterModal.classList.add("hidden");
+    filterModal.classList.remove("flex");
+  };
 };
 
 const drawCallHistory = () => {
@@ -252,9 +890,9 @@ const drawCallHistory = () => {
               }"/>
             </div>
             <div class="flex flex-col">
-                <p class="text-[#232323]">${el.cdr.pbx_cnam || el.cdr.src}</p>
+                <p class="text-[#232323]">${el.cdr.pbx_cnam || el.cdr.dst}</p>
                 <span class="text-[#A3A3A3]">${
-                  el.cdr.dst
+                  el.cdr.src
                 }, ${formatedDate}</span>
             </div>
           </div>
@@ -276,7 +914,6 @@ const drawCallHistory = () => {
             });
           openDetailedOptions(item.dataset.id)
             .then((res) => {
-              console.log(res, "res");
               historyListContainer
                 .querySelectorAll(".history-list-item")
                 .forEach((el) => {
@@ -299,7 +936,7 @@ const drawCallHistory = () => {
 async function getCallHistory() {
   try {
     const history = await fetch(
-      `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&extension=${getCookie(
+      `${backendApi}/cdrs/v3/cdrs?from_date=${beforeHistory}&to_date=${new Date().toISOString()}&src=${getCookie(
         "user_id"
       )}
     `,
@@ -318,6 +955,38 @@ async function getCallHistory() {
     if (isLocalhost) {
       localStorage.setItem("call_history", JSON.stringify(mockHistory));
       drawCallHistory();
+    }
+  }
+}
+
+async function getVoicemails(isFromFilter) {
+  let filterModal = document.getElementById("filters-modal");
+
+  try {
+    const history = await fetch(
+      `${backendApi}/voicemail/messages?from_date=${
+        beforeHistory.split("T")[0]
+      }&to_date=${
+        new Date().toISOString().split("T")[0]
+      }&extension_destination=${getCookie("user_id")}
+    `,
+      {
+        headers: {
+          Authorization: id_token,
+        },
+      }
+    );
+    if (history.ok) {
+      const data = await history.json();
+      if (!isFromFilter) {
+        localStorage.setItem("voicemails", JSON.stringify(data));
+      }
+      drawVoicemails(data);
+    }
+  } catch (error) {
+    if (isLocalhost) {
+      localStorage.setItem("voicemails", JSON.stringify(mockHistory));
+      drawVoicemails(mockHistory);
     }
   }
 }
@@ -348,7 +1017,6 @@ async function updateUI() {
     let phoneTab = document.getElementById("phone-tab");
     let settingsTab = document.getElementById("settings-tab");
     let callHistoryTab = document.getElementById("call-history");
-    let subMenu = document.getElementById("settings-submenu");
     let pageTitle = document.getElementById("page-title");
     let mainContainer = document.getElementById("main");
     let settingsInfo = document.getElementById("settings-info");
@@ -359,6 +1027,8 @@ async function updateUI() {
     let logoutCancel = document.getElementById("logout-cancel");
     let container = document.getElementById("my-container");
     let callHistoryContainer = document.getElementById("history-container");
+    let voiceMailTab = document.getElementById("voicemail-tab");
+    let voiceMailContainer = document.getElementById("voicemail-container");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -382,106 +1052,105 @@ async function updateUI() {
             statusBadge.src = `/images/status-icons/${mainStatus}.svg`;
           });
         });
-
-      getCallHistory();
     } else {
+      callHistoryTab.remove();
+      voiceMailTab.remove();
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
 
     const cancelLogout = () => {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
+
       pageTitle.innerText = `Phone`;
       settingsInfo.classList.remove("!hidden");
-      phoneTab.classList.remove("gap-5");
-      phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.remove("grayscale");
-      settingsTab.querySelector("img").classList.add("grayscale");
+
+      removeActiveTab();
+      setActiveTab(phoneTab);
 
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      settingsInfo.classList.add("hidden");
-      settingsInfo.classList.remove("flex");
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
       $("#my-container").removeClass("hidden");
+      $("#my-container").addClass("active-container");
+      extensionOpts.classList.remove("hidden");
 
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
       mainWrapper.classList.add("grid");
       mainWrapper.classList.remove("hidden");
     };
 
-    // tabs functionality
-
-    settingsTab.onclick = () => {
-      settingsTab.children[0].classList.remove("gap-5");
-      settingsTab.children[0].classList.add(...activeClasses, "gap-16");
-
-      phoneTab.classList.remove(...activeClasses, "gap-16");
-      phoneTab.classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.add("grayscale");
-      settingsTab.querySelector("img").classList.remove("grayscale");
+    settingsTab.onclick = function () {
+      removeActiveTab();
+      setActiveTab(this.children[0]);
       versionInfoBtn.classList.add(...activeSubMenuClasses);
-
       callHistoryContainer.classList.add("hidden");
       callHistoryContainer.classList.remove("flex");
-
       pageTitle.innerText = "Settings - Version Info";
       extensionOpts.classList.add("hidden");
-      $("#my-container").addClass("hidden");
+
       mainContainer.classList.add("!bg-[#F2F2F2]");
       settingsInfo.classList.remove("hidden");
-      settingsInfo.classList.add("flex");
+      settingsInfo.classList.add("flex", "active-container");
       mainWrapper.classList.add("h-main", "grid", "place-items-center");
-      activeSubMenuClasses.map((cx) => callHistoryTab.classList.remove(cx));
     };
 
-    phoneTab.onclick = () => {
-      phoneTab.classList.remove("gap-5");
-      phoneTab.classList.add(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.remove("grayscale");
+    phoneTab.onclick = function () {
+      removeActiveTab();
+      setActiveTab(this);
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
-
-      settingsTab.querySelector("img").classList.add("grayscale");
       pageTitle.innerText = "Phone";
       extensionOpts.classList.remove("hidden");
       $("#my-container").removeClass("hidden");
+      $("#my-container").addClass("active-container");
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      settingsInfo.classList.add("hidden");
-      settingsInfo.classList.remove("flex");
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
     };
 
-    callHistoryTab.onclick = () => {
-      phoneTab.classList.remove("gap-5");
-      phoneTab.classList.add(...activeClasses, "gap-16");
+    callHistoryTab.onclick = function () {
+      if (this.dataset.shouldFetch !== "false") {
+        getCallHistory();
+        this.dataset.shouldFetch = "false";
+      }
+
+      removeActiveTab();
+      setActiveTab(this);
+      callHistoryContainer.classList.remove("hidden");
+      callHistoryContainer.classList.add("flex", "active-container");
+
       pageTitle.innerText = "Phone";
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
       extensionOpts.classList.remove("hidden");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.remove("grayscale");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
-      settingsTab.querySelector("img").classList.add("grayscale");
-      callHistoryContainer.classList.toggle("hidden");
-      callHistoryContainer.classList.toggle("flex");
-      settingsTab.children[0].classList.remove(...activeClasses, "gap-16");
-      settingsTab.children[0].classList.add("gap-5", "font-medium");
-      settingsTab.querySelector("img").classList.add("grayscale");
-      activeSubMenuClasses.map((cx) => callHistoryTab.classList.toggle(cx));
+    };
+
+    voiceMailTab.onclick = function () {
+      let voiceMailLoader = document.getElementById("voicemail-list-loader");
+      const loaderElement = document.createElement("div");
+      loaderElement.id = "voicemail-loader";
+      loaderElement.innerHTML = svgLoader;
+
+      if (!document.getElementById("voicemail-loader")) {
+        voiceMailLoader.insertAdjacentElement("afterbegin", loaderElement);
+      }
+
+      if (this.dataset.shouldFetch !== "false") {
+        getVoicemails();
+        this.dataset.shouldFetch = "false";
+      }
+      removeActiveTab();
+      setActiveTab(this);
+      pageTitle.innerText = "Voicemail";
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
+      extensionOpts.classList.add("hidden");
+      voiceMailContainer.classList.remove("hidden");
+      voiceMailContainer.classList.add("flex", "active-container");
     };
 
     logoutPopupTrigger.onclick = (e) => {
-      settingsTab.children[0].classList.remove("gap-5");
-      settingsTab.children[0].classList.add(...activeClasses, "gap-16");
-      phoneTab.classList.remove(...activeClasses, "gap-16");
-      phoneTab.classList.add("gap-5", "font-medium");
-      phoneTab.querySelector("img").classList.add("grayscale");
-      settingsTab.querySelector("img").classList.remove("grayscale");
+      removeActiveTab();
+      setActiveTab(settingsTab.children[0]);
       e.stopPropagation();
       modal.classList.remove("hidden");
-      modal.classList.add("grid");
+      modal.classList.add("grid", "active-container");
       pageTitle.innerText = "Settings - Logout";
       settingsInfo.classList.add("!hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
@@ -499,11 +1168,6 @@ async function updateUI() {
 
     hamburgerBtn.onclick = () => {
       sidebar.classList.toggle("-translate-x-full");
-      if (sidebar.classList.contains("-translate-x-full")) {
-        callHistoryContainer.classList.remove("left-[252px]");
-      } else {
-        callHistoryContainer.classList.add("left-[252px]");
-      }
     };
   } catch (error) {
     document.getElementById("dialpad-content").classList.add("hidden");
