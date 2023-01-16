@@ -708,6 +708,7 @@ const drawVoicemails = (values) => {
     document
       .querySelector(".datepicker-main")
       .classList.add("overflow-y-auto", "max-h-62.5");
+    filterExtTrigger.querySelector("span").innerText = getCookie("user_id");
   };
 
   filterModal.onclick = () => {
@@ -744,9 +745,15 @@ const drawVoicemails = (values) => {
 
   filterExtList.insertAdjacentHTML("beforeend", extList);
   filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {
+    if (item.dataset.ext === getCookie("user_id")) {
+      item.querySelector("input").checked = true;
+      applyFilters.disabled = (!fromDate.value || !toDate.value);
+    }
     item.addEventListener("click", function (e) {
       e.stopPropagation();
-
+      applyFilters.disabled =
+        this.dataset.ext === getCookie("user_id") &&
+        (!fromDate.value || !toDate.value);
       this.querySelector("input").checked =
         !this.querySelector("input").checked;
       filteredItem = Number(this.dataset.ext);
@@ -758,9 +765,9 @@ const drawVoicemails = (values) => {
     let from = fromDate.value;
     let to = toDate.value;
     if (from && to) {
-      console.log(from, 'from');
-      console.log(to,"to");
-      console.log(filteredItem,"filteredItem");
+      console.log(from, "from");
+      console.log(to, "to");
+      console.log(filteredItem, "filteredItem");
     }
   };
 
