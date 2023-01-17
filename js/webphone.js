@@ -1047,6 +1047,34 @@ async function updateUI() {
 
     let statusBadge = document.querySelector("#status-badge");
 
+    let ctrlDown = false;
+    document.addEventListener("keydown", (event) => {
+      if (event.code === "ControlLeft" || event.code === "ControlRight") {
+        ctrlDown = true;
+      }
+    });
+    document.addEventListener("keyup", (event) => {
+      if (event.code === "ControlLeft" || event.code === "ControlRight") {
+        ctrlDown = false;
+      }
+    });
+
+    document.addEventListener("paste", (event) => {
+      if (ctrlDown) {
+        const pastedContent = event.clipboardData.getData("text/plain");
+        if (
+          !isNaN(Number(pastedContent)) &&
+          phoneTab.classList.contains("active-tab") &&
+          !pastedContent.includes(".")
+        ) {
+          document.querySelector(".webphone-digits").innerText = pastedContent;
+          document
+            .getElementById("webphone-backspace-btn")
+            .classList.remove("hidden");
+        }
+      }
+    });
+
     if (isFromSSO) {
       extensionOpts.addEventListener("click", handleOpenExtensions);
       getAccount()
@@ -1079,6 +1107,8 @@ async function updateUI() {
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
+      $("#my-container").addClass("flex");
+
       extensionOpts.classList.remove("hidden");
 
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
@@ -1109,6 +1139,7 @@ async function updateUI() {
       extensionOpts.classList.remove("hidden");
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
+      $("#my-container").addClass("flex");
       mainContainer.classList.remove("!bg-[#F2F2F2]");
       mainWrapper.classList.remove("h-main", "grid", "place-items-center");
     };
