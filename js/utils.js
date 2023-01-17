@@ -5,6 +5,74 @@ const statuses = Object.freeze({
   do_not_disturb: "Do not disturb",
 });
 
+function formatHistoryDate(date, isVoicemail) {
+  let origDate = new Date(date).toLocaleString("en-us", {
+    weekday: "short",
+    month: "short",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+  });
+  if (isVoicemail) {
+    origDate = new Date(date)
+      .toLocaleString("en-us", {
+        weekday: "short",
+        month: "2-digit",
+        year: "2-digit",
+        day: "2-digit",
+        hour: "numeric",
+        minute: "numeric",
+      })
+      .replace(/\//g, "-")
+      .replace(/,/, "");
+  }
+  return origDate;
+}
+
+function dateFormat(date) {
+  let year = date.getFullYear();
+  let month = (1 + date.getMonth()).toString().padStart(2, "0");
+  let day = date.getDate().toString().padStart(2, "0");
+
+  return month + "/" + day + "/" + year;
+}
+
+function copyToClipboard(text) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val(text).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+
+function generateAvatar(text) {
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  canvas.width = 200;
+  canvas.height = 200;
+
+  let grd = context.createLinearGradient(0, 0, 200, 0);
+  grd.addColorStop(0, "#07a2de");
+  grd.addColorStop(1, "#1dd3b3");
+
+  context.fillStyle = grd;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.font = "bold 100px Roboto";
+  context.fillStyle = "white";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  context.fillText(text, canvas.width / 2, canvas.height / 1.8);
+
+  return canvas.toDataURL("image/png");
+}
+
+let beforeHistory = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth(),
+  new Date().getDay() - 15
+).toISOString();
+
 const additionalStatuses = Object.freeze({
   in_a_meeting: "In a meeting",
   on_a_call: "On a call",
@@ -143,9 +211,8 @@ const patchStatus = async (data) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
-}
-
+  });
+};
 
 const handleStatusChange = async (value, type, target) => {
   let sendData = {};
@@ -165,7 +232,7 @@ const handleStatusChange = async (value, type, target) => {
   target.classList.add("hidden");
 
   const data = await patchStatus(sendData);
-  if (data.ok) { 
+  if (data.ok) {
     const finalData = await data.json();
     const { main_status, additional_status } = finalData;
     return {
