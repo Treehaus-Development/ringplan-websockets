@@ -750,8 +750,6 @@ const drawVoicemails = (values) => {
 
   filterExtList.insertAdjacentHTML("beforeend", extList);
   filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {
-    console.log(filteredItem, "filteredItem");
-    console.log(item.dataset.ext);
     if (isFilterMode) {
       document.querySelector(`input[value="${filteredItem}"]`).checked = true;
     } else {
@@ -764,9 +762,14 @@ const drawVoicemails = (values) => {
       applyFilters.disabled =
         this.dataset.ext === getCookie("user_id") &&
         (!fromDate.value || !toDate.value);
+      if (isFilterMode) {
+        document.querySelector(
+          `input[value="${filteredItem}"]`
+        ).checked = false;
+      }
       this.querySelector("input").checked =
         !this.querySelector("input").checked;
-      filteredItem = Number(this.dataset.ext);
+      filteredItem = !this.dataset.ext ? "All" : Number(this.dataset.ext);
       filterExtTrigger.querySelector("span").innerText = filteredItem;
     });
   });
@@ -791,6 +794,10 @@ const drawVoicemails = (values) => {
       "extension_destination",
       filteredItem || getCookie("user_id")
     );
+
+    if (filteredItem === "All") {
+      searchParams.delete("extension_destination");
+    }
 
     let url = new URL(baseVoicemailUrl);
     url.search = searchParams.toString();
