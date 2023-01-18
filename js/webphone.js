@@ -339,7 +339,6 @@ async function updateUI() {
     let phoneTab = document.getElementById("phone-tab");
     let settingsTab = document.getElementById("settings-tab");
     let callHistoryTab = document.getElementById("call-history");
-    let pageTitle = document.getElementById("page-title");
     let mainContainer = document.getElementById("main");
     let settingsInfo = document.getElementById("settings-info");
     let mainWrapper = document.getElementById("main-wrapper");
@@ -413,10 +412,10 @@ async function updateUI() {
         let vals = JSON.parse(activeExtension);
         let activeNum = vals.outbound_callerid?.number;
         let name = vals.data.name;
-        
-        document
-          .getElementById("caller-id")
-          .innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`
+
+        document.getElementById(
+          "caller-id"
+        ).innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`;
       }
     } else {
       callHistoryTab.remove();
@@ -428,7 +427,6 @@ async function updateUI() {
       modal.classList.remove("grid");
       modal.classList.add("hidden");
 
-      pageTitle.innerText = `Phone`;
       settingsInfo.classList.remove("!hidden");
 
       removeActiveTab();
@@ -439,8 +437,6 @@ async function updateUI() {
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
       $("#my-container").addClass("flex");
-
-      extensionOpts.classList.remove("hidden");
 
       logoutPopupTrigger.classList.remove(...activeSubMenuClasses);
       mainWrapper.classList.add("grid");
@@ -453,26 +449,27 @@ async function updateUI() {
       versionInfoBtn.classList.add(...activeSubMenuClasses);
       callHistoryContainer.classList.add("hidden");
       callHistoryContainer.classList.remove("flex");
-      pageTitle.innerText = "Settings - Version Info";
-      extensionOpts.classList.add("hidden");
-
       mainContainer.classList.add("!bg-[#F2F2F2]");
       settingsInfo.classList.remove("hidden");
       settingsInfo.classList.add("flex", "active-container");
       mainWrapper.classList.add("h-main", "grid", "place-items-center");
+      mainWrapper.classList.remove("overflow-hidden");
     };
 
     phoneTab.onclick = function () {
       removeActiveTab();
       setActiveTab(this);
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
-      pageTitle.innerText = "Phone";
-      extensionOpts.classList.remove("hidden");
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
       $("#my-container").addClass("flex");
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      mainWrapper.classList.remove("h-main", "grid", "place-items-center");
+      mainWrapper.classList.remove(
+        "h-main",
+        "grid",
+        "place-items-center",
+        "overflow-hidden"
+      );
     };
 
     callHistoryTab.onclick = function () {
@@ -483,11 +480,10 @@ async function updateUI() {
 
       removeActiveTab();
       setActiveTab(this);
+      mainWrapper.classList.add("overflow-hidden");
       callHistoryContainer.classList.remove("hidden");
       callHistoryContainer.classList.add("flex", "active-container");
 
-      pageTitle.innerText = "Phone";
-      extensionOpts.classList.remove("hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
     };
 
@@ -507,9 +503,8 @@ async function updateUI() {
       }
       removeActiveTab();
       setActiveTab(this);
-      pageTitle.innerText = "Voicemail";
+      mainWrapper.classList.add("overflow-hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
-      extensionOpts.classList.add("hidden");
       voiceMailContainer.classList.remove("hidden");
       voiceMailContainer.classList.add("flex", "active-container");
     };
@@ -520,7 +515,6 @@ async function updateUI() {
       e.stopPropagation();
       modal.classList.remove("hidden");
       modal.classList.add("grid", "active-container");
-      pageTitle.innerText = "Settings - Logout";
       settingsInfo.classList.add("!hidden");
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
       logoutPopupTrigger.classList.add(...activeSubMenuClasses);

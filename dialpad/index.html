@@ -26,8 +26,28 @@
     />
   </div>
 
+  <div class="flex justify-center mt-3">
+    <div
+      id="extension-options"
+      class="rounded-3.5xl flex items-center gap-4 px-6 pt-2 pb-1.4 cursor-pointer border border-[#B7B7B7]"
+    >
+      <img
+        id="status-badge"
+        src="../images/status-icons/available.svg"
+        class="rounded-full w-4 h-4 mb-0.75"
+      />
+      <span class="select-none"></span>
+
+      <img id="additional-badge" class="w-5 hidden mt-[-4px]" />
+
+      <div>
+        <img src="../images/chevron-down.svg" />
+      </div>
+    </div>
+  </div>
+
   <div
-    class="items-center mt-12 block w-auto max-h-screen h-sidenav grow basis-full"
+    class="items-center mt-6 block w-auto max-h-screen h-sidenav grow basis-full"
   >
     <ul class="flex flex-col pl-0 mb-0">
       <ul>
@@ -93,32 +113,7 @@
   id="main"
   class="ease-soft-in-out bg-[#fafafa] xl:ml-62.5 relative h-full max-h-screen rounded-xl transition-all duration-200"
 >
-  <div
-    class="bg-[#F6F8FC] flex items-center shadow-nav justify-between w-full px-4 sm:px-6 md:px-10 h-16 mx-auto flex-wrap-inherit"
-  >
-    <h3 class="font-bold text-base md:text-xl lg:text-2xl" id="page-title">
-      Phone
-    </h3>
-    <div
-      id="extension-options"
-      class="rounded-3.5xl flex items-center gap-4 px-6 pt-2 pb-1.4 cursor-pointer border border-[#B7B7B7]"
-    >
-      <img
-        id="status-badge"
-        src="../images/status-icons/available.svg"
-        class="rounded-full w-4 h-4 mb-0.75"
-      />
-      <span class="select-none"></span>
-
-      <img id="additional-badge" class="w-5 hidden mt-[-4px]" />
-
-      <div>
-        <img src="../images/chevron-down.svg" />
-      </div>
-    </div>
-  </div>
-
-  <div id="main-wrapper" class="w-full mx-auto">
+  <div id="main-wrapper" class="w-full mx-auto min-h-screen grid">
     <div
       id="settings-info"
       class="hidden justify-center items-center bg-white flex-col rounded-2.5 w-full p-4 max-w-md mx-auto shadow-info"
@@ -142,9 +137,9 @@
     </div>
     <div
       id="history-container"
-      class="hidden w-full h-container border-l border-[#dfdede] items-stretch mt-0.5"
+      class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
     >
-      <div class="pt-4 basis-[30%] bg-white block w-auto max-h-screen">
+      <div class="pt-4 basis-[30%] bg-white block w-auto max-h-content">
         <span class="text-[#00A2DD] font-medium text-xl ml-10">Recents</span>
         <div
           class="flex-col overflow-y-auto max-h-full mt-2 hidden"
@@ -199,7 +194,7 @@
     </div>
     <div
       id="voicemail-container"
-      class="hidden w-full border-l border-[#dfdede] h-container items-stretch mt-0.5"
+      class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
     >
       <div class="pt-4 basis-[40%] bg-white block w-auto max-h-screen">
         <div

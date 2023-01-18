@@ -424,7 +424,7 @@ module.exports = {
       72: "18rem",
       75: "18.75rem",
       80: "20rem",
-      85: '21.25rem',
+      85: "21.25rem",
       90: "22.5rem",
       96: "24rem",
       120: "30rem",
@@ -442,7 +442,7 @@ module.exports = {
       pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       bounce: "bounce 1s infinite",
       "fade-up": "fade-up 1.5s both",
-      "fade-out":"fade-out 1.5s both"
+      "fade-out": "fade-out 1.5s both",
     },
     aspectRatio: {
       auto: "auto",
@@ -948,7 +948,7 @@ module.exports = {
       full: "100%",
     }),
     keyframes: {
-      'fade-out': {
+      "fade-out": {
         "0%": { opacity: "1" },
         "100%": { opacity: "0" },
       },
@@ -1022,6 +1022,7 @@ module.exports = {
     maxHeight: ({ theme }) => ({
       ...theme("spacing"),
       full: "100%",
+      content: "95vh",
       screen: "100vh",
       min: "min-content",
       max: "max-content",
