@@ -433,7 +433,6 @@ async function updateUI() {
       setActiveTab(phoneTab);
 
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      mainWrapper.classList.remove("h-main", "grid", "place-items-center");
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
       $("#my-container").addClass("flex");
@@ -452,7 +451,6 @@ async function updateUI() {
       mainContainer.classList.add("!bg-[#F2F2F2]");
       settingsInfo.classList.remove("hidden");
       settingsInfo.classList.add("flex", "active-container");
-      mainWrapper.classList.add("h-main", "grid", "place-items-center");
       mainWrapper.classList.remove("overflow-hidden");
     };
 
@@ -464,12 +462,7 @@ async function updateUI() {
       $("#my-container").addClass("active-container");
       $("#my-container").addClass("flex");
       mainContainer.classList.remove("!bg-[#F2F2F2]");
-      mainWrapper.classList.remove(
-        "h-main",
-        "grid",
-        "place-items-center",
-        "overflow-hidden"
-      );
+      mainWrapper.classList.remove("overflow-hidden");
     };
 
     callHistoryTab.onclick = function () {

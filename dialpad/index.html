@@ -113,10 +113,11 @@
   id="main"
   class="ease-soft-in-out bg-[#fafafa] xl:ml-62.5 relative h-full max-h-screen rounded-xl transition-all duration-200"
 >
-  <div id="main-wrapper" class="w-full mx-auto min-h-screen grid">
+  <div id="main-wrapper" class="w-full mx-auto h-screen grid">
     <div
       id="settings-info"
-      class="hidden justify-center items-center bg-white flex-col rounded-2.5 w-full p-4 max-w-md mx-auto shadow-info"
+      class="hidden justify-center items-center bg-white
+       flex-col rounded-2.5 w-full m-auto p-4 max-w-md max-h-120 shadow-info"
     >
       <div>
         <img src="/images/ringplan-big.svg" />
@@ -196,7 +197,7 @@
       id="voicemail-container"
       class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
     >
-      <div class="pt-4 basis-[40%] bg-white block w-auto max-h-screen">
+      <div class="pt-4 basis-[40%] bg-white block w-auto max-h-box">
         <div
           id="settings-filters"
           class="hidden justify-between min-h-10 px-6 w-full items-center gap-3"
@@ -229,19 +230,19 @@
                 class="z-10 bg-white divide-y absolute w-36 divide-gray-100 rounded shadow hidden"
               >
                 <ul class="py-1 text-sm text-gray-700">
-                  <li data-action="delete">
+                  <li id="bulk-delete">
                     <span
                       class="block cursor-pointer px-4 py-2 hover:bg-gray-100"
                       >Delete</span
                     >
                   </li>
-                  <li data-action="read">
+                  <li id="bulk-read">
                     <span
                       class="block cursor-pointer px-4 py-2 hover:bg-gray-100"
                       >Mark read</span
                     >
                   </li>
-                  <li data-action="unread">
+                  <li id="bulk-unread">
                     <span
                       class="block cursor-pointer px-4 py-2 hover:bg-gray-100"
                       >Mark unread</span

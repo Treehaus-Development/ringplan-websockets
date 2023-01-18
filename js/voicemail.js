@@ -81,7 +81,12 @@ async function bulkDeleteVoicemails() {
       },
       body: JSON.stringify({ message_ids: checkedIds }),
     });
-    return values;
+    if (values.ok) {
+      const finalData = await values.json();
+      return finalData;
+    } else {
+      return { error: true };
+    }
   } catch (err) {
     return err;
   }
@@ -159,13 +164,13 @@ async function setVoicemailListened(id) {
   }
 }
 
-async function handleBulkActions(action, listItems) {
+async function handleBulkActions(action, listItems, cb) {
+  document.body.click(); //click to body to close the options modal;
+  
   if (action !== "delete") {
     bulkUpdateVoicemailsRead(action === "read")
       .then((res) => {
-        console.log(res, "res");
-        document.body.click();
-
+        cb();
         const newData = listItems.map((item) => {
           const newItem = res.find((el) => el.message_id === item._id);
           return newItem
@@ -178,20 +183,29 @@ async function handleBulkActions(action, listItems) {
         drawVoicemails(newData);
       })
       .catch((err) => {
+        cb();
         console.log(err, "error");
       });
   } else {
     bulkDeleteVoicemails()
       .then((res) => {
+        if (res.error) {
+          cb();
+          showErrorToast();
+          drawVoicemails(listItems);
+          return;
+        }
         const newData = listItems.filter(
           (item) => !checkedIds.includes(item._id)
         );
+        cb();
         showSuccessToast(true);
         drawVoicemails(newData);
       })
       .catch((err) => {
         console.log(err, "err");
         showErrorToast(err);
+        cb();
       });
   }
 }
@@ -227,6 +241,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
   let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
   let audioDest = document.getElementById("audio-dest");
+
   const activeItem = data.find((item) => item._id === id);
   voiceMailDetails.classList.remove("hidden");
   voiceMailDetails.classList.add("flex");
@@ -289,7 +304,6 @@ function drawVoicemails(values) {
   let voiceMailList = document.getElementById("voicemail-list");
   let bulkSelect = document.getElementById("select_all");
   let actionMenu = document.getElementById("action-menu");
-  let actionGroup = document.getElementById("action-group");
   let filterTrigger = document.getElementById("filter-trigger");
   let filterModal = document.getElementById("filters-modal");
   let closeFilter = document.getElementById("close-filter");
@@ -302,6 +316,10 @@ function drawVoicemails(values) {
   let toDate = document.getElementById("end_date");
   voiceMailLoader.classList.add("hidden");
   voiceMailLoader.classList.remove("grid");
+
+  let readBtn = document.getElementById("bulk-read");
+  let unReadBtn = document.getElementById("bulk-unread");
+  let bulkDelete = document.getElementById("bulk-delete");
 
   document.addEventListener("click", toggleVoicemailOpts);
 
@@ -404,16 +422,26 @@ function drawVoicemails(values) {
     });
   });
 
-  actionGroup.querySelectorAll("li").forEach((item) => {
-    item.addEventListener("click", function (e) {
-      e.stopPropagation();
-      handleBulkActions(item.dataset.action, values).then((res) => {
-        isBulkEdit = false;
-        actionMenu.classList.add("hidden");
-        bulkSelect.checked = false;
-      });
-    });
-  });
+  const bulkUpdateCb = () => {
+    isBulkEdit = false;
+    actionMenu.classList.add("hidden");
+    bulkSelect.checked = false;
+  };
+
+  readBtn.onclick = (e) => {
+    e.stopPropagation();
+    handleBulkActions("read", values, bulkUpdateCb);
+  };
+
+  unReadBtn.onclick = (e) => {
+    e.stopPropagation();
+    handleBulkActions("unread", values, bulkUpdateCb);
+  };
+
+  bulkDelete.onclick = (e) => {
+    e.stopPropagation();
+    handleBulkActions("delete", values, bulkUpdateCb);
+  };
 
   bulkSelect.onchange = (e) => {
     isBulkEdit = e.target.checked;
@@ -443,7 +471,7 @@ function drawVoicemails(values) {
     filterExtList.classList.add("hidden");
     filterExtList.classList.remove("flex");
   };
-  
+
   filterExtList.innerHTML = `
       <div
       class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500"
@@ -463,7 +491,7 @@ function drawVoicemails(values) {
       </label>
     </div>
   
-  `
+  `;
 
   let extensions = JSON.parse(localStorage.getItem("extensions"));
 
