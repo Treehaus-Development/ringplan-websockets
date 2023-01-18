@@ -94,8 +94,6 @@ const handleOpenExtensions = () => {
   };
 };
 
-
-
 const getDetailedCallHistory = async (src, dst) => {
   try {
     const history = await fetch(
@@ -363,6 +361,7 @@ async function updateUI() {
       sessionStorage.getItem("user") || getCookie("user_id");
 
     let statusBadge = document.querySelector("#status-badge");
+    let additionalBadge = document.querySelector("#additional-badge");
 
     let ctrlDown = false;
     document.addEventListener("keydown", (event) => {
@@ -401,7 +400,12 @@ async function updateUI() {
         .then((id) => {
           getUserStatus(id).then((data) => {
             let mainStatus = data.mainStatus;
+            let additionalStatus = data.additionalStatus;
             statusBadge.src = `/images/status-icons/${mainStatus}.svg`;
+            if(additionalStatus){
+              additionalBadge.classList.remove("hidden");
+              additionalBadge.src = `/images/status-icons/${additionalStatus}.svg`;
+            }
           });
         });
     } else {

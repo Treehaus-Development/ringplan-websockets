@@ -92,7 +92,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQwMDM3NDEsIm5iZiI6MTY3Mzk3NDk0MSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjczOTc0OTQxLCJhdXRoX3RpbWUiOjE2NzM5NzQ5NDAsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiR1hsbjdwNTQyM2hEMGxVb2ppUGJ0ZyJ9.cnmBR8iJSVpQ-5khCbDos4vaRYuL43dB3aQoj0Y5smDvH05u7MiSCRyXwjHZUiZtTDcR7-ex7-xesDg68ab-RjhGzbj0FHG48j8Hk0OgY3xn-p2oxnrFeIjxlsOfc_zF2xjSS_9of8G2rxH_ac9f3_CLhCuVIhKgjpm0Q0k-unJPa138fuqbOykBTe3h0iKJx2WBWX5XRNf5J3_cjCdmukzBPj2hYYCZNt4aG7JwMOnP839tgjlzybioDTJpwFPXpq34BcWF9pO-whUvmqwe68aROaMS9CBPlCY2kOtqg1uqzAvyptg98379g3V2YjFzSlHc0nSiJGxzvZBANtQdWg";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQwNTk4MzksIm5iZiI6MTY3NDAzMTAzOSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc0MDMxMDM5LCJhdXRoX3RpbWUiOjE2NzQwMzEwMzgsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoicFgxbElmazlrT0V4YUQyTk4wQUhrQSJ9.Oj9SiFJWHrU0oOPYyachhXdiK7DBC4YGfF3YLqpwO1yORN9Pg_REzOyrmGi51YYzVj2aFwzSTe3oq5vkJIEvGMlrWGSXefw5sv9d7syGGAGJUGkjcesilIVvBHNHhT0Jjf-wX_hOvAHtPfiQ9p8nAUDCmVxga8_ClanlOQFWTD6IxNotsipmKRQmg75k7MfkeGVuDsZoJEiv8TlhNQFc6WjMziBym4R-n6NL2c_R-TYoMaY6A79GJfX0CE8LjWQtn3Y4IaXwU3fGw_D_OQijbk7ITDQCO6mBaG6S5qttD5tDm0tciGG3qxl7CjVjeXeiuq0IgraClfcelqW_XElBzw";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -315,8 +315,15 @@ const drawStatusList = (mainStatus, additionalStatus) => {
         document.querySelector(
           "#status-badge"
         ).src = `/images/status-icons/${res.main_status}.svg`;
+       
 
         if (!!res.additional_status) {
+          document.querySelector(
+            "#additional-badge"
+          ).classList.remove('hidden');
+          document.querySelector(
+            "#additional-badge"
+          ).src = `/images/status-icons/${res.additional_status}.svg`;
           if (item.dataset.id === res.additional_status) {
             statusList
               .querySelectorAll("#additional-statuses .status-list-item")
@@ -340,6 +347,9 @@ const drawStatusList = (mainStatus, additionalStatus) => {
             document.querySelector("#additional-icon").appendChild(newImg);
           }
         } else {
+          document.querySelector(
+            "#additional-badge"
+          ).classList.add('hidden');
           document.querySelector("#additional-icon").classList.add("hidden");
           if (item.dataset.checked === "true") {
             item.querySelector("#delete-status").remove();
