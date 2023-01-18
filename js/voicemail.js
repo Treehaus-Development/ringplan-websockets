@@ -443,6 +443,27 @@ function drawVoicemails(values) {
     filterExtList.classList.add("hidden");
     filterExtList.classList.remove("flex");
   };
+  
+  filterExtList.innerHTML = `
+      <div
+      class="flex filter-ext-item p-4 justify-between cursor-pointer border-b border-gray-500"
+    >
+      <input
+        class="peer input-ext"
+        type="radio"
+        id="all_ext"
+        value="All"
+        name="extension_filter"
+      />
+      <label
+        for="all_ext"
+        class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
+      >
+        All
+      </label>
+    </div>
+  
+  `
 
   let extensions = JSON.parse(localStorage.getItem("extensions"));
 
