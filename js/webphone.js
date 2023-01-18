@@ -402,12 +402,22 @@ async function updateUI() {
             let mainStatus = data.mainStatus;
             let additionalStatus = data.additionalStatus;
             statusBadge.src = `/images/status-icons/${mainStatus}.svg`;
-            if(additionalStatus){
+            if (additionalStatus) {
               additionalBadge.classList.remove("hidden");
               additionalBadge.src = `/images/status-icons/${additionalStatus}.svg`;
             }
           });
         });
+      const activeExtension = localStorage.getItem("activeExtension");
+      if (activeExtension) {
+        let vals = JSON.parse(activeExtension);
+        let activeNum = vals.outbound_callerid?.number;
+        let name = vals.data.name;
+        
+        document
+          .getElementById("caller-id")
+          .innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`
+      }
     } else {
       callHistoryTab.remove();
       voiceMailTab.remove();
