@@ -412,10 +412,12 @@ async function updateUI() {
         let vals = JSON.parse(activeExtension);
         let activeNum = vals.outbound_callerid?.number;
         let name = vals.data.name;
-
-        document.getElementById(
-          "caller-id"
-        ).innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`;
+        let callerId = document.getElementById("caller-id")
+        callerId.innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`;
+        callerId.onclick = () => {
+          const editExtension = triggerModalUpdates(null, null, null, true)
+          editExtension(vals._id, activeNum, name, vals.location?.id)   
+        }
       }
     } else {
       callHistoryTab.remove();

@@ -92,7 +92,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQxNjgzNjMsIm5iZiI6MTY3NDEzOTU2MywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc0MTM5NTYzLCJhdXRoX3RpbWUiOjE2NzQxMzk1NjIsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoibXB5UEZKNkctVXhXOVhwdUpyN2JXdyJ9.hfMJFC77TpbXhtJKUv9oAem7rX6udC9F1GkNngx6Xveh2wtd9Tzj1N5-yJQfAohg1Q-E4lcLGQ390fEoEOtxUvg7WODyAeMB7Gy8coOj9TP-ywQ2CdFpSleNns1HsVrCsQGVMs341o4GCLTe1A85OXQmJImWW6Me8UCBMqudbTaq6dkBY9Dho4CjByx811VEHZMBwBCTQXP4Q_8_3Go6jwZJa14oeD441-YGjQIzCrm2HWc1KkEofKhiedueL87O1O7sxufIk_iEto-IR-RtN6FxGdjUcmKIRGtLjBlzhTqFfhXE0Z-wXJsSTie17pDZaSdS4FNa3xldUWa7zUz92w";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQxOTczNzMsIm5iZiI6MTY3NDE2ODU3MywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc0MTY4NTczLCJhdXRoX3RpbWUiOjE2NzQxNjg1NzIsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiTjdvOUNJdUF5dGIyU1VwU3JVQUZRUSJ9.s2WDDECaK9rmO0CHw7VcTISk-gtEU-f2zZZlV_2NWRI36MPux1ZUzmVa7ymdvJXdeJpoIvJR83O_riqFWLNytFIf3z9e3Eg4e5uOMt70AwdcsT1bZVfzUBEQJBFf_967bTNCIeH_n9Q_9XD9l6KwN4KzyvpjLinbC_FU2EV-52AdnnMei9Q7hFRzA5NM534bv0Pj5bzObSTOdkmocTSv_uhR7UFRVgX07y7Gm7exp8RdRemtYWuOrE4SsM8oVfaJG6p3Pn0EKkEGstD_MQP5NrkZ6bCq3kNSDWdC5wSRqpz-6ym4uG9j6gIzWHazxfSyLxmVgHbAe9Vn-fdEcxTmVg";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -315,12 +315,11 @@ const drawStatusList = (mainStatus, additionalStatus) => {
         document.querySelector(
           "#status-badge"
         ).src = `/images/status-icons/${res.main_status}.svg`;
-       
 
         if (!!res.additional_status) {
-          document.querySelector(
-            "#additional-badge"
-          ).classList.remove('hidden');
+          document
+            .querySelector("#additional-badge")
+            .classList.remove("hidden");
           document.querySelector(
             "#additional-badge"
           ).src = `/images/status-icons/${res.additional_status}.svg`;
@@ -347,9 +346,7 @@ const drawStatusList = (mainStatus, additionalStatus) => {
             document.querySelector("#additional-icon").appendChild(newImg);
           }
         } else {
-          document.querySelector(
-            "#additional-badge"
-          ).classList.add('hidden');
+          document.querySelector("#additional-badge").classList.add("hidden");
           document.querySelector("#additional-icon").classList.add("hidden");
           if (item.dataset.checked === "true") {
             item.querySelector("#delete-status").remove();
@@ -405,7 +402,7 @@ const getAccount = async () => {
   }
 };
 
-const triggerModalUpdates = (target, listValues, isLoggedIn) => {
+const triggerModalUpdates = (target, listValues, isLoggedIn, isCallerId) => {
   let editModal = document.getElementById("edit-modal");
   let closeEdit = document.getElementById("close-edit");
   let nameInput = document.getElementById("name-edit");
@@ -422,52 +419,56 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   let spinner = document.getElementById("loading-spinner");
   let statusContainer = document.getElementById("status-container");
   let statusList = document.getElementById("status-list");
+
   let statusBar = document.getElementById("status-bar");
-  if (isLoggedIn) {
-    getAccount()
-      .then((res) => {
-        return res.id;
-      })
-      .then((id) => {
-        getUserStatus(id)
-          .then((data) => {
-            let mainStatus = data.mainStatus;
-            let additionalStatus = data.additionalStatus;
-            let img = document.createElement("img");
-            img.id = "main-icon";
-            img.src = `/images/status-icons/${mainStatus}.svg`;
-            let additionalImg = document.createElement("img");
-            additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
-            additionalImg.id = "additional-img";
-            if (!statusBar.querySelector("#main-icon")) {
-              statusBar.insertAdjacentElement("afterbegin", img);
-            }
-            statusBar.querySelector("span").innerText = statuses[mainStatus];
-            if (!!additionalStatus) {
-              statusBar
-                .querySelector("#additional-icon")
-                .classList.remove("hidden");
-              if (!statusBar.querySelector("#additional-img")) {
+
+  if (!isCallerId) {
+    if (isLoggedIn) {
+      getAccount()
+        .then((res) => {
+          return res.id;
+        })
+        .then((id) => {
+          getUserStatus(id)
+            .then((data) => {
+              let mainStatus = data.mainStatus;
+              let additionalStatus = data.additionalStatus;
+              let img = document.createElement("img");
+              img.id = "main-icon";
+              img.src = `/images/status-icons/${mainStatus}.svg`;
+              let additionalImg = document.createElement("img");
+              additionalImg.src = `/images/status-icons/${additionalStatus}.svg`;
+              additionalImg.id = "additional-img";
+              if (!statusBar.querySelector("#main-icon")) {
+                statusBar.insertAdjacentElement("afterbegin", img);
+              }
+              statusBar.querySelector("span").innerText = statuses[mainStatus];
+              if (!!additionalStatus) {
                 statusBar
                   .querySelector("#additional-icon")
-                  .appendChild(additionalImg);
+                  .classList.remove("hidden");
+                if (!statusBar.querySelector("#additional-img")) {
+                  statusBar
+                    .querySelector("#additional-icon")
+                    .appendChild(additionalImg);
+                }
               }
-            }
-            drawStatusList(mainStatus, additionalStatus);
+              drawStatusList(mainStatus, additionalStatus);
 
-            statusContainer.onclick = () => {
-              statusList.classList.toggle("hidden");
-              statusList.classList.toggle("flex");
-            };
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
+              statusContainer.onclick = () => {
+                statusList.classList.toggle("hidden");
+                statusList.classList.toggle("flex");
+              };
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+    }
+
+    target.classList.remove("hidden");
+    target.classList.add("grid");
   }
-
-  target.classList.remove("hidden");
-  target.classList.add("grid");
 
   const setSelectHtml = (activeNumber) => {
     const html = availableNumbers
@@ -530,12 +531,19 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
       Number(prevActiveNumber) === Number(numberBtn.children[0].innerText);
   };
 
-  const editExtension = async (id, activeNumber, name, locationId) => {
-    target.classList.remove("grid");
-    target.classList.add("hidden");
+  async function editExtension(id, activeNumber, name, locationId) {
+    if (!isCallerId) {
+      target.classList.remove("grid");
+      target.classList.add("hidden");
+    }
     editModal.classList.remove("hidden");
     editModal.classList.add("grid");
-
+    let activeExt = localStorage.getItem('activeExtension')
+    let exts = JSON.parse(activeExt);
+    if(isCallerId){
+      activeNumber = exts.outbound_callerid.number
+      name = exts.data.name
+    }
     await getAvailableNumbers();
     nameInput.placeholder = name;
     nameInput.value = name;
@@ -548,9 +556,11 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
     nameInput.oninput = (e) => {
       handleInputChange(e.target.value, name);
     };
-  };
+  }
 
-  reDrawList(listValues, editExtension, isLoggedIn);
+  if (!isCallerId) {
+    reDrawList(listValues, editExtension, isLoggedIn);
+  }
 
   closeEdit.onclick = () => {
     closeEditModal();
@@ -586,18 +596,25 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
     );
     if (postData.ok) {
       const res = await postData.json();
+      if (!isCallerId) {
+        listValues = [
+          ...listValues.map((ext) => {
+            if (ext._id === res._id) {
+              return {
+                ...ext,
+                ...res,
+              };
+            }
+            return ext;
+          }),
+        ];
+      }
+      if (isCallerId) {
+        localStorage.setItem("activeExtension", JSON.stringify(res));
+      }
+      let callerIdWrapper = document.getElementById("caller-id");
+      callerIdWrapper.innerHTML = `Caller ID: “${name}” &lt;${callerId}&gt;`;
 
-      listValues = [
-        ...listValues.map((ext) => {
-          if (ext._id === res._id) {
-            return {
-              ...ext,
-              ...res,
-            };
-          }
-          return ext;
-        }),
-      ];
       closeEditModal(false, true);
     } else {
       closeEditModal(true, true);
@@ -609,13 +626,17 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
   };
 
   const closeEditModal = (isError, fromApi) => {
-    target.classList.add("grid");
-    target.classList.remove("hidden");
+    if (!isCallerId) {
+      target.classList.add("grid");
+      target.classList.remove("hidden");
+    }
 
     editModal.classList.add("hidden");
     editModal.classList.remove("grid");
     if (fromApi) {
-      reDrawList(listValues, editExtension, isLoggedIn);
+      if (!isCallerId) {
+        reDrawList(listValues, editExtension, isLoggedIn);
+      }
       message.classList.remove("hidden");
       message.classList.add("animate-fade-up");
       if (isError) {
@@ -634,6 +655,10 @@ const triggerModalUpdates = (target, listValues, isLoggedIn) => {
       }, 5000);
     }
   };
+
+  if (isCallerId) {
+    return editExtension;
+  }
 
   const saveBtn = document.getElementById("save");
 
