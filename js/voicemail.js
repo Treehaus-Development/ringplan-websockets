@@ -68,7 +68,7 @@ function shareEmail(email, link) {
     encodeURIComponent("Voicemail") +
     "&body=" +
     encodeURIComponent(link);
-  window.location.href = mailLink;
+  window.open(mailLink, "_blank");
 }
 
 async function bulkDeleteVoicemails() {
@@ -166,7 +166,7 @@ async function setVoicemailListened(id) {
 
 async function handleBulkActions(action, listItems, cb) {
   document.body.click(); //click to body to close the options modal;
-  
+
   if (action !== "delete") {
     bulkUpdateVoicemailsRead(action === "read")
       .then((res) => {
