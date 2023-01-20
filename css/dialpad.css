@@ -1,5 +1,7 @@
 #logout-confirm,
-#apply-filters {
+#apply-filters, 
+#delete-voicemail-confirm
+{
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 
