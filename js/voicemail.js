@@ -3,6 +3,7 @@ let filteredItem;
 
 let checkedIds = [];
 let isBulkEdit = false;
+let timerId;
 
 function handleVoiceMailActions(id, activeItem) {
   let successToast = document.getElementById("toast-success");
@@ -418,7 +419,7 @@ function drawVoicemails(values) {
 
   voiceMailList.classList.remove("hidden");
   voiceMailList.classList.add("flex");
-
+  applyFilters.disabled = true;
   document.getElementById("settings-filters").classList.remove("hidden");
   document.getElementById("settings-filters").classList.add("flex");
 
@@ -504,6 +505,14 @@ function drawVoicemails(values) {
     });
   };
 
+  setInterval(() => {
+    if(fromDate.value && toDate.value){
+      applyFilters.disabled = false;
+      clearFilters.disabled = false;
+    } 
+  },1500)
+  
+  
   let datePicker = document.querySelector(".datepicker-dropdown");
   filterTrigger.onclick = () => {
     filterModal.classList.remove("hidden");
