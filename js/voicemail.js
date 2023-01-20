@@ -295,7 +295,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   cancelDeleteVoicemailBtn.onclick = closeVoicemailModal;
 
   confirmDeleteVoicemailBtn.onclick = () => {
-    confirmDeleteVoicemailBtn.disabled = true
+    confirmDeleteVoicemailBtn.disabled = true;
     confirmDeleteVoicemailBtn.innerText = "Loading...";
 
     confirmDeleteVoicemailBtn.insertAdjacentHTML(
@@ -422,6 +422,8 @@ function drawVoicemails(values) {
   document.getElementById("settings-filters").classList.remove("hidden");
   document.getElementById("settings-filters").classList.add("flex");
 
+  clearFilters.disabled = !fromDate.value && !toDate.value && !filteredItem;
+
   voiceMailList.innerHTML = html;
 
   voiceMailList.querySelectorAll(".voicemail-list-item").forEach((item) => {
@@ -463,6 +465,8 @@ function drawVoicemails(values) {
       }
       fromDate.value = finalFrom;
       toDate.value = finalTo;
+      clearFilters.disabled = false;
+      applyFilters.disabled = false;
     });
   });
 
@@ -493,7 +497,9 @@ function drawVoicemails(values) {
       if (e.target.checked) {
         item.querySelector("input").parentNode.classList.remove("hidden");
       } else {
+        item.querySelector("input").checked = false;
         item.querySelector("input").parentNode.classList.add("hidden");
+        actionMenu.classList.add("hidden");
       }
     });
   };
@@ -507,7 +513,7 @@ function drawVoicemails(values) {
       .querySelector(".datepicker-main")
       .classList.add("overflow-y-auto", "max-h-62.5");
     filterExtTrigger.querySelector("span").innerText = isFilterMode
-      ? filteredItem
+      ? filteredItem || getCookie("user_id")
       : getCookie("user_id");
   };
 
@@ -577,14 +583,17 @@ function drawVoicemails(values) {
       e.stopPropagation();
       applyFilters.disabled =
         this.dataset.ext === getCookie("user_id") &&
+        !isFilterMode &&
         (!fromDate.value || !toDate.value);
       if (isFilterMode) {
         document.querySelector(
           `input[value="${filteredItem}"]`
         ).checked = false;
       }
+      clearFilters.disabled = false;
       this.querySelector("input").checked =
         !this.querySelector("input").checked;
+      console.log(this.dataset.ext);
       filteredItem = !this.dataset.ext ? "All" : Number(this.dataset.ext);
       filterExtTrigger.querySelector("span").innerText = filteredItem;
     });
@@ -618,7 +627,7 @@ function drawVoicemails(values) {
     let url = new URL(baseVoicemailUrl);
     url.search = searchParams.toString();
     applyFilters.disabled = true;
-
+    clearFilters.disabled = true;
     applyFilters.innerText = "Loading...";
 
     applyFilters.insertAdjacentHTML(
@@ -649,10 +658,22 @@ function drawVoicemails(values) {
       .finally(() => {
         applyFilters.querySelector("#apply-loading").remove();
         applyFilters.innerText = "Apply";
+        clearFilters.disabled = false;
       });
   };
 
   clearFilters.onclick = () => {
+    clearFilters.innerHTML = `
+    <svg 
+      id="clear-loading"
+      class="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+          <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+      </svg>
+      Loading...
+    `;
+    clearFilters.disabled = true;
+    applyFilters.disabled = true;
     fromDate.value = "";
     toDate.value = "";
     filteredItem = null;
@@ -664,7 +685,9 @@ function drawVoicemails(values) {
     ).checked = true;
     isFilterMode = false;
     filterExtTrigger.querySelector("span").innerText = getCookie("user_id");
-    getVoicemails(true);
+    getVoicemails(true).then((res) => {
+      clearFilters.innerHTML = "Clear filters";
+    });
   };
 
   filterExtTrigger.onclick = (e) => {
