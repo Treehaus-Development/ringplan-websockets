@@ -570,6 +570,7 @@ function drawVoicemails(values) {
     })
     .join(" ");
 
+
   filterExtList.insertAdjacentHTML("beforeend", extList);
   filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {
     if (isFilterMode && filteredItem) {
@@ -587,7 +588,7 @@ function drawVoicemails(values) {
         (!fromDate.value || !toDate.value);
       if (isFilterMode) {
         document.querySelector(
-          `input[value="${filteredItem}"]`
+          `input[value="${filteredItem || getCookie("user_id")}"]`
         ).checked = false;
       }
       clearFilters.disabled = false;
