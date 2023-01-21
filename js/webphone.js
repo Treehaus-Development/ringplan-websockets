@@ -350,6 +350,8 @@ async function updateUI() {
     let callHistoryContainer = document.getElementById("history-container");
     let voiceMailTab = document.getElementById("voicemail-tab");
     let voiceMailContainer = document.getElementById("voicemail-container");
+    let contactsTab = document.getElementById("contacts-tab");
+    let contactsContainer = document.getElementById("contacts-container");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -410,14 +412,14 @@ async function updateUI() {
       const activeExtension = localStorage.getItem("activeExtension");
       if (activeExtension) {
         let vals = JSON.parse(activeExtension);
-        let activeNum = vals.outbound_callerid?.number;
+        let activeNum = vals.outbound_callerid?.number || vals.location.callerid;
         let name = vals.data.name;
-        let callerId = document.getElementById("caller-id")
+        let callerId = document.getElementById("caller-id");
         callerId.innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`;
         callerId.onclick = () => {
-          const editExtension = triggerModalUpdates(null, null, null, true)
-          editExtension(vals._id, activeNum, name, vals.location?.id)   
-        }
+          const editExtension = triggerModalUpdates(null, null, null, true);
+          editExtension(vals._id, activeNum, name, vals.location?.id);
+        };
       }
     } else {
       callHistoryTab.remove();
@@ -454,6 +456,28 @@ async function updateUI() {
       settingsInfo.classList.remove("hidden");
       settingsInfo.classList.add("flex", "active-container");
       mainWrapper.classList.remove("overflow-hidden");
+    };
+
+    contactsTab.onclick = function () {
+      let contactsLoader = document.getElementById("contacts-list-loader");
+      const loaderElement = document.createElement("div");
+      loaderElement.id = "contacts-loader";
+      loaderElement.innerHTML = svgLoader;
+
+      if (!document.getElementById("contacts-loader")) {
+        contactsLoader.insertAdjacentElement("afterbegin", loaderElement);
+      }
+
+      if (this.dataset.shouldFetch !== "false") {
+        getContacts();
+        this.dataset.shouldFetch = "false";
+      }
+      removeActiveTab();
+      setActiveTab(this);
+      mainWrapper.classList.add("overflow-hidden");
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
+      contactsContainer.classList.remove("hidden");
+      contactsContainer.classList.add("flex", "active-container");
     };
 
     phoneTab.onclick = function () {

@@ -1,7 +1,6 @@
 #logout-confirm,
-#apply-filters, 
-#delete-voicemail-confirm
-{
+#apply-filters,
+#confirm-action {
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 
@@ -104,11 +103,10 @@
   border-bottom-left-radius: 0.5rem;
 }
 
-.leading-9{
+.leading-9 {
   line-height: 2.25rem;
-
 }
 
-.datepicker-cell.selected{
+.datepicker-cell.selected {
   background-color: #83d929 !important;
 }
