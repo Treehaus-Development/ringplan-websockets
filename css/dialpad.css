@@ -1,6 +1,8 @@
 #logout-confirm,
 #apply-filters,
-#confirm-action {
+#confirm-action,
+#edit-trigger
+{
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 

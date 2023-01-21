@@ -399,7 +399,7 @@
         ></p>
       </div>
       <div id="contacts-details" class="hidden flex-1 flex-col relative h-full">
-        <div class="flex flex-col py-6 items-center">
+        <div class="flex flex-col py-6 items-center h-full">
           <div class="flex flex-col items-center w-full justify-center gap-7">
             <img
               id="contact-avatar"
@@ -436,7 +436,7 @@
               <span class="text-sm text-[#848484]">Delete</span>
             </div>
           </div>
-          <div class="mt-10 w-full pr-10 pl-4">
+          <div class="mt-10 w-full pr-10 pl-4 h-full relative">
             <div
               id="contact-mobile"
               class="hidden gap-10 border-b border-gray-200"
@@ -450,6 +450,20 @@
             >
               <span>Email</span>
               <p></p>
+            </div>
+            <div class="absolute bottom-10 w-full pr-10 flex justify-between items-center">
+              <div
+                class="cursor-pointer select-none text-[#42AAF5] font-medium"
+                id="view-call-history"
+              >
+                View call history
+              </div>
+              <button
+                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                id="edit-trigger"
+              >
+                Edit
+              </button>
             </div>
           </div>
         </div>

@@ -680,6 +680,14 @@ video {
   right: 0px !important;
 }
 
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
+.right-12 {
+  right: 3rem;
+}
+
 .z-\[999\] {
   z-index: 999;
 }

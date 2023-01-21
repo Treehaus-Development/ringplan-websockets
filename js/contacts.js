@@ -3,7 +3,9 @@ async function getContacts() {
 
   try {
     const contacts = await fetch(
-      `${backendApi}/company/directory/contacts?phone=${vals.outbound_callerid?.number || vals.location.callerid}
+      `${backendApi}/company/directory/contacts?phone=${
+        vals.outbound_callerid?.number || vals.location.callerid
+      }
           `,
       {
         headers: {
@@ -37,6 +39,16 @@ async function deleteContact(id) {
   }
 }
 
+function filterContacts(contacts, input) {
+  return contacts.filter(function (contact) {
+    return (
+      contact.first_name?.toLowerCase()?.includes(input.toLowerCase()) ||
+      contact.last_name?.toLowerCase()?.includes(input.toLowerCase()) ||
+      contact.phone.includes(input)
+    );
+  });
+}
+
 const removeActiveMark = () => {
   document.querySelectorAll(".contact-list-item").forEach((item) => {
     item.classList.remove("bg-gray-100");
@@ -58,6 +70,7 @@ function openContactDetails(id, data) {
   let closeContactModal = document.getElementById("close-confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");
+  let viewCallHistory = document.getElementById("view-call-history");
 
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
@@ -69,14 +82,14 @@ function openContactDetails(id, data) {
   activeElem.classList.add("bg-gray-100");
 
   if (activeContact.email) {
-    contactPhone.classList.remove("hidden");
-    contactPhone.classList.add("flex");
-    contactPhone.querySelector("p").innerText = activeContact.email;
+    contactEmail.classList.remove("hidden");
+    contactEmail.classList.add("flex");
+    contactEmail.querySelector("p").innerText = activeContact.email;
   }
 
-  contactEmail.classList.remove("hidden");
-  contactEmail.classList.add("flex");
-  contactEmail.querySelector("p").innerText = activeContact.phone;
+  contactPhone.classList.remove("hidden");
+  contactPhone.classList.add("flex");
+  contactPhone.querySelector("p").innerText = activeContact.phone;
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
@@ -103,6 +116,15 @@ function openContactDetails(id, data) {
 
   cancelAction.onclick = () => {
     closeConfirmModal();
+  };
+
+  viewCallHistory.onclick = () => {
+    const historyList = localStorage.getItem("call_history");
+    let vals = JSON.parse(historyList);
+    let num = activeContact.phone.replace(/\+/g, "");
+    console.log(num, "num");
+    let foundItem = vals.find((el) => el.cdr.src === num || el.cdr.dst === num);
+    console.log(foundItem, "foundItem");
   };
 
   confirmDelete.onclick = () => {
@@ -145,18 +167,34 @@ function openContactDetails(id, data) {
   };
 }
 
-function drawContacts(data) {
+function drawContacts(data, isSearch, prevData) {
   let contactsLoader = document.getElementById("contacts-list-loader");
   let contactsList = document.getElementById("contacts-list");
   let searchBar = document.getElementById("search-bar");
   let emptyContacts = document.getElementById("empty-contacts");
+  let clearSearch = document.getElementById("clear-search");
+
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
 
+  if (isSearch) {
+    clearSearch.classList.remove("hidden");
+    clearSearch.classList.add("flex");
+    clearSearch.onclick = () => {
+      drawContacts(prevData)
+    }
+  }
+
   if (data.length === 0) {
     emptyContacts.classList.remove("hidden");
-    emptyContacts.innerText = `You don't have any contacts`;
+    emptyContacts.innerText = isSearch
+      ? "No contact matches with your input"
+      : `You don't have any contacts`;
+    contactsList.innerHTML = "";
     return;
+  } else {
+    emptyContacts.classList.add("hidden");
+    emptyContacts.innerText = "";
   }
 
   let html = data
@@ -199,14 +237,30 @@ function drawContacts(data) {
 
   let searchContent = `
   <div class="relative w-full">
-  <div class="absolute inset-y-0 right-4 flex items-center pl-3 pointer-events-none">
-      <svg aria-hidden="true" class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
-  </div>
-  <input type="text" id="simple-search" 
-  class="bg-white border border-gray-300 text-4 text-gray-900 text-sm rounded-lg
-   focus:ring-blue-500 focus:border-blue-500 placeholder-[#9A9A9A]
-   block w-full p-4" placeholder="Search contacts..." required>
-</div>
+    <div class="absolute inset-y-0 right-4 flex items-center pl-3 pointer-events-none">
+        <svg aria-hidden="true" class="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path></svg>
+    </div>
+    <div id="clear-search" 
+    class="hidden items-center cursor-pointer absolute inset-y-0 right-12">
+        <svg
+        aria-hidden="true"
+        class="w-4 h-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+        xmlns="http://www.w3.org/2000/svg"
+        >
+        <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+        ></path>
+        </svg>
+    </div>
+    <input type="text" id="contact-search" 
+    class="bg-white border border-gray-300 text-4 text-gray-900 text-sm rounded-lg
+    focus:ring-blue-500 focus:border-blue-500 placeholder-[#9A9A9A]
+    block w-full p-4" placeholder="Search contacts..." required>
+   </div>
   `;
   searchBar.innerHTML = searchContent;
   searchBar.classList.remove("hidden");
@@ -216,5 +270,20 @@ function drawContacts(data) {
     item.addEventListener("click", () => {
       openContactDetails(item.dataset.id, data);
     });
+  });
+
+  let searchField = document.getElementById("contact-search");
+  var timeout;
+
+  searchField.addEventListener("input", function (e) {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      let contactDetails = document.getElementById("contacts-details");
+      let prevData = [...data];
+      const newData = filterContacts(data, e.target.value);
+      contactDetails.classList.remove("flex");
+      contactDetails.classList.add("hidden");
+      drawContacts(newData, true, prevData);
+    }, 500);
   });
 }
