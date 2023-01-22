@@ -39,6 +39,22 @@ async function deleteContact(id) {
   }
 }
 
+async function updateContact(id, data) {
+  try {
+    let values = fetch(`${backendApi}/company/directory/contacts/${id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+}
+
 function filterContacts(contacts, input) {
   return contacts.filter(function (contact) {
     return (
@@ -63,7 +79,6 @@ function openContactDetails(id, data) {
   let activeImageSrc = activeElem.querySelector("img").src;
   let contactPhone = document.getElementById("contact-mobile");
   let contactEmail = document.getElementById("contact-email");
-  let activeContact = data.find((el) => el.id === id);
   let contactCallBtn = document.getElementById("call-contact-btn");
   let deleteContactTrigger = document.getElementById("delete-contact-btn");
   let deleteContactModal = document.getElementById("delete-confirm-modal");
@@ -75,8 +90,10 @@ function openContactDetails(id, data) {
   let editMode = document.getElementById("edit-mode");
   let editTrigger = document.getElementById("edit-trigger");
   let cancelEdit = document.getElementById("cancel-changes");
+  let saveEdit = document.getElementById("save-contact-edit");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
+  let activeContact = data.find((el) => el.id === id);
   contactAvatar.src = activeImageSrc;
   contactNumber.innerHTML = activeContact.phone;
 
@@ -104,6 +121,8 @@ function openContactDetails(id, data) {
   const closeConfirmModal = () => {
     deleteContactModal.classList.remove("grid");
     deleteContactModal.classList.add("hidden");
+    confirmDelete.innerText = "Delete";
+    cancelAction.innerText = "Cancel";
   };
 
   deleteContactTrigger.onclick = () => {
@@ -130,7 +149,14 @@ function openContactDetails(id, data) {
     console.log(foundItem, "foundItem");
   };
 
-  confirmDelete.onclick = () => {
+  confirmDelete.onclick = function () {
+    if (this.dataset.isEdit === "true") {
+      viewMode.classList.remove("hidden");
+      editMode.classList.add("hidden");
+      this.dataset.isEdit = false;
+      closeConfirmModal();
+      return;
+    }
     confirmDelete.disabled = true;
     confirmDelete.innerText = "Loading...";
 
@@ -168,15 +194,108 @@ function openContactDetails(id, data) {
         showErrorToast(err);
       });
   };
+  let numWithoutPlus = activeContact.phone.replace(/\+/g, "");
+
+  const updateSaveButton = () => {
+    const tmpContact = { ...activeContact, phone: numWithoutPlus };
+    const inputs = editMode.querySelectorAll("input");
+    const inputValues = Array.from(inputs).map((input) => ({
+      name: input.name,
+      value: input.value,
+    }));
+    const match = inputValues.every((inputVal) => {
+      if (tmpContact.hasOwnProperty(inputVal.name)) {
+        if (!inputVal.value && !tmpContact[inputVal.name]) {
+          return true;
+        }
+        return inputVal.value === tmpContact[inputVal.name];
+      }
+      return true;
+    });
+
+    saveEdit.disabled = match;
+  };
 
   editTrigger.onclick = () => {
     viewMode.classList.add("hidden");
     editMode.classList.remove("hidden");
+
+    editMode.querySelectorAll("input").forEach((el) => {
+      let finalVal = activeContact[el.name] || "";
+      if (el.name === "phone") {
+        el.value = numWithoutPlus;
+      } else {
+        el.value = finalVal;
+      }
+    });
+    updateSaveButton();
+
+    editMode.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("input", updateSaveButton);
+    });
   };
   cancelEdit.onclick = () => {
-    viewMode.classList.remove("hidden");
-    editMode.classList.add("hidden");
-  }
+    deleteContactModal.classList.remove("hidden");
+    deleteContactModal.classList.add("grid");
+    confirmDelete.innerText = "Yes";
+    confirmDelete.dataset.isEdit = true;
+    cancelAction.innerText = "No";
+    deleteContactModal.querySelector(
+      "h3"
+    ).innerText = `Are you sure? your changes won't be saved`;
+  };
+  saveEdit.onclick = function () {
+    this.disabled = true;
+    this.innerText = "Loading...";
+
+    this.insertAdjacentHTML(
+      `afterbegin`,
+      `
+      <svg 
+      id="update-contact-loading"
+      class="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+          <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+      </svg>
+      `
+    );
+    const inputs = editMode.querySelectorAll("input");
+    const inputValues = Array.from(inputs).map((input) => ({
+      [input.name]: input.value,
+    }));
+
+    let sendData = {};
+
+    inputValues.forEach((item) => {
+      for (const [key, value] of Object.entries(item)) {
+        sendData[key] = value;
+      }
+    });
+
+    updateContact(id, sendData)
+      .then((res) => {
+        saveEdit.innerText = "Save";
+        showSuccessToast(null, true, true);
+        const newData = [...data].map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              ...sendData,
+            };
+          }
+          return item;
+        });
+        viewMode.classList.remove("hidden");
+        editMode.classList.add("hidden");
+        contactDetails.classList.add("hidden");
+        contactDetails.classList.remove("flex");
+        drawContacts(newData);
+      })
+      .catch((err) => {
+        saveEdit.innerText = "Save";
+        showErrorToast(err);
+      });
+  };
 }
 
 function drawContacts(data, isSearch, prevData) {

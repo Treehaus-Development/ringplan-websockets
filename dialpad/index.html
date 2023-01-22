@@ -473,52 +473,55 @@
             id="edit-mode"
             class="mt-10 w-full pr-10 pl-4 h-full hidden relative"
           >
-            <div class="flex gap-10 border-b border-gray-200">
-              <span>First Name</span>
-              <input
-                class="outline-none border-none"
-                name="first_name"
-                id="first-name"
-              />
+            <div class="flex flex-col max-h-54 overflow-y-auto customScroller">
+              <div class="flex gap-10 border-b border-gray-200 pb-2">
+                <span>First Name</span>
+                <input
+                  class="outline-none border-gray-100 border"
+                  name="first_name"
+                  id="first-name"
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span>Last Name</span>
+                <input
+                  class="outline-none border-gray-100 border"
+                  name="last_name"
+                  id="last-name"
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span>Phone No.</span>
+                <input
+                  class="outline-none border-gray-100 border"
+                  type="number"
+                  name="phone"
+                  id="phone-edit"
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span>Fax No.</span>
+                <input
+                  class="outline-none border-gray-100 border"
+                  type="number"
+                  name="fax"
+                  id="fax-edit"
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span>Email</span>
+                <input
+                  class="outline-none border-gray-100 border"
+                  type="email"
+                  name="email"
+                  id="email-edit"
+                />
+              </div>
             </div>
-            <div class="flex gap-10 border-b border-gray-200">
-              <span>Last Name</span>
-              <input
-                class="outline-none border-none"
-                name="last_name"
-                id="last-name"
-              />
-            </div>
-            <div class="flex gap-10 border-b border-gray-200">
-              <span>Phone No.</span>
-              <input
-                class="outline-none border-none"
-                type="number"
-                name="phone"
-                id="phone-edit"
-              />
-            </div>
-            <div class="flex gap-10 border-b border-gray-200">
-              <span>Fax No.</span>
-              <input
-                class="outline-none border-none"
-                type="number"
-                name="fax"
-                id="fax-edit"
-              />
-            </div>
-            <div class="flex gap-10 border-b border-gray-200">
-              <span>Email</span>
-              <input
-                class="outline-none border-none"
-                type="email"
-                name="email"
-                id="email-edit"
-              />
-            </div>
+
             <div
               id="edit-actions"
-              class="absolute bottom-10 w-full pr-10 flex justify-between items-center"
+              class="absolute bottom-1 w-full pr-10 flex justify-between items-center"
             >
               <div
                 class="cursor-pointer select-none text-red-500 font-medium"
@@ -527,7 +530,9 @@
                 Cancel
               </div>
               <button
-                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                class="text-white focus:ring-4 focus:outline-none font-medium 
+                rounded-lg inline-flex items-center disabled:opacity-50 
+                disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
                 id="save-contact-edit"
               >
                 Save
@@ -576,7 +581,8 @@
 
 <div
   id="toast-success"
-  class="absolute flex-row-reverse justify-center left-1/2 top-10 flex opacity-0 items-center w-full max-w-fit p-4 mb-4 bg-white rounded-lg shadow"
+  class="absolute flex-row-reverse justify-center left-1/2 
+  top-10 flex opacity-0 items-center w-fit max-w-fit p-4 mb-4 bg-white rounded-lg shadow"
   role="alert"
 >
   <span class="ml-3 text-sm font-normal text-gray-600"></span>

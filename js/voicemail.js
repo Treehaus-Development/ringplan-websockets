@@ -46,13 +46,14 @@ function showErrorToast(err) {
   }, 4500);
 }
 
-function showSuccessToast(isBulk, isContact) {
+function showSuccessToast(isBulk, isContact, isEdit) {
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
   successToast.querySelector("span").innerText = `${
     isContact ? "Contact" : "Voicemail"
-  }${isBulk ? "s" : ""} deleted successfully`;
+  }${isBulk ? "s" : ""} ${isEdit ? "updated" : "deleted"} 
+   successfully`;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);
