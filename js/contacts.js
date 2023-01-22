@@ -281,6 +281,7 @@ function openContactDetails(id, data) {
 
     updateContact(id, sendData)
       .then((res) => {
+        console.log(res, "res");
         if (res.ok) {
           saveEdit.innerText = "Save";
           showSuccessToast(null, true, true);
@@ -298,9 +299,15 @@ function openContactDetails(id, data) {
           contactDetails.classList.add("hidden");
           contactDetails.classList.remove("flex");
           drawContacts(newData);
-        } else {
-          showErrorToast();
         }
+        return res.json();
+      })
+      .then((res) => {
+        let isError = res.status.toString().startsWith("4");
+        if (isError) {
+          showErrorToast({ message: res.detail });
+        }
+        saveEdit.innerText = "Save";
       })
       .catch((err) => {
         saveEdit.innerText = "Save";
