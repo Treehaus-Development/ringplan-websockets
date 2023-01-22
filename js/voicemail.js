@@ -50,10 +50,9 @@ function showSuccessToast(isBulk, isContact, isEdit) {
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
-  successToast.querySelector("span").innerText = `${
+  successToast.querySelector("span").innerHTML = `${
     isContact ? "Contact" : "Voicemail"
-  }${isBulk ? "s" : ""} ${isEdit ? "updated" : "deleted"} 
-   successfully`;
+  }${isBulk ? "s" : ""} ${isEdit ? "updated" : "deleted"} successfuly`;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);

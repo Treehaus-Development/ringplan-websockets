@@ -275,7 +275,9 @@ function openContactDetails(id, data) {
 
     inputValues.forEach((item) => {
       for (const [key, value] of Object.entries(item)) {
-        sendData[key] = value;
+        if (!!value) {
+          sendData[key] = value;
+        }
       }
     });
 
@@ -303,9 +305,11 @@ function openContactDetails(id, data) {
         return res.json();
       })
       .then((res) => {
-        let isError = res.status.toString().startsWith("4");
+        let isError = res.status?.toString().startsWith("4");
         if (isError) {
           showErrorToast({ message: res.detail });
+        } else {
+          showSuccessToast(null, true, true);
         }
         saveEdit.innerText = "Save";
       })
