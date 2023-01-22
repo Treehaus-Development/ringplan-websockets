@@ -91,6 +91,7 @@ function openContactDetails(id, data) {
   let editTrigger = document.getElementById("edit-trigger");
   let cancelEdit = document.getElementById("cancel-changes");
   let saveEdit = document.getElementById("save-contact-edit");
+  let detailActions = document.getElementById("detail-actions");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
   let activeContact = data.find((el) => el.id === id);
@@ -153,6 +154,9 @@ function openContactDetails(id, data) {
     if (this.dataset.isEdit === "true") {
       viewMode.classList.remove("hidden");
       editMode.classList.add("hidden");
+      detailActions.classList.remove("hidden");
+      detailActions.classList.add("flex");
+
       this.dataset.isEdit = false;
       closeConfirmModal();
       return;
@@ -220,6 +224,9 @@ function openContactDetails(id, data) {
     viewMode.classList.add("hidden");
     editMode.classList.remove("hidden");
 
+    detailActions.classList.remove("flex");
+    detailActions.classList.add("hidden");
+
     editMode.querySelectorAll("input").forEach((el) => {
       let finalVal = activeContact[el.name] || "";
       if (el.name === "phone") {
@@ -274,26 +281,34 @@ function openContactDetails(id, data) {
 
     updateContact(id, sendData)
       .then((res) => {
-        saveEdit.innerText = "Save";
-        showSuccessToast(null, true, true);
-        const newData = [...data].map((item) => {
-          if (item.id === id) {
-            return {
-              ...item,
-              ...sendData,
-            };
-          }
-          return item;
-        });
-        viewMode.classList.remove("hidden");
-        editMode.classList.add("hidden");
-        contactDetails.classList.add("hidden");
-        contactDetails.classList.remove("flex");
-        drawContacts(newData);
+        if (res.ok) {
+          saveEdit.innerText = "Save";
+          showSuccessToast(null, true, true);
+          const newData = [...data].map((item) => {
+            if (item.id === id) {
+              return {
+                ...item,
+                ...sendData,
+              };
+            }
+            return item;
+          });
+          viewMode.classList.remove("hidden");
+          editMode.classList.add("hidden");
+          contactDetails.classList.add("hidden");
+          contactDetails.classList.remove("flex");
+          drawContacts(newData);
+        } else {
+          showErrorToast();
+        }
       })
       .catch((err) => {
         saveEdit.innerText = "Save";
         showErrorToast(err);
+      })
+      .finally(() => {
+        detailActions.classList.remove("hidden");
+        detailActions.classList.add("flex");
       });
   };
 }
