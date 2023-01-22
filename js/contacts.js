@@ -71,7 +71,10 @@ function openContactDetails(id, data) {
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");
   let viewCallHistory = document.getElementById("view-call-history");
-
+  let viewMode = document.getElementById("view-mode");
+  let editMode = document.getElementById("edit-mode");
+  let editTrigger = document.getElementById("edit-trigger");
+  let cancelEdit = document.getElementById("cancel-changes");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
   contactAvatar.src = activeImageSrc;
@@ -165,6 +168,15 @@ function openContactDetails(id, data) {
         showErrorToast(err);
       });
   };
+
+  editTrigger.onclick = () => {
+    viewMode.classList.add("hidden");
+    editMode.classList.remove("hidden");
+  };
+  cancelEdit.onclick = () => {
+    viewMode.classList.remove("hidden");
+    editMode.classList.add("hidden");
+  }
 }
 
 function drawContacts(data, isSearch, prevData) {
@@ -181,8 +193,8 @@ function drawContacts(data, isSearch, prevData) {
     clearSearch.classList.remove("hidden");
     clearSearch.classList.add("flex");
     clearSearch.onclick = () => {
-      drawContacts(prevData)
-    }
+      drawContacts(prevData);
+    };
   }
 
   if (data.length === 0) {
