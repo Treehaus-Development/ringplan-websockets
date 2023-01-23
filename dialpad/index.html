@@ -410,7 +410,10 @@
               >+24163527192</span
             >
           </div>
-          <div id="detail-actions" class="flex w-full justify-center gap-20 mt-10">
+          <div
+            id="detail-actions"
+            class="flex w-full justify-center gap-20 mt-10"
+          >
             <div class="flex flex-col items-center gap-1">
               <div
                 id="call-contact-btn"
@@ -469,17 +472,18 @@
             </div>
           </div>
 
-          <div
+          <form
             id="edit-mode"
             class="mt-10 w-full pr-10 pl-4 h-full hidden relative"
           >
-            <div class="flex flex-col max-h-54 overflow-y-auto customScroller">
+            <div class="flex flex-col max-h-80 overflow-y-auto customScroller">
               <div class="flex gap-10 border-b border-gray-200 pb-2">
                 <span>First Name</span>
                 <input
                   class="outline-none border-gray-100 border"
                   name="first_name"
                   id="first-name"
+                  required
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
@@ -488,6 +492,7 @@
                   class="outline-none border-gray-100 border"
                   name="last_name"
                   id="last-name"
+                  required
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
@@ -497,6 +502,7 @@
                   type="number"
                   name="phone"
                   id="phone-edit"
+                  required
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
@@ -517,6 +523,204 @@
                   id="email-edit"
                 />
               </div>
+              <div
+                id="additional-fields"
+                class="flex flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div class="flex justify-between items-center">
+                  <span>Additional Fields</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+
+                <div class="p-3 grid gap-y-3 grid-cols-2 place-items-center">
+                  <div class="flex flex-col">
+                    <span class="text-sm">Birthdate</span>
+                    <div class="relative">
+                      <input
+                        datepicker
+                        id="birthdate"
+                        datepicker-format="MM.DD.YYYY"
+                        type="text"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        placeholder="Select date"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm">Salutation</span>
+                    <input
+                      id="salutation"
+                      name="salutation"
+                      type="text"
+                      placeholder="Mr."
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm">Position</span>
+                    <input
+                      name="position"
+                      id="position"
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      placeholder=""
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm">Department</span>
+                    <input
+                      name="department"
+                      id="department"
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      placeholder=""
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm">Description</span>
+                    <input
+                      name="description"
+                      id="description"
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      placeholder=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                id="company-fields"
+                class="flex flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div class="flex justify-between items-center">
+                  <span>Company</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+                <div class="flex justify-center gap-4">
+                  <div class="flex flex-col">
+                    <span class="text-sm">Organization</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      name="organization"
+                      id="organization"
+                      type="text"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-sm">Parent Organization</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      name="parent_organization"
+                      id="parent_organization"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                id="manager-fields"
+                class="flex flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div class="flex justify-between items-center">
+                  <span>Manager</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+                <div class="flex w-full flex-col mt-2">
+                  <span class="text-sm">Reports to</span>
+                </div>
+              </div>
+              <div
+                id="address-fields"
+                class="flex flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div class="flex justify-between items-center">
+                  <span>Address</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+
+                <div class="p-3 grid gap-y-3 grid-cols-2 place-items-center">
+                  <div class="flex flex-col">
+                    <span class="text-sm">Location</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      id="location"
+                      name="location"
+                      placeholder="Enter a location"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-sm">City</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      id="city"
+                      name="city"
+                      placeholder="Enter city"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-sm">State</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      id="state"
+                      name="state"
+                      placeholder="Enter state"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-sm">Zip</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="number"
+                      id="zip"
+                      name="zip"
+                      placeholder="Enter zip"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-sm">Country</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="text"
+                      id="country"
+                      name="country"
+                      placeholder="Enter country"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-sm">Mailing address</span>
+                    <input
+                      class="bg-white border border-[#949494] rounded p-3"
+                      type="email"
+                      id="mailing_address"
+                      name="mailing_address"
+                      placeholder="Enter mailing address"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div
@@ -530,15 +734,14 @@
                 Cancel
               </div>
               <button
-                class="text-white focus:ring-4 focus:outline-none font-medium 
-                rounded-lg inline-flex items-center disabled:opacity-50 
-                disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                type="submit"
                 id="save-contact-edit"
               >
                 Save
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
@@ -581,8 +784,7 @@
 
 <div
   id="toast-success"
-  class="absolute flex-row-reverse justify-center left-1/2 
-  top-10 flex opacity-0 items-center w-fit p-4 mb-4 bg-white rounded-lg shadow"
+  class="absolute flex-row-reverse justify-center left-1/2 top-10 flex opacity-0 items-center w-fit p-4 mb-4 bg-white rounded-lg shadow"
   role="alert"
 >
   <span class="ml-3 text-sm font-normal text-gray-600"></span>

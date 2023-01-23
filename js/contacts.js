@@ -97,6 +97,8 @@ function openContactDetails(id, data, activeContact) {
   let detailActions = document.getElementById("detail-actions");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
+  editMode.classList.add("hidden");
+  viewMode.classList.remove("hidden");
 
   contactAvatar.src = activeImageSrc;
   contactNumber.innerHTML = activeContact.phone || activeContact.email;
@@ -140,8 +142,7 @@ function openContactDetails(id, data, activeContact) {
   viewCallHistory.onclick = () => {
     const historyList = localStorage.getItem("call_history");
     let vals = JSON.parse(historyList);
-    let num = activeContact.phone.replace(/\+/g, "");
-    console.log(num, "num");
+    let num = activeContact.phone?.replace(/\+/g, "");
     let foundItem = vals.find((el) => el.cdr.src === num || el.cdr.dst === num);
     if (!foundItem) {
       showErrorToast({ message: "No call history found for this contact" });
@@ -307,6 +308,8 @@ function openContactDetails(id, data, activeContact) {
         if (isError) {
           showErrorToast({ message: res.detail });
         } else {
+          detailActions.classList.remove("hidden");
+          detailActions.classList.add("flex");
           showSuccessToast(null, true, true);
         }
         saveEdit.innerText = "Save";
@@ -314,15 +317,12 @@ function openContactDetails(id, data, activeContact) {
       .catch((err) => {
         saveEdit.innerText = "Save";
         showErrorToast(err);
-      })
-      .finally(() => {
-        detailActions.classList.remove("hidden");
-        detailActions.classList.add("flex");
       });
   };
 }
 
 function drawContacts(data, isSearch, prevData) {
+  console.log(data, "data");
   let contactsLoader = document.getElementById("contacts-list-loader");
   let contactsList = document.getElementById("contacts-list");
   let searchBar = document.getElementById("search-bar");
@@ -338,7 +338,7 @@ function drawContacts(data, isSearch, prevData) {
     clearSearch.onclick = () => {
       drawContacts(prevData);
     };
-  } 
+  }
 
   if (data.length === 0) {
     emptyContacts.classList.remove("hidden");
@@ -417,7 +417,7 @@ function drawContacts(data, isSearch, prevData) {
     block w-full p-4" placeholder="Search contacts..." required>
    </div>
   `;
-  if(!isSearch){
+  if (!isSearch) {
     searchBar.innerHTML = searchContent;
     searchBar.classList.remove("hidden");
     searchBar.style.maxWidth = "420px";
