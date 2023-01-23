@@ -50,7 +50,8 @@ function filterContacts(contacts, input) {
     return (
       contact.first_name?.toLowerCase()?.includes(input.toLowerCase()) ||
       contact.last_name?.toLowerCase()?.includes(input.toLowerCase()) ||
-      contact.phone.includes(input)
+      contact.phone?.includes(input) ||
+      contact.email?.toLowerCase()?.includes(input.toLowerCase())
     );
   });
 }
@@ -59,6 +60,18 @@ const removeActiveMark = () => {
   document.querySelectorAll(".contact-list-item").forEach((item) => {
     item.classList.remove("bg-gray-100");
   });
+};
+
+const toggleEmailPhone = (target, value) => {
+  if (!!value) {
+    target.classList.remove("hidden");
+    target.classList.add("flex");
+    target.querySelector("p").innerText = value;
+  } else {
+    target.classList.add("hidden");
+    target.classList.remove("flex");
+    target.querySelector("p").innerText = "";
+  }
 };
 
 function openContactDetails(id, data, activeContact) {
@@ -92,17 +105,8 @@ function openContactDetails(id, data, activeContact) {
 
   activeElem.classList.add("bg-gray-100");
 
-  if (activeContact.email) {
-    contactEmail.classList.remove("hidden");
-    contactEmail.classList.add("flex");
-    contactEmail.querySelector("p").innerText = activeContact.email;
-  }
-
-  if (activeContact.phone) {
-    contactPhone.classList.remove("hidden");
-    contactPhone.classList.add("flex");
-    contactPhone.querySelector("p").innerText = activeContact.phone;
-  }
+  toggleEmailPhone(contactEmail, activeContact.email);
+  toggleEmailPhone(contactPhone, activeContact.phone);
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
@@ -334,7 +338,7 @@ function drawContacts(data, isSearch, prevData) {
     clearSearch.onclick = () => {
       drawContacts(prevData);
     };
-  }
+  } 
 
   if (data.length === 0) {
     emptyContacts.classList.remove("hidden");
@@ -413,14 +417,15 @@ function drawContacts(data, isSearch, prevData) {
     block w-full p-4" placeholder="Search contacts..." required>
    </div>
   `;
-  searchBar.innerHTML = searchContent;
-  searchBar.classList.remove("hidden");
-  searchBar.style.maxWidth = "420px";
+  if(!isSearch){
+    searchBar.innerHTML = searchContent;
+    searchBar.classList.remove("hidden");
+    searchBar.style.maxWidth = "420px";
+  }
 
   contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
     item.addEventListener("click", () => {
       const activeContact = data.find((el) => el.id === item.dataset.id);
-      console.log(activeContact,"activeContact");
       openContactDetails(item.dataset.id, data, activeContact);
     });
   });
