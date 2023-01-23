@@ -3,10 +3,7 @@ async function getContacts() {
 
   try {
     const contacts = await fetch(
-      `${backendApi}/company/directory/contacts?phone=${
-        vals.outbound_callerid?.number || vals.location.callerid
-      }
-          `,
+      `${backendApi}/company/directory/contacts`,
       {
         headers: {
           Authorization: id_token,
