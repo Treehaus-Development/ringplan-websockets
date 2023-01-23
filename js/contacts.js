@@ -1,19 +1,12 @@
 async function getContacts() {
-  let vals = JSON.parse(activeExtension);
-
   try {
-    const contacts = await fetch(
-      `${backendApi}/company/directory/contacts`,
-      {
-        headers: {
-          Authorization: id_token,
-        },
-      }
-    );
+    const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
+      headers: {
+        Authorization: id_token,
+      },
+    });
     if (contacts.ok) {
       const data = await contacts.json();
-
-      localStorage.setItem("contacts", JSON.stringify(data));
 
       drawContacts(data);
     }
@@ -68,7 +61,7 @@ const removeActiveMark = () => {
   });
 };
 
-function openContactDetails(id, data) {
+function openContactDetails(id, data, activeContact) {
   let contactDetails = document.getElementById("contacts-details");
   let contactAvatar = document.getElementById("contact-avatar");
   let activeElem = document.querySelector(`[data-id="${id}"]`);
@@ -91,9 +84,9 @@ function openContactDetails(id, data) {
   let detailActions = document.getElementById("detail-actions");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
-  let activeContact = data.find((el) => el.id === id);
+
   contactAvatar.src = activeImageSrc;
-  contactNumber.innerHTML = activeContact.phone;
+  contactNumber.innerHTML = activeContact.phone || activeContact.email;
 
   removeActiveMark();
 
@@ -105,9 +98,11 @@ function openContactDetails(id, data) {
     contactEmail.querySelector("p").innerText = activeContact.email;
   }
 
-  contactPhone.classList.remove("hidden");
-  contactPhone.classList.add("flex");
-  contactPhone.querySelector("p").innerText = activeContact.phone;
+  if (activeContact.phone) {
+    contactPhone.classList.remove("hidden");
+    contactPhone.classList.add("flex");
+    contactPhone.querySelector("p").innerText = activeContact.phone;
+  }
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
@@ -144,7 +139,9 @@ function openContactDetails(id, data) {
     let num = activeContact.phone.replace(/\+/g, "");
     console.log(num, "num");
     let foundItem = vals.find((el) => el.cdr.src === num || el.cdr.dst === num);
-    console.log(foundItem, "foundItem");
+    if (!foundItem) {
+      showErrorToast({ message: "No call history found for this contact" });
+    }
   };
 
   confirmDelete.onclick = function () {
@@ -195,7 +192,8 @@ function openContactDetails(id, data) {
         showErrorToast(err);
       });
   };
-  let numWithoutPlus = activeContact.phone.replace(/\+/g, "");
+
+  let numWithoutPlus = activeContact.phone?.replace(/\+/g, "");
 
   const updateSaveButton = () => {
     const tmpContact = { ...activeContact, phone: numWithoutPlus };
@@ -223,7 +221,6 @@ function openContactDetails(id, data) {
 
     detailActions.classList.remove("flex");
     detailActions.classList.add("hidden");
-
     editMode.querySelectorAll("input").forEach((el) => {
       let finalVal = activeContact[el.name] || "";
       if (el.name === "phone") {
@@ -374,11 +371,11 @@ function drawContacts(data, isSearch, prevData) {
                 <p class="text-[#232323]">${
                   el.first_name && el.last_name
                     ? el.first_name + " " + el.last_name
-                    : el.phone
+                    : el.phone || el.email
                 }</p>
                 <span class="text-[#A3A3A3] ${
                   el.first_name && el.last_name ? "inline" : "hidden"
-                }">${el.phone}</span>
+                }">${el.phone || el.email}</span>
             </div>
           </div>
         </div>
@@ -422,7 +419,9 @@ function drawContacts(data, isSearch, prevData) {
 
   contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
     item.addEventListener("click", () => {
-      openContactDetails(item.dataset.id, data);
+      const activeContact = data.find((el) => el.id === item.dataset.id);
+      console.log(activeContact,"activeContact");
+      openContactDetails(item.dataset.id, data, activeContact);
     });
   });
 
