@@ -103,6 +103,7 @@
 .paginationjs{
   justify-content: center;
   margin-top: 20px;
+  user-select: none;
 }
 
 .paginationjs-ellipsis{
