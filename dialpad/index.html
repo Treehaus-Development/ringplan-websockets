@@ -386,9 +386,11 @@
       <div class="pt-4 basis-[40%] bg-white block w-auto max-h-box">
         <div id="search-bar" class="hidden mx-auto"></div>
         <div
-          class="flex-col overflow-y-auto customScroller max-h-full mt-2 hidden"
+          class="hidden h-full relative"
           id="contacts-list"
-        ></div>
+        >
+        <div id="contacts-list-wrapper" class="flex-col overflow-y-auto customScroller max-h-full mt-2 flex"></div>
+      </div>
         <div
           id="contacts-list-loader"
           class="w-full h-full grid place-items-center"

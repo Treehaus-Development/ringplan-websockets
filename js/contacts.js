@@ -321,8 +321,44 @@ function openContactDetails(id, data, activeContact) {
   };
 }
 
+function template(data) {
+  return data
+    .map((el) => {
+      let acronym =
+        el.first_name?.charAt(0)?.toUpperCase() +
+        el.last_name?.charAt(0)?.toUpperCase();
+      return `
+      <div 
+      data-id="${el.id}" 
+      class="flex contact-list-item cursor-pointer justify-between select-none 
+      px-6 py-2 
+      items-center border-b border-[#D3D3D3]">
+        <div class="flex gap-4 items-center">
+          <div class="w-11 h-11">
+            <img class="rounded-full" src="${
+              el.first_name && el.last_name
+                ? generateAvatar(acronym)
+                : "/images/profile.svg"
+            }"/>
+          </div>
+          <div class="flex flex-col">
+              <p class="text-[#232323]">${
+                el.first_name && el.last_name
+                  ? el.first_name + " " + el.last_name
+                  : el.phone || el.email
+              }</p>
+              <span class="text-[#A3A3A3] ${
+                el.first_name && el.last_name ? "inline" : "hidden"
+              }">${el.phone || el.email}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    })
+    .join(" ");
+}
+
 function drawContacts(data, isSearch, prevData) {
-  console.log(data, "data");
   let contactsLoader = document.getElementById("contacts-list-loader");
   let contactsList = document.getElementById("contacts-list");
   let searchBar = document.getElementById("search-bar");
@@ -331,6 +367,8 @@ function drawContacts(data, isSearch, prevData) {
 
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
+
+  contactsList.classList.remove("hidden");
 
   if (isSearch) {
     clearSearch.classList.remove("hidden");
@@ -345,50 +383,32 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.innerText = isSearch
       ? "No contact matches with your input"
       : `You don't have any contacts`;
-    contactsList.innerHTML = "";
+    contactsList.classList.add("hidden");
     return;
   } else {
+    contactsList.classList.remove("hidden");
     emptyContacts.classList.add("hidden");
     emptyContacts.innerText = "";
   }
 
-  let html = data
-    .map((el) => {
-      let acronym =
-        el.first_name?.charAt(0)?.toUpperCase() +
-        el.last_name?.charAt(0)?.toUpperCase();
-      return `
-        <div 
-        data-id="${el.id}" 
-        class="flex contact-list-item cursor-pointer justify-between select-none 
-        px-6 py-2 
-        items-center border-b border-[#D3D3D3]">
-          <div class="flex gap-4 items-center">
-            <div class="w-11 h-11">
-              <img class="rounded-full" src="${
-                el.first_name && el.last_name
-                  ? generateAvatar(acronym)
-                  : "/images/profile.svg"
-              }"/>
-            </div>
-            <div class="flex flex-col">
-                <p class="text-[#232323]">${
-                  el.first_name && el.last_name
-                    ? el.first_name + " " + el.last_name
-                    : el.phone || el.email
-                }</p>
-                <span class="text-[#A3A3A3] ${
-                  el.first_name && el.last_name ? "inline" : "hidden"
-                }">${el.phone || el.email}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    })
-    .join(" ");
-  contactsList.classList.remove("hidden");
-  contactsList.classList.add("flex");
-  contactsList.innerHTML = html;
+  console.log(data,"data");
+
+  $("#contacts-list").pagination({
+    dataSource: data,
+    pageSize: isSearch ? 50 : data.length / 20,
+    autoHidePrevious: true,
+    autoHideNext: true,
+    callback: function (data, pagination) {
+      var html = template(data);
+      $("#contacts-list-wrapper").html(html);
+      contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          const activeContact = data.find((el) => el.id === item.dataset.id);
+          openContactDetails(item.dataset.id, data, activeContact);
+        });
+      });
+    },
+  });
 
   let searchContent = `
   <div class="relative w-full">
@@ -422,13 +442,6 @@ function drawContacts(data, isSearch, prevData) {
     searchBar.classList.remove("hidden");
     searchBar.style.maxWidth = "420px";
   }
-
-  contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
-    item.addEventListener("click", () => {
-      const activeContact = data.find((el) => el.id === item.dataset.id);
-      openContactDetails(item.dataset.id, data, activeContact);
-    });
-  });
 
   let searchField = document.getElementById("contact-search");
   var timeout;
