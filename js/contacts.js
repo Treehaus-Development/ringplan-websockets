@@ -181,7 +181,7 @@ function openContactDetails(id, data, activeContact) {
         closeConfirmModal();
         if (res.ok) {
           showSuccessToast(null, true);
-          const newData = [...data].filter((item) => item._id !== id);
+          const newData = [...data].filter((item) => item.id !== id);
           drawContacts(newData);
           contactDetails.classList.remove("flex");
           contactDetails.classList.add("hidden");
@@ -398,8 +398,8 @@ function drawContacts(data, isSearch, prevData) {
     pageSize: isSearch ? 50 : data.length / 20,
     autoHidePrevious: true,
     autoHideNext: true,
-    callback: function (data, pagination) {
-      var html = template(data);
+    callback: function (values, pagination) {
+      var html = template(values);
       $("#contacts-list-wrapper").html(html);
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
