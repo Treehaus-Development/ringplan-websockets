@@ -1,3 +1,4 @@
+let salutationList = [];
 async function getContacts() {
   try {
     const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
@@ -12,6 +13,19 @@ async function getContacts() {
     }
   } catch (error) {
     console.log(error, "error");
+  }
+}
+
+async function getOptions() {
+  try {
+    let values = fetch(`${backendApi}/company/directory/contacts/options`, {
+      headers: {
+        Authorization: id_token,
+      },
+    });
+    return values;
+  } catch (err) {
+    return { err, error: true };
   }
 }
 
@@ -95,8 +109,7 @@ function openContactDetails(id, data, activeContact) {
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
 
-  let fieldWrappers = document.querySelectorAll(".field-wrapper")
-
+  let fieldWrappers = document.querySelectorAll(".field-wrapper");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
   editMode.classList.add("hidden");
@@ -112,19 +125,24 @@ function openContactDetails(id, data, activeContact) {
   toggleEmailPhone(contactEmail, activeContact.email);
   toggleEmailPhone(contactPhone, activeContact.phone);
 
-  fieldWrappers.forEach(wrapper => {
-    wrapper.children[0].querySelector("img").classList.add('ease', 'duration-300', 'transition-transform')
-    wrapper.addEventListener('click', function(e){
-      let fieldChild = this.querySelector(".field-child")
-      this.children[0].querySelector("img").classList.toggle('rotate-180')
-      fieldChild.classList.toggle('hidden')
-      if(fieldChild.dataset.grid === 'true'){
-        fieldChild.classList.toggle('grid')
+  fieldWrappers.forEach((wrapper) => {
+    wrapper.children[0]
+      .querySelector("img")
+      .classList.add("ease", "duration-300", "transition-transform");
+    wrapper.addEventListener("click", function (e) {
+      let fieldChild = this.querySelector(".field-child");
+      this.children[0].querySelector("img").classList.toggle("rotate-180");
+      fieldChild.classList.toggle("hidden");
+      if (fieldChild.dataset.grid === "true") {
+        fieldChild.classList.toggle("grid");
       } else {
-        fieldChild.classList.toggle('flex')
+        fieldChild.classList.toggle("flex");
       }
-    })
-  })
+      fieldChild.onclick = (e) => {
+        e.stopPropagation();
+      };
+    });
+  });
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
@@ -397,7 +415,7 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.innerText = "";
   }
 
-  console.log(data,"data");
+  console.log(data, "data");
 
   $("#contacts-list").pagination({
     dataSource: data,
@@ -410,6 +428,34 @@ function drawContacts(data, isSearch, prevData) {
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
           const activeContact = data.find((el) => el.id === item.dataset.id);
+          if (item.dataset.shouldFetch !== "false") {
+            getOptions()
+              .then((res) => {
+                return res.json();
+              })
+              .then((data) => {
+                var items = data.possible_salutations.map(function (x) {
+                  return { item: x };
+                });
+
+                let selectedItems = [{item:activeContact.salutation}]
+
+                $("#salutation").selectize({
+                  options: items,
+                  items:selectedItems,
+                  maxItems: 1,
+                  allowEmptyOption: true,
+                  labelField: "item",
+                  valueField: "item",
+                  plugins: ["clear_button"],
+                });
+              });
+            contactsList
+              .querySelectorAll(".contact-list-item")
+              .forEach((el) => {
+                el.dataset.shouldFetch = false;
+              });
+          }
           openContactDetails(item.dataset.id, data, activeContact);
         });
       });

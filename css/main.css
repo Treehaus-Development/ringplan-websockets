@@ -1260,6 +1260,10 @@ video {
   align-items: stretch;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -2194,12 +2198,12 @@ video {
   transition-duration: 200ms;
 }
 
-.duration-250 {
-  transition-duration: 250ms;
-}
-
 .duration-300 {
   transition-duration: 300ms;
+}
+
+.duration-250 {
+  transition-duration: 250ms;
 }
 
 .ease-in {

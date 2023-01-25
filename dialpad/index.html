@@ -7,7 +7,7 @@
     type="checkbox"
     class="hidden box-border transition-all duration-200 ease-linear"
     id="hamburger"
-   />
+  />
 
   <label for="hamburger" class="sidebarIconToggle">
     <div class="spinner diagonal part-1 bg-black"></div>
@@ -402,7 +402,9 @@
       </div>
       <div id="contacts-details" class="hidden flex-1 flex-col relative h-full">
         <div class="flex flex-col py-6 items-center h-full">
-          <div class="flex flex-col select-none items-center w-full justify-center gap-7">
+          <div
+            class="flex flex-col select-none items-center w-full justify-center gap-7"
+          >
             <img
               id="contact-avatar"
               class="w-18.5 h-18.5 rounded-full"
@@ -456,9 +458,7 @@
               <span>Email</span>
               <p></p>
             </div>
-            <div
-              class="absolute bottom-10 w-full pr-10 flex justify-between items-center"
-            >
+            <div class="absolute bottom-10 w-full pr-10 flex justify-end">
               <button
                 class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
                 id="edit-trigger"
@@ -472,7 +472,9 @@
             id="edit-mode"
             class="mt-10 w-full pr-10 pl-4 h-full hidden relative"
           >
-            <div class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller">
+            <div
+              class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller"
+            >
               <div class="flex gap-10 border-b border-gray-200 pb-2">
                 <span>First Name</span>
                 <input
@@ -547,13 +549,15 @@
                   </div>
                   <div class="flex flex-col">
                     <span class="text-sm">Salutation</span>
-                    <div
+                    <!-- <div
                       id="salutation"
                       class="bg-white border border-[#949494] rounded p-3"
                       placeholder="Mr."
                     >
                       Mr.
-                    </div>
+                    </div> -->
+                    <input id="salutation"/>
+                    
                   </div>
                   <div class="flex flex-col">
                     <span class="text-sm">Position</span>
