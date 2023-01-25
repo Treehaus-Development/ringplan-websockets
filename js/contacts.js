@@ -95,6 +95,9 @@ function openContactDetails(id, data, activeContact) {
   let cancelEdit = document.getElementById("cancel-changes");
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
+
+  let fieldWrappers = document.querySelectorAll(".field-wrapper")
+
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
   editMode.classList.add("hidden");
@@ -109,6 +112,20 @@ function openContactDetails(id, data, activeContact) {
 
   toggleEmailPhone(contactEmail, activeContact.email);
   toggleEmailPhone(contactPhone, activeContact.phone);
+
+  fieldWrappers.forEach(wrapper => {
+    wrapper.children[0].querySelector("img").classList.add('ease', 'duration-300', 'transition-transform')
+    wrapper.addEventListener('click', function(e){
+      let fieldChild = this.querySelector(".field-child")
+      this.children[0].querySelector("img").classList.toggle('rotate-180')
+      fieldChild.classList.toggle('hidden')
+      if(fieldChild.dataset.grid === 'true'){
+        fieldChild.classList.toggle('grid')
+      } else {
+        fieldChild.classList.toggle('flex')
+      }
+    })
+  })
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
