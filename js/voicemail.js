@@ -255,7 +255,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   voiceMailDetails.querySelector("#voicemail-number").innerText =
     activeItem.extension_source;
   voiceMailDetails.querySelector("#voicemail-message span").innerText =
-    activeItem.source_representation_name;
+    activeItem.transcription || 'No transcription available';
   audioDest.innerHTML = "";
   let audio = document.createElement("audio");
   audio.className = "fc-media";
