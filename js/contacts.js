@@ -180,6 +180,9 @@ function openContactDetails(id, data, activeContact) {
       detailActions.classList.remove("hidden");
       detailActions.classList.add("flex");
 
+      // let a = $("#salutation")[0].selectize.getValue()
+      // console.log(a,"aa");
+
       this.dataset.isEdit = false;
       closeConfirmModal();
       return;
@@ -428,6 +431,7 @@ function drawContacts(data, isSearch, prevData) {
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
           const activeContact = data.find((el) => el.id === item.dataset.id);
+          $("#salutation")[0].selectize?.clear();
           if (item.dataset.shouldFetch !== "false") {
             getOptions()
               .then((res) => {
@@ -437,18 +441,7 @@ function drawContacts(data, isSearch, prevData) {
                 var items = data.possible_salutations.map(function (x) {
                   return { item: x };
                 });
-
-                let selectedItems = [{item:activeContact.salutation}]
-
-                $("#salutation").selectize({
-                  options: items,
-                  items:selectedItems,
-                  maxItems: 1,
-                  allowEmptyOption: true,
-                  labelField: "item",
-                  valueField: "item",
-                  plugins: ["clear_button"],
-                });
+                sessionStorage.setItem("salutations", JSON.stringify(items));
               });
             contactsList
               .querySelectorAll(".contact-list-item")
@@ -456,6 +449,23 @@ function drawContacts(data, isSearch, prevData) {
                 el.dataset.shouldFetch = false;
               });
           }
+
+          let selectedItems = [{ item: activeContact.salutation }];
+          let items = sessionStorage.getItem("salutations");
+          if (items) {
+            items = JSON.parse(sessionStorage.getItem("salutations"));
+          }
+
+          $("#salutation").selectize({
+            options: items,
+            items: selectedItems,
+            maxItems: 1,
+            allowEmptyOption: true,
+            labelField: "item",
+            valueField: "item",
+            plugins: ["clear_button"],
+          });
+          
           openContactDetails(item.dataset.id, data, activeContact);
         });
       });
