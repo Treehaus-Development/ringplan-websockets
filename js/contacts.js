@@ -88,7 +88,6 @@ function openContactDetails(id, data, activeContact) {
   let closeContactModal = document.getElementById("close-confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");
-  let viewCallHistory = document.getElementById("view-call-history");
   let viewMode = document.getElementById("view-mode");
   let editMode = document.getElementById("edit-mode");
   let editTrigger = document.getElementById("edit-trigger");
@@ -154,16 +153,6 @@ function openContactDetails(id, data, activeContact) {
 
   cancelAction.onclick = () => {
     closeConfirmModal();
-  };
-
-  viewCallHistory.onclick = () => {
-    const historyList = localStorage.getItem("call_history");
-    let vals = JSON.parse(historyList);
-    let num = activeContact.phone?.replace(/\+/g, "");
-    let foundItem = vals.find((el) => el.cdr.src === num || el.cdr.dst === num);
-    if (!foundItem) {
-      showErrorToast({ message: "No call history found for this contact" });
-    }
   };
 
   confirmDelete.onclick = function () {
