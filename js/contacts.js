@@ -4,6 +4,16 @@ function removePlus(str) {
   return str.replace(/\+/g, "");
 }
 
+function findActiveReportTo(data, activeContact) {
+  return data.find(
+    (item) =>
+      item.first_name + " " + item.last_name ===
+        activeContact.job_details?.reports_to ||
+      item.phone === activeContact.job_details?.reports_to ||
+      item.email === activeContact.job_details?.reports_to
+  );
+}
+
 async function getContacts() {
   try {
     const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
@@ -242,10 +252,6 @@ function openContactDetails(id, data, activeContact) {
       editMode.classList.add("hidden");
       detailActions.classList.remove("hidden");
       detailActions.classList.add("flex");
-
-      // let a = $("#salutation")[0].selectize.getValue()
-      // console.log(a,"aa");
-
       this.dataset.isEdit = false;
       closeConfirmModal();
       return;
@@ -299,9 +305,12 @@ function openContactDetails(id, data, activeContact) {
       $("#salutation")[0].selectize.setValue(activeContact.salutation);
     }
     if (activeContact.job_details?.reports_to) {
-      $("#reports_to")[0].selectize.setValue(
-        activeContact.phone || activeContact.email
-      );
+      const activeReportsTo = findActiveReportTo(data, activeContact);
+      if (activeReportsTo) {
+        $("#reports_to")[0].selectize.setValue(
+          activeReportsTo.phone || activeReportsTo.email
+        );
+      }
     }
 
     detailActions.classList.remove("flex");
@@ -376,10 +385,40 @@ function openContactDetails(id, data, activeContact) {
     inputValues.forEach((item) => {
       for (const [key, value] of Object.entries(item)) {
         if (!!value) {
-          sendData[key] = value;
+          switch (key) {
+            case "country":
+            case "state":
+            case "zipcode":
+            case "city":
+            case "street":
+              sendData["address"] = {
+                ...sendData["address"],
+                [key]: value,
+              };
+              break;
+            case "reports_to":
+            case "position":
+            case "department":
+              sendData["job_details"] = {
+                ...sendData["job_details"],
+                [key]: value,
+              };
+              break;
+            case "organization":
+            case "parent_organization":
+              sendData["organization_details"] = {
+                ...sendData["organization_details"],
+                [key]: value,
+              };
+              break;
+            default:
+              sendData[key] = value;
+          }
         }
       }
     });
+
+    console.log(sendData, "send");
 
     updateContact(id, sendData)
       .then((res) => {
@@ -549,8 +588,22 @@ function drawContacts(data, isSearch, prevData) {
               phone: el.phone || el.email,
             };
           });
+
+          const activeReportsTo = data.find(
+            (item) =>
+              item.first_name + " " + item.last_name ===
+                activeContact.job_details?.reports_to ||
+              item.phone === activeContact.job_details?.reports_to ||
+              item.email === activeContact.job_details?.reports_to
+          );
+
+          let selectedReportsTo = [
+            { phone: activeReportsTo?.phone || activeReportsTo?.email },
+          ];
+
           $("#reports_to").selectize({
             options: finalVals,
+            items: selectedReportsTo,
             maxItems: 1,
             allowEmptyOption: true,
             searchField: ["phone"],
