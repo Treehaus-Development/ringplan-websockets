@@ -132,8 +132,7 @@ function openContactDetails(id, data, activeContact) {
     wrapper.querySelector(".field-child").classList.remove("flex", "grid");
     wrapper.querySelector(".field-child").classList.add("hidden");
     wrapper.children[0].querySelector("img").classList.remove("rotate-180");
-    wrapper.onclick = function(e){
-      console.log(this,"this");
+    wrapper.onclick = function (e) {
       let fieldChild = this.querySelector(".field-child");
       this.children[0].querySelector("img").classList.toggle("rotate-180");
       fieldChild.classList.toggle("hidden");
@@ -145,7 +144,7 @@ function openContactDetails(id, data, activeContact) {
       fieldChild.onclick = (e) => {
         e.stopPropagation();
       };
-    }
+    };
   });
 
   contactCallBtn.onclick = () => {
@@ -258,14 +257,45 @@ function openContactDetails(id, data, activeContact) {
     $("#salutation")[0].selectize?.clear();
     $("#reports-to")[0].selectize?.clear();
 
+    if (activeContact.salutation) {
+      $("#salutation")[0].selectize.setValue(activeContact.salutation);
+    }
+    if (activeContact.job_details?.reports_to) {
+      $("#reports-to")[0].selectize.setValue(
+        activeContact.phone || activeContact.email
+      );
+    }
+
     detailActions.classList.remove("flex");
     detailActions.classList.add("hidden");
     editMode.querySelectorAll("input").forEach((el) => {
       let finalVal = activeContact[el.name] || "";
-      if (el.name === "phone") {
-        el.value = numWithoutPlus;
-      } else {
-        el.value = finalVal;
+      let faxWithoutPlus = activeContact.fax?.replace(/\+/g, "");
+
+      switch (el.name) {
+        case "phone":
+          el.value = numWithoutPlus;
+          break;
+        case "fax":
+          el.value = faxWithoutPlus;
+          break;
+        case "position":
+        case "department":
+          el.value = activeContact.job_details?.[el.name] || "";
+          break;
+        case "organization":
+        case "parent_organization":
+          el.value = activeContact.organization_details?.[el.name] || "";
+          break;
+        case "country":
+        case "street":
+        case "city":
+        case "zipcode":
+        case "state":
+          el.value = activeContact.address?.[el.name] || "";
+          break;
+        default:
+          el.value = finalVal;
       }
     });
     updateSaveButton();
@@ -425,8 +455,6 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.innerText = "";
   }
 
-  console.log(data, "data");
-
   $("#contacts-list").pagination({
     dataSource: data,
     pageSize: isSearch ? 50 : data.length / 20,
@@ -437,7 +465,9 @@ function drawContacts(data, isSearch, prevData) {
       $("#contacts-list-wrapper").html(html);
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
-          const activeContact = data.find((el) => el.id === item.dataset.id);
+          const activeContact = data.find(
+            (el) => el.id === item.dataset.id
+          );
 
           if (item.dataset.shouldFetch !== "false") {
             getOptions()
