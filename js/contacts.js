@@ -432,6 +432,8 @@ function drawContacts(data, isSearch, prevData) {
         item.addEventListener("click", () => {
           const activeContact = data.find((el) => el.id === item.dataset.id);
           $("#salutation")[0].selectize?.clear();
+          $("#reports-to")[0].selectize?.clear();
+
           if (item.dataset.shouldFetch !== "false") {
             getOptions()
               .then((res) => {
@@ -465,7 +467,24 @@ function drawContacts(data, isSearch, prevData) {
             valueField: "item",
             plugins: ["clear_button"],
           });
-          
+
+          let showSelectData = isSearch ? prevData : data;
+          let finalVals = showSelectData.map((el) => {
+            return {
+              ...el,
+              phone: el.phone || el.email,
+            };
+          });
+          $("#reports-to").selectize({
+            options: finalVals,
+            maxItems: 1,
+            allowEmptyOption: true,
+            searchField: ["name", "email", "phone"],
+            labelField: "phone",
+            valueField: "phone",
+            plugins: ["clear_button"],
+          });
+
           openContactDetails(item.dataset.id, data, activeContact);
         });
       });
