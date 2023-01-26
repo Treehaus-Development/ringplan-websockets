@@ -1,4 +1,9 @@
 let salutationList = [];
+
+function removePlus(str) {
+  return str.replace(/\+/g, "");
+}
+
 async function getContacts() {
   try {
     const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
@@ -87,6 +92,61 @@ const toggleEmailPhone = (target, value) => {
     target.querySelector("p").innerText = "";
   }
 };
+
+function updateSaveButton(activeContact) {
+  let saveEdit = document.getElementById("save-contact-edit");
+  let editMode = document.getElementById("edit-mode");
+
+  let { address, job_details, organization_details, ...rest } = activeContact;
+  if (!address) {
+    address = {
+      country: "",
+      state: "",
+      city: "",
+      street: "",
+      zipcode: "",
+    };
+  }
+  if (!job_details) {
+    job_details = {
+      position: "",
+      department: "",
+      reports_to: "",
+    };
+  }
+  if (!organization_details) {
+    organization_details = {
+      organization: "",
+      parent_organization: "",
+    };
+  }
+  const tmpContact = {
+    ...rest,
+    phone: removePlus(rest.phone || ""),
+    ...address,
+    ...job_details,
+    ...organization_details,
+    mailing_address: rest.mailing_address || "",
+  };
+
+  const inputs = editMode.querySelectorAll("input");
+  const inputValues = Array.from(inputs).map((input) => ({
+    name: input.name,
+    value: input.value,
+  }));
+
+  const match = inputValues.every((inputVal) => {
+    if (tmpContact.hasOwnProperty(inputVal.name)) {
+      if (!inputVal.value && !tmpContact[inputVal.name]) {
+        return true;
+      }
+      return inputVal.value === tmpContact[inputVal.name];
+    }
+    return true;
+  });
+
+  saveEdit.disabled = match;
+}
 
 function openContactDetails(id, data, activeContact) {
   let contactDetails = document.getElementById("contacts-details");
@@ -228,40 +288,18 @@ function openContactDetails(id, data, activeContact) {
       });
   };
 
-  let numWithoutPlus = activeContact.phone?.replace(/\+/g, "");
-
-  const updateSaveButton = () => {
-    const tmpContact = { ...activeContact, phone: numWithoutPlus };
-    const inputs = editMode.querySelectorAll("input");
-    const inputValues = Array.from(inputs).map((input) => ({
-      name: input.name,
-      value: input.value,
-    }));
-    const match = inputValues.every((inputVal) => {
-      if (tmpContact.hasOwnProperty(inputVal.name)) {
-        if (!inputVal.value && !tmpContact[inputVal.name]) {
-          return true;
-        }
-        return inputVal.value === tmpContact[inputVal.name];
-      }
-      return true;
-    });
-
-    saveEdit.disabled = match;
-  };
-
   editTrigger.onclick = () => {
     viewMode.classList.add("hidden");
     editMode.classList.remove("hidden");
 
     $("#salutation")[0].selectize?.clear();
-    $("#reports-to")[0].selectize?.clear();
+    $("#reports_to")[0].selectize?.clear();
 
     if (activeContact.salutation) {
       $("#salutation")[0].selectize.setValue(activeContact.salutation);
     }
     if (activeContact.job_details?.reports_to) {
-      $("#reports-to")[0].selectize.setValue(
+      $("#reports_to")[0].selectize.setValue(
         activeContact.phone || activeContact.email
       );
     }
@@ -270,14 +308,11 @@ function openContactDetails(id, data, activeContact) {
     detailActions.classList.add("hidden");
     editMode.querySelectorAll("input").forEach((el) => {
       let finalVal = activeContact[el.name] || "";
-      let faxWithoutPlus = activeContact.fax?.replace(/\+/g, "");
 
       switch (el.name) {
         case "phone":
-          el.value = numWithoutPlus;
-          break;
         case "fax":
-          el.value = faxWithoutPlus;
+          el.value = removePlus(finalVal);
           break;
         case "position":
         case "department":
@@ -298,10 +333,12 @@ function openContactDetails(id, data, activeContact) {
           el.value = finalVal;
       }
     });
-    updateSaveButton();
+    updateSaveButton(activeContact);
 
     editMode.querySelectorAll("input").forEach((input) => {
-      input.addEventListener("input", updateSaveButton);
+      input.addEventListener("input", () => {
+        updateSaveButton(activeContact);
+      });
     });
   };
   cancelEdit.onclick = () => {
@@ -465,9 +502,7 @@ function drawContacts(data, isSearch, prevData) {
       $("#contacts-list-wrapper").html(html);
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
-          const activeContact = data.find(
-            (el) => el.id === item.dataset.id
-          );
+          const activeContact = data.find((el) => el.id === item.dataset.id);
 
           if (item.dataset.shouldFetch !== "false") {
             getOptions()
@@ -500,7 +535,11 @@ function drawContacts(data, isSearch, prevData) {
             allowEmptyOption: true,
             labelField: "item",
             valueField: "item",
+            searchField: "item",
             plugins: ["clear_button"],
+            onChange: function () {
+              updateSaveButton(activeContact);
+            },
           });
 
           let showSelectData = isSearch ? prevData : data;
@@ -510,14 +549,17 @@ function drawContacts(data, isSearch, prevData) {
               phone: el.phone || el.email,
             };
           });
-          $("#reports-to").selectize({
+          $("#reports_to").selectize({
             options: finalVals,
             maxItems: 1,
             allowEmptyOption: true,
-            searchField: ["name", "email", "phone"],
+            searchField: ["phone"],
             labelField: "phone",
             valueField: "phone",
             plugins: ["clear_button"],
+            onChange: function () {
+              updateSaveButton(activeContact);
+            },
           });
 
           openContactDetails(item.dataset.id, data, activeContact);
