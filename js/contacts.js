@@ -129,7 +129,11 @@ function openContactDetails(id, data, activeContact) {
     wrapper.children[0]
       .querySelector("img")
       .classList.add("ease", "duration-300", "transition-transform");
-    wrapper.addEventListener("click", function (e) {
+    wrapper.querySelector(".field-child").classList.remove("flex", "grid");
+    wrapper.querySelector(".field-child").classList.add("hidden");
+    wrapper.children[0].querySelector("img").classList.remove("rotate-180");
+    wrapper.onclick = function(e){
+      console.log(this,"this");
       let fieldChild = this.querySelector(".field-child");
       this.children[0].querySelector("img").classList.toggle("rotate-180");
       fieldChild.classList.toggle("hidden");
@@ -141,7 +145,7 @@ function openContactDetails(id, data, activeContact) {
       fieldChild.onclick = (e) => {
         e.stopPropagation();
       };
-    });
+    }
   });
 
   contactCallBtn.onclick = () => {
@@ -250,6 +254,9 @@ function openContactDetails(id, data, activeContact) {
   editTrigger.onclick = () => {
     viewMode.classList.add("hidden");
     editMode.classList.remove("hidden");
+
+    $("#salutation")[0].selectize?.clear();
+    $("#reports-to")[0].selectize?.clear();
 
     detailActions.classList.remove("flex");
     detailActions.classList.add("hidden");
@@ -431,8 +438,6 @@ function drawContacts(data, isSearch, prevData) {
       contactsList.querySelectorAll(".contact-list-item").forEach((item) => {
         item.addEventListener("click", () => {
           const activeContact = data.find((el) => el.id === item.dataset.id);
-          $("#salutation")[0].selectize?.clear();
-          $("#reports-to")[0].selectize?.clear();
 
           if (item.dataset.shouldFetch !== "false") {
             getOptions()
