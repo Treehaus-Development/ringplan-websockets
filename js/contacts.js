@@ -175,6 +175,7 @@ function openContactDetails(id, data, activeContact) {
   let viewMode = document.getElementById("view-mode");
   let editMode = document.getElementById("edit-mode");
   let editTrigger = document.getElementById("edit-trigger");
+  let addContactTrigger = document.getElementById("create-contact-trigger");
   let cancelEdit = document.getElementById("cancel-changes");
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
@@ -252,6 +253,9 @@ function openContactDetails(id, data, activeContact) {
       editMode.classList.add("hidden");
       detailActions.classList.remove("hidden");
       detailActions.classList.add("flex");
+      addContactTrigger.classList.remove("hidden");
+      addContactTrigger.classList.add("flex");
+
       this.dataset.isEdit = false;
       closeConfirmModal();
       return;
@@ -297,6 +301,8 @@ function openContactDetails(id, data, activeContact) {
   editTrigger.onclick = () => {
     viewMode.classList.add("hidden");
     editMode.classList.remove("hidden");
+    addContactTrigger.classList.remove("flex");
+    addContactTrigger.classList.add("hidden");
 
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
@@ -459,6 +465,10 @@ function openContactDetails(id, data, activeContact) {
       .catch((err) => {
         saveEdit.innerText = "Save";
         showErrorToast(err);
+      })
+      .finally(() => {
+        addContactTrigger.classList.remove("hidden");
+        addContactTrigger.classList.add("flex");
       });
   };
 }
@@ -573,7 +583,7 @@ function drawContacts(data, isSearch, prevData) {
             options: items,
             items: selectedItems,
             maxItems: 1,
-            placeholder:'None',
+            placeholder: "None",
             allowEmptyOption: true,
             labelField: "item",
             valueField: "item",
@@ -613,7 +623,7 @@ function drawContacts(data, isSearch, prevData) {
             labelField: "phone",
             valueField: "phone",
             plugins: ["clear_button"],
-            placeholder:'None',
+            placeholder: "None",
             onChange: function () {
               updateSaveButton(activeContact);
             },
