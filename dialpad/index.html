@@ -390,6 +390,17 @@
             id="contacts-list-wrapper"
             class="flex-col overflow-y-auto customScroller max-h-list mt-2 flex"
           ></div>
+          <div
+            id="create-contact-trigger"
+            class="bg-[#3B9EF7] absolute ease-in duration-250 
+            transition-colors hover:bg-blue-500
+            cursor-pointer right-4 bottom-10 select-none
+            rounded-full p-3 w-14 h-14 flex justify-center items-center"
+          >
+          <div class="w-7 h-7">
+            <img class="invert" src="../images/contact.svg" alt="" />
+          </div>
+          </div>
         </div>
         <div
           id="contacts-list-loader"
@@ -476,11 +487,12 @@
               class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller"
             >
               <div class="flex gap-10 border-b border-gray-200 pb-2">
-                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">First Name
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >First Name
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                   name="first_name"
                   id="first-name"
                   placeholder="Enter a first name..."
@@ -488,12 +500,13 @@
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Last Name
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Last Name
                   <sup class="text-red-500">*</sup>
                 </span>
-                
+
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                   name="last_name"
                   id="last-name"
                   placeholder="Enter a last name..."
@@ -501,11 +514,12 @@
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Phone No.
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Phone No.
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                   type="number"
                   name="phone"
                   id="phone-edit"
@@ -514,9 +528,11 @@
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Fax No.</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Fax No.</span
+                >
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                   type="number"
                   name="fax"
                   id="fax-edit"
@@ -524,9 +540,11 @@
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Email</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Email</span
+                >
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                   type="email"
                   name="email"
                   id="email-edit"
@@ -536,7 +554,9 @@
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center font-medium text-[#2d3841]">
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
                   <span>Additional Fields</span>
                   <img
                     class="w-4 h-4"
@@ -550,46 +570,55 @@
                   class="p-3 field-child hidden gap-6 grid-cols-2"
                 >
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Birthdate</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Birthdate</span
+                    >
                     <input
                       type="date"
                       id="birthday"
                       name="birthday"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       placeholder="Select date"
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Salutation</span>
-                    <input id="salutation" name="salutation"/>
-                    
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Salutation</span
+                    >
+                    <input id="salutation" name="salutation" />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Position</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Position</span
+                    >
                     <input
                       name="position"
                       id="position"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       placeholder="Enter a position..."
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Department</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Department</span
+                    >
                     <input
                       name="department"
                       id="department"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       placeholder="Enter a department..."
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Description</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Description</span
+                    >
                     <input
                       name="description"
                       id="description"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       placeholder="Enter a description..."
                     />
@@ -599,7 +628,9 @@
               <div
                 class="flex field-wrapper flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center font-medium text-[#2d3841]">
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
                   <span>Company</span>
                   <img
                     class="w-4 h-4"
@@ -609,18 +640,22 @@
                 </div>
                 <div class="hidden field-child justify-center gap-4">
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Organization</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Organization</span
+                    >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       name="organization"
                       id="organization"
                       type="text"
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Parent Organization</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Parent Organization</span
+                    >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       name="parent_organization"
                       id="parent_organization"
                       type="text"
@@ -631,7 +666,9 @@
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center font-medium text-[#2d3841]">
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
                   <span>Manager</span>
                   <img
                     class="w-4 h-4"
@@ -640,14 +677,18 @@
                   />
                 </div>
                 <div class="hidden field-child w-full flex-col mt-2 px-6">
-                  <span class="text-[#96a5ab] font-bold text-sm">Reports to</span>
-                  <input id="reports_to" name="reports_to">
+                  <span class="text-[#96a5ab] font-bold text-sm"
+                    >Reports to</span
+                  >
+                  <input id="reports_to" name="reports_to" />
                 </div>
               </div>
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center font-medium text-[#2d3841]">
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
                   <span>Address</span>
                   <img
                     class="w-4 h-4"
@@ -661,9 +702,11 @@
                   class="p-3 hidden field-child gap-y-3 grid-cols-2 place-items-center"
                 >
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Location</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Location</span
+                    >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       id="autocomplete-location"
                       name="autocomplete-location"
@@ -674,7 +717,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">City</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       id="city"
                       name="city"
@@ -685,7 +728,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">State</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       id="state"
                       name="state"
@@ -696,7 +739,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">Zip</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="number"
                       id="zipcode"
                       name="zipcode"
@@ -705,9 +748,11 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Country</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Country</span
+                    >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       type="text"
                       id="country"
                       name="country"
@@ -716,9 +761,11 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-[#96a5ab] font-bold text-sm">Mailing address</span>
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Mailing address</span
+                    >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
                       id="street"
                       name="street"
                       placeholder="Enter mailing address"
