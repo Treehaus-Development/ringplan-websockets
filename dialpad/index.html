@@ -476,55 +476,67 @@
               class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller"
             >
               <div class="flex gap-10 border-b border-gray-200 pb-2">
-                <span>First Name</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">First Name
+                  <sup class="text-red-500">*</sup>
+                </span>
                 <input
-                  class="outline-none border-gray-100 border"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                   name="first_name"
                   id="first-name"
+                  placeholder="Enter a first name..."
                   required
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span>Last Name</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Last Name
+                  <sup class="text-red-500">*</sup>
+                </span>
+                
                 <input
-                  class="outline-none border-gray-100 border"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                   name="last_name"
                   id="last-name"
+                  placeholder="Enter a last name..."
                   required
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span>Phone No.</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Phone No.
+                  <sup class="text-red-500">*</sup>
+                </span>
                 <input
-                  class="outline-none border-gray-100 border"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                   type="number"
                   name="phone"
                   id="phone-edit"
                   required
+                  placeholder="Enter a phone..."
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span>Fax No.</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Fax No.</span>
                 <input
-                  class="outline-none border-gray-100 border"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                   type="number"
                   name="fax"
                   id="fax-edit"
+                  placeholder="Enter fax number..."
                 />
               </div>
               <div class="flex gap-10 border-b border-gray-200 py-2">
-                <span>Email</span>
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]">Email</span>
                 <input
-                  class="outline-none border-gray-100 border"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                   type="email"
                   name="email"
                   id="email-edit"
+                  placeholder="Enter an email..."
                 />
               </div>
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center font-medium text-[#2d3841]">
                   <span>Additional Fields</span>
                   <img
                     class="w-4 h-4"
@@ -538,48 +550,48 @@
                   class="p-3 field-child hidden gap-6 grid-cols-2"
                 >
                   <div class="flex flex-col">
-                    <span class="text-sm">Birthdate</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Birthdate</span>
                     <input
                       type="date"
                       id="birthday"
                       name="birthday"
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       placeholder="Select date"
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-sm">Salutation</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Salutation</span>
                     <input id="salutation" name="salutation"/>
                     
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-sm">Position</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Position</span>
                     <input
                       name="position"
                       id="position"
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
-                      placeholder=""
+                      placeholder="Enter a position..."
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-sm">Department</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Department</span>
                     <input
                       name="department"
                       id="department"
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
-                      placeholder=""
+                      placeholder="Enter a department..."
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-sm">Description</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Description</span>
                     <input
                       name="description"
                       id="description"
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
-                      placeholder=""
+                      placeholder="Enter a description..."
                     />
                   </div>
                 </div>
@@ -587,7 +599,7 @@
               <div
                 class="flex field-wrapper flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center font-medium text-[#2d3841]">
                   <span>Company</span>
                   <img
                     class="w-4 h-4"
@@ -597,18 +609,18 @@
                 </div>
                 <div class="hidden field-child justify-center gap-4">
                   <div class="flex flex-col">
-                    <span class="text-sm">Organization</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Organization</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       name="organization"
                       id="organization"
                       type="text"
                     />
                   </div>
                   <div class="flex flex-col">
-                    <span class="text-sm">Parent Organization</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Parent Organization</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       name="parent_organization"
                       id="parent_organization"
                       type="text"
@@ -619,7 +631,7 @@
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center font-medium text-[#2d3841]">
                   <span>Manager</span>
                   <img
                     class="w-4 h-4"
@@ -628,14 +640,14 @@
                   />
                 </div>
                 <div class="hidden field-child w-full flex-col mt-2 px-6">
-                  <span class="text-sm">Reports to</span>
+                  <span class="text-[#96a5ab] font-bold text-sm">Reports to</span>
                   <input id="reports_to" name="reports_to">
                 </div>
               </div>
               <div
                 class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
               >
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center font-medium text-[#2d3841]">
                   <span>Address</span>
                   <img
                     class="w-4 h-4"
@@ -649,9 +661,9 @@
                   class="p-3 hidden field-child gap-y-3 grid-cols-2 place-items-center"
                 >
                   <div class="flex flex-col">
-                    <span class="text-sm">Location</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Location</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
                       id="autocomplete-location"
                       name="autocomplete-location"
@@ -660,9 +672,9 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-sm">City</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">City</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
                       id="city"
                       name="city"
@@ -671,9 +683,9 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-sm">State</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">State</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
                       id="state"
                       name="state"
@@ -682,9 +694,9 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-sm">Zip</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Zip</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="number"
                       id="zipcode"
                       name="zipcode"
@@ -693,9 +705,9 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-sm">Country</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Country</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       type="text"
                       id="country"
                       name="country"
@@ -704,9 +716,9 @@
                   </div>
 
                   <div class="flex flex-col">
-                    <span class="text-sm">Mailing address</span>
+                    <span class="text-[#96a5ab] font-bold text-sm">Mailing address</span>
                     <input
-                      class="bg-white border border-[#949494] rounded p-3"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72]"
                       id="street"
                       name="street"
                       placeholder="Enter mailing address"

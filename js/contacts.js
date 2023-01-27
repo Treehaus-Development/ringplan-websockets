@@ -573,6 +573,7 @@ function drawContacts(data, isSearch, prevData) {
             options: items,
             items: selectedItems,
             maxItems: 1,
+            placeholder:'None',
             allowEmptyOption: true,
             labelField: "item",
             valueField: "item",
@@ -612,6 +613,7 @@ function drawContacts(data, isSearch, prevData) {
             labelField: "phone",
             valueField: "phone",
             plugins: ["clear_button"],
+            placeholder:'None',
             onChange: function () {
               updateSaveButton(activeContact);
             },

@@ -112,5 +112,7 @@
 
 .selectize-input {
   background: white !important;
-  padding: 1rem !important;
+  padding: 12px !important;
+  color:#576a72 !important;
+  border-color: #d3dce0 !important;
 }
