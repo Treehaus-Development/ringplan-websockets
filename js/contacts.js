@@ -411,6 +411,8 @@ function openContactDetails(id, data, activeContact) {
                 [key]: value,
               };
               break;
+            case "autocomplete-location":
+              break;
             default:
               sendData[key] = value;
           }
