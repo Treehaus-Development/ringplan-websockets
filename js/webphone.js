@@ -316,6 +316,11 @@ async function getCallHistory() {
 async function updateUI() {
   try {
     await login();
+    let script = document.createElement("script");
+    script.src =
+      "https://maps.googleapis.com/maps/api/js?libraries=places&language=en&region=US&key=AIzaSyA8GVNT40QJeOAQzp0IHNMJEZlxsmYtVb8&callback=initMap";
+    document.body.appendChild(script);
+
     document.getElementById("login-content").classList.add("hidden");
     const data = await fetch("/dialpad/index.html");
     const html = await data.text();
@@ -412,7 +417,8 @@ async function updateUI() {
       const activeExtension = localStorage.getItem("activeExtension");
       if (activeExtension) {
         let vals = JSON.parse(activeExtension);
-        let activeNum = vals.outbound_callerid?.number || vals.location.callerid;
+        let activeNum =
+          vals.outbound_callerid?.number || vals.location.callerid;
         let name = vals.data.name;
         let callerId = document.getElementById("caller-id");
         callerId.innerHTML = `Caller ID: “${name}” &lt;${activeNum}&gt;`;

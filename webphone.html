@@ -41,13 +41,13 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.7/mediaelement-and-player.min.js"></script>
- 
+
     <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
-    integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  ></script>
+      src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+      integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
 
   <body
@@ -514,6 +514,45 @@
     <script src="./js/audio.js"></script>
     <script src="./js/voicemail.js"></script>
     <script src="./js/contacts.js"></script>
+    <script>
+      function initMap() {
+        var input = document.getElementById("autocomplete-location");
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        google.maps.event.addListener(
+          autocomplete,
+          "place_changed",
+          function () {
+            var place = autocomplete.getPlace();
+
+            const info = place.address_components;
+            let postalCode = info.find(
+              (el) => el.types[0] === "postal_code"
+            )?.short_name;
+            let country = info.find(
+              (el) => el.types[0] === "country"
+            )?.long_name;
+            let state = info.find(
+              (el) => el.types[0] === "administrative_area_level_1"
+            )?.short_name;
+            let city = info.find((el) => el.types[0] === "locality")?.long_name;
+
+            if (city) {
+              document.querySelector("input[name='city']").value = city;
+            }
+            if (country) {
+              document.querySelector("input[name='country']").value = country;
+            }
+            if (postalCode) {
+              document.querySelector("input[name='zipcode']").value =
+                postalCode;
+            }
+            if (state) {
+              document.querySelector("input[name='state']").value = state;
+            }
+          }
+        );
+      }
+    </script>
     <script src="./js/webphone.js"></script>
   </body>
 </html>
