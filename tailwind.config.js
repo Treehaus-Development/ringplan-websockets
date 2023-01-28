@@ -1022,6 +1022,7 @@ module.exports = {
     maxHeight: ({ theme }) => ({
       ...theme("spacing"),
       full: "100%",
+      'list':'calc(100vh - 150px)',
       'box': '90vh',
       content: "95vh",
       screen: "100vh",

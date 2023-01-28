@@ -7,7 +7,7 @@
     type="checkbox"
     class="hidden box-border transition-all duration-200 ease-linear"
     id="hamburger"
-   />
+  />
 
   <label for="hamburger" class="sidebarIconToggle">
     <div class="spinner diagonal part-1 bg-black"></div>
@@ -69,6 +69,16 @@
           <img class="grayscale rotate-[137deg]" src="../images/phone.svg" />
         </div>
         <span>Call history</span>
+      </li>
+
+      <li
+        id="contacts-tab"
+        class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-5 items-center font-bold bg-white"
+      >
+        <div class="w-7 h-7">
+          <img class="grayscale" src="../images/contact-tab.svg" />
+        </div>
+        <span>Contacts</span>
       </li>
 
       <li
@@ -142,7 +152,7 @@
       <div class="pt-4 basis-[30%] bg-white block w-auto max-h-content">
         <span class="text-[#00A2DD] font-medium text-xl ml-10">Recents</span>
         <div
-          class="flex-col overflow-y-auto max-h-full mt-2 hidden"
+          class="flex-col overflow-y-auto customScroller max-h-full mt-2 hidden"
           id="history-list"
         ></div>
         <div id="spinner-list" class="w-full h-full grid place-items-center">
@@ -263,7 +273,7 @@
           </div>
         </div>
         <div
-          class="flex-col overflow-y-auto max-h-full mt-2 hidden"
+          class="flex-col overflow-y-auto customScroller max-h-full mt-2 hidden"
           id="voicemail-list"
         ></div>
         <div
@@ -368,6 +378,433 @@
         </div>
       </div>
     </div>
+
+    <div
+      id="contacts-container"
+      class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
+    >
+      <div class="pt-4 basis-[40%] bg-white block w-auto max-h-box">
+        <div id="search-bar" class="hidden mx-auto"></div>
+        <div class="hidden h-full relative" id="contacts-list">
+          <div
+            id="contacts-list-wrapper"
+            class="flex-col overflow-y-auto customScroller max-h-list mt-2 flex"
+          ></div>
+          <div
+            id="create-contact-trigger"
+            class="bg-[#3B9EF7] absolute ease-in duration-250 transition-colors hover:bg-blue-500 cursor-pointer right-4 bottom-10 select-none rounded-full p-3 w-14 h-14 flex justify-center items-center"
+          >
+            <div class="w-7 h-7">
+              <img class="invert" src="../images/contact.svg" alt="" />
+            </div>
+          </div>
+        </div>
+        <div
+          id="contacts-list-loader"
+          class="w-full h-full grid place-items-center"
+        ></div>
+        <p
+          id="empty-contacts"
+          class="hidden text-center mt-14 text-[#3C3C3C]"
+        ></p>
+      </div>
+      <div id="contacts-details" class="hidden flex-1 flex-col relative h-full">
+        <div class="flex flex-col py-6 items-center h-full">
+          <div
+            class="flex flex-col select-none items-center w-full justify-center gap-7"
+          >
+            <img
+              id="contact-avatar"
+              class="w-18.5 h-18.5 rounded-full"
+              src="../images/profile.svg"
+            />
+            <span id="contact-number" class="text-[#232323] text-5 font-medium"
+              >+24163527192</span
+            >
+          </div>
+          <div
+            id="detail-actions"
+            class="flex w-full justify-center gap-20 mt-10"
+          >
+            <div class="flex flex-col items-center gap-1">
+              <div
+                id="call-contact-btn"
+                class="bg-[#00A2DD] cursor-pointer duration-200 ease-in p-3.5 mx-auto justify-center flex items-center h-14 w-14 rounded-full select-none"
+              >
+                <img
+                  src="/images/dialer.svg"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <span class="text-sm text-[#848484]">Call</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div
+                id="delete-contact-btn"
+                class="bg-[#00A2DD] cursor-pointer duration-200 ease-in p-4 mx-auto justify-center flex items-center h-14 w-14 rounded-full select-none"
+              >
+                <img
+                  src="/images/delete.svg"
+                  class="w-full h-full object-contain"
+                />
+              </div>
+              <span class="text-sm text-[#848484]">Delete</span>
+            </div>
+          </div>
+          <div id="view-mode" class="mt-10 w-full pr-10 pl-4 h-full relative">
+            <div
+              id="contact-mobile"
+              class="hidden gap-10 border-b border-gray-200"
+            >
+              <span>Mobile</span>
+              <p></p>
+            </div>
+            <div
+              id="contact-email"
+              class="hidden gap-10 border-b border-gray-200"
+            >
+              <span>Email</span>
+              <p></p>
+            </div>
+            <div class="absolute bottom-10 w-full pr-10 flex justify-end">
+              <button
+                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                id="edit-trigger"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+
+          <form
+            id="edit-mode"
+            class="mt-10 w-full pr-10 pl-4 h-full hidden relative"
+          >
+            <div
+              class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller"
+            >
+              <div class="flex gap-10 border-b border-gray-200 pb-2">
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >First Name
+                  <sup class="text-red-500">*</sup>
+                </span>
+                <input
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  name="first_name"
+                  id="first-name"
+                  placeholder="Enter a first name..."
+                  required
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Last Name
+                  <sup class="text-red-500">*</sup>
+                </span>
+
+                <input
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  name="last_name"
+                  id="last-name"
+                  placeholder="Enter a last name..."
+                  required
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Phone No.
+                  <sup class="text-red-500">*</sup>
+                </span>
+                <input
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  type="number"
+                  name="phone"
+                  id="phone-edit"
+                  required
+                  placeholder="Enter a phone..."
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Fax No.</span
+                >
+                <input
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  type="number"
+                  name="fax"
+                  id="fax-edit"
+                  placeholder="Enter fax number..."
+                />
+              </div>
+              <div class="flex gap-10 border-b border-gray-200 py-2">
+                <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
+                  >Email</span
+                >
+                <input
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  type="email"
+                  name="email"
+                  id="email-edit"
+                  placeholder="Enter an email..."
+                />
+              </div>
+              <div
+                class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
+                  <span>Additional Fields</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+
+                <div
+                  data-grid="true"
+                  class="p-3 field-child hidden gap-6 grid-cols-2"
+                >
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Birthdate</span
+                    >
+                    <input
+                      type="date"
+                      id="birthday"
+                      name="birthday"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      placeholder="Select date"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Salutation</span
+                    >
+                    <input id="salutation" name="salutation" />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Position</span
+                    >
+                    <input
+                      name="position"
+                      id="position"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      placeholder="Enter a position..."
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Department</span
+                    >
+                    <input
+                      name="department"
+                      id="department"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      placeholder="Enter a department..."
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Description</span
+                    >
+                    <input
+                      name="description"
+                      id="description"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      placeholder="Enter a description..."
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="flex field-wrapper flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
+                  <span>Company</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+                <div class="hidden field-child justify-center gap-4">
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Organization</span
+                    >
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      name="organization"
+                      id="organization"
+                      type="text"
+                    />
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Parent Organization</span
+                    >
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      name="parent_organization"
+                      id="parent_organization"
+                      type="text"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
+                  <span>Manager</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+                <div class="hidden field-child w-full flex-col mt-2 px-6">
+                  <span class="text-[#96a5ab] font-bold text-sm"
+                    >Reports to</span
+                  >
+                  <input id="reports_to" name="reports_to" />
+                </div>
+              </div>
+              <div
+                class="flex field-wrapper select-none flex-col cursor-pointer border-b border-gray-200 py-2"
+              >
+                <div
+                  class="flex justify-between items-center font-medium text-[#2d3841] select-none"
+                >
+                  <span>Address</span>
+                  <img
+                    class="w-4 h-4"
+                    src="../images/chevron-down.svg"
+                    alt=""
+                  />
+                </div>
+
+                <div
+                  data-grid="true"
+                  class="p-3 hidden field-child gap-y-3 grid-cols-2 place-items-center"
+                >
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Location</span
+                    >
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      id="autocomplete-location"
+                      name="autocomplete-location"
+                      placeholder="Enter a location"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm">City</span>
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      id="city"
+                      name="city"
+                      placeholder="Enter city"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm">State</span>
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      id="state"
+                      name="state"
+                      placeholder="Enter state"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm">Zip</span>
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="number"
+                      id="zipcode"
+                      name="zipcode"
+                      placeholder="Enter zip"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Country</span
+                    >
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      type="text"
+                      id="country"
+                      name="country"
+                      placeholder="Enter country"
+                    />
+                  </div>
+
+                  <div class="flex flex-col">
+                    <span class="text-[#96a5ab] font-bold text-sm"
+                      >Mailing address</span
+                    >
+                    <input
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      id="street"
+                      name="street"
+                      placeholder="Enter mailing address"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="edit-actions"
+              class="absolute bottom-1 w-full pr-10 flex justify-between items-center"
+            >
+              <div
+                class="cursor-pointer select-none text-red-500 font-medium"
+                id="cancel-changes"
+              >
+                Cancel
+              </div>
+              <button
+                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+                type="button"
+                id="save-contact-edit"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div
+        id="add-contact-container"
+        class="hidden flex-1 flex-col relative h-full"
+      >
+        <div id="add-contact-wrapper" class="flex flex-col py-6 items-center h-full">
+          <h3 class="text-center mt-4 text-xl font-semibold select-none">
+            Add new contact
+          </h3>
+
+        </div>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -407,7 +844,7 @@
 
 <div
   id="toast-success"
-  class="absolute flex-row-reverse justify-center left-1/2 top-10 flex opacity-0 items-center w-full max-w-fit p-4 mb-4 bg-white rounded-lg shadow"
+  class="absolute flex-row-reverse justify-center left-1/2 top-10 flex opacity-0 items-center w-fit p-4 mb-4 bg-white rounded-lg shadow"
   role="alert"
 >
   <span class="ml-3 text-sm font-normal text-gray-600"></span>

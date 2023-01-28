@@ -1,6 +1,8 @@
 #logout-confirm,
-#apply-filters, 
-#delete-voicemail-confirm
+#apply-filters,
+#confirm-action,
+#edit-trigger,
+#save-contact-edit
 {
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
@@ -63,21 +65,6 @@
     brightness(95%) contrast(103%);
 }
 
-#extension-list::-webkit-scrollbar-track {
-  background-color: #dddddd;
-  border-radius: 3px;
-}
-
-#extension-list::-webkit-scrollbar {
-  width: 8px;
-  border-radius: 4px;
-}
-
-#extension-list::-webkit-scrollbar-thumb {
-  background-color: #9b9b9b;
-  border-radius: 4px;
-}
-
 .text-gray-900 {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
@@ -104,11 +91,38 @@
   border-bottom-left-radius: 0.5rem;
 }
 
-.leading-9{
+.leading-9 {
   line-height: 2.25rem;
-
 }
 
-.datepicker-cell.selected{
+.datepicker-cell.selected {
   background-color: #83d929 !important;
+}
+
+
+.paginationjs{
+  justify-content: center;
+  margin-top: 20px;
+  user-select: none;
+}
+
+.paginationjs-ellipsis{
+  background: white;
+}
+
+.selectize-input {
+  background: white !important;
+  padding: 12px !important;
+  color:#576a72 !important;
+  border-color: #d3dce0 !important;
+}
+
+.webphone-digits::-webkit-outer-spin-button,
+.webphone-digits::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.webphone-digits {
+    -moz-appearance:textfield; /* Firefox */
 }

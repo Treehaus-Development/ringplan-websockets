@@ -167,9 +167,12 @@
 
   <div class="w-full text-center flex flex-col gap-2 relative">
     <div id="no-call" class="relative flex justify-center">
-      <div
-        class="webphone-digits font-medium select-none text-[#232323] text-4xl bg-transparent mx-2 text-center focus:outline-none min-h-10"
-      ></div>
+      <input
+        type="number"
+        class="webphone-digits font-medium select-none outline-none border-none
+         text-[#232323] text-4xl bg-transparent mx-2 
+         text-center focus:outline-none min-h-10"
+      />
       <div
         class="hidden cursor-pointer select-none absolute 
         bottom-[-5px] right-[-8%] lg:right-[-20%]"
@@ -190,6 +193,7 @@
       </div>
     </div>
   </div>
-  <div id="caller-id" class="mt-4 cursor-pointer select-none text-[#42AAF5] font-medium text-lg">
+  <div id="caller-id" class="mt-4 cursor-pointer select-none
+   text-[#42AAF5] font-medium text-lg flex justify-center">
   </div>
 </div>

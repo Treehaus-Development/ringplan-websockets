@@ -46,13 +46,15 @@ function showErrorToast(err) {
   }, 4500);
 }
 
-function showSuccessToast(isBulk) {
+function showSuccessToast(isBulk, isContact, isEdit, isAdd) {
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
-  successToast.querySelector("span").innerText = `Voicemail${
-    isBulk ? "s" : ""
-  } deleted successfully`;
+  successToast.querySelector("span").innerHTML = `${
+    isContact ? "Contact" : "Voicemail"
+  }${isBulk ? "s" : ""} ${
+    isEdit ? "updated" : isAdd ? "added" : "deleted"
+  } successfuly`;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);
@@ -239,16 +241,12 @@ async function openVoicemailDetails(data, id, isListened, target) {
   let voiceMailDetails = document.getElementById("voicemail-details");
   let voiceMailSubmenu = document.getElementById("voicemail-submenu");
   let deleteVoicemailBtn = document.getElementById("delete-voicemail-btn");
-  let closeDeleteVoicemailBtn = document.getElementById(
-    "close-voicemail-delete"
-  );
-  let cancelDeleteVoicemailBtn = document.getElementById(
-    "delete-voicemail-cancel"
-  );
-  let confirmDeleteVoicemailBtn = document.getElementById(
-    "delete-voicemail-confirm"
-  );
-  let voicemailModal = document.getElementById("voicemail-delete");
+
+  let closeDeleteVoicemailBtn = document.getElementById("close-confirm-modal");
+  let cancelDeleteVoicemailBtn = document.getElementById("cancel-action");
+  let confirmDeleteVoicemailBtn = document.getElementById("confirm-action");
+  let voicemailModal = document.getElementById("delete-confirm-modal");
+
   let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
   let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
   let audioDest = document.getElementById("audio-dest");
@@ -259,7 +257,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   voiceMailDetails.querySelector("#voicemail-number").innerText =
     activeItem.extension_source;
   voiceMailDetails.querySelector("#voicemail-message span").innerText =
-    activeItem.transcription || 'No transcription available';
+    activeItem.transcription || "No transcription available";
   audioDest.innerHTML = "";
   let audio = document.createElement("audio");
   audio.className = "fc-media";
@@ -283,6 +281,8 @@ async function openVoicemailDetails(data, id, isListened, target) {
     });
 
   deleteVoicemailBtn.onclick = () => {
+    voicemailModal.querySelector("h3").innerText =
+      "Are you sure to delete this voicemail?";
     voicemailModal.classList.remove("hidden");
     voicemailModal.classList.add("grid");
   };
@@ -506,13 +506,12 @@ function drawVoicemails(values) {
   };
 
   setInterval(() => {
-    if(fromDate.value && toDate.value){
+    if (fromDate.value && toDate.value) {
       applyFilters.disabled = false;
       clearFilters.disabled = false;
-    } 
-  },1500)
-  
-  
+    }
+  }, 1500);
+
   let datePicker = document.querySelector(".datepicker-dropdown");
   filterTrigger.onclick = () => {
     filterModal.classList.remove("hidden");
@@ -578,7 +577,6 @@ function drawVoicemails(values) {
       `;
     })
     .join(" ");
-
 
   filterExtList.insertAdjacentHTML("beforeend", extList);
   filterExtList.querySelectorAll(".filter-ext-item").forEach((item) => {

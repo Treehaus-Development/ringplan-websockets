@@ -92,7 +92,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQ2OTM4NTAsIm5iZiI6MTY3NDY2NTA1MCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc0NjY1MDUwLCJhdXRoX3RpbWUiOjE2NzQ2NjUwNDksImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoibzgzZk5NWTNSclEyOVdXTGpPdmdHZyJ9.LqH-JryGncdSZrbWU_MUTf5fjY8b844mcNDUG5kbQa40htTcCRvU4IK97GEc3WSVXhe0q7ViQ20LPxoVFhWjOruYTzbcqX0AsnbnVgAgluoXbV6c9Ef4gRXA5G1doD3YtXabHSGk3mfopzP9V2gN1wnZALrjHyRhXxZQiiJfgsCyH2_KEiIFL-2VrQ7mMeFxy4Qaf2UO7f64uxrz6wiRzlix-OmQmRWhHXH8oYgR8Tv1Il1aohGmjqF7JAsAREt_AYbPL6DH-i2HdqOXA4v4zWV82jEaLe6Sf3-CBta9hKCPcyQaUtQw6aE1C-1bKYJ2C8rMam5Fx946DSOQhKS2nQ";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzQ5NTEyMTAsIm5iZiI6MTY3NDkyMjQxMCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc0OTIyNDEwLCJhdXRoX3RpbWUiOjE2NzQ5MjI0MDksImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiMXR3RGFtY3ZYbERjWlpMRXZMLW52USJ9.EGJa8UXhckCLUyzo-hRx2Aoy82uYid2jyFv04K-BRnUn4sM-GiTSZP9RSenAnRvahTp4Dj9JEZyK1MqduNihoaLQ-HKFtPR5p-4QPV9iUfry-lpJaQyAcY0MtXdQ0NtI5DEbTPWp8GhgPvJ_kfE0dKTrhfRIftA9RTa5N1uN9woqTXwBsbBGOof_3A6oQtp_GmLlNy-8hR0glBw1QhpGVv9I6tsIQ5zfbWbHTjzzyD5JtypOXNNesuZzrnQGOZkjh-1_XWj0LyYBg3UwJUftkAMZ3wnz6F8ItXh0l2tlD0clyPFxtiJEeqqm4AUjM-nTnc52YN_o-WWZ54KNkyv-gQ";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -609,9 +609,7 @@ const triggerModalUpdates = (target, listValues, isLoggedIn, isCallerId) => {
           }),
         ];
       }
-      if (isCallerId) {
-        localStorage.setItem("activeExtension", JSON.stringify(res));
-      }
+      localStorage.setItem("activeExtension", JSON.stringify(res));
       let callerIdWrapper = document.getElementById("caller-id");
       callerIdWrapper.innerHTML = `Caller ID: “${name}” &lt;${callerId}&gt;`;
 

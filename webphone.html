@@ -15,6 +15,21 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.7/mediaelementplayer.min.css"
     />
     <link rel="stylesheet" href="./css/audio.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.5.0/pagination.min.css"
+      integrity="sha512-K1k7jSn9RDKEcn/ugqVVvWYu0bcS3q1w6m/5pQSnrj0bCfIqF6Wk49lkmckSb4wglvTP9V17LtS0q0XxYccXbg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+      integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"
       integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ=="
@@ -26,6 +41,13 @@
       src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/js/bootstrap.min.js"
     ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mediaelement/4.2.7/mediaelement-and-player.min.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+      integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
 
   <body
@@ -174,7 +196,7 @@
           <form
             name="extensions"
             id="extension-list"
-            class="overflow-auto max-h-72 flex flex-col gap-2"
+            class="overflow-auto customScroller max-h-72 flex flex-col gap-2"
           ></form>
           <span id="message" class="hidden text-xs select-none"></span>
           <div class="flex gap-3 justify-center mt-4">
@@ -369,7 +391,11 @@
                 Custom range
               </div>
               <div class="mt-4 flex gap-8">
-                <div id="date-range" date-rangepicker class="flex items-center gap-3">
+                <div
+                  id="date-range"
+                  date-rangepicker
+                  class="flex items-center gap-3"
+                >
                   <div class="flex flex-col gap-1">
                     <label class="font-medium text-[#3C3C3C]">From</label>
                     <input
@@ -414,9 +440,7 @@
               <button
                 id="clear-filters"
                 type="button"
-                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 
-                focus:outline-none focus:ring-gray-200 rounded-lg
-                 font-medium px-8 py-2 hover:text-gray-900 focus:z-10 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg font-medium px-8 py-2 hover:text-gray-900 focus:z-10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Clear filters
               </button>
@@ -433,18 +457,16 @@
       </div>
     </div>
     <div
-      id="voicemail-delete"
+      id="delete-confirm-modal"
       tabindex="-1"
       class="fixed hidden top-0 w-full h-full place-content-center bg-modal left-0 right-0 p-4 overflow-x-hidden overflow-y-auto z-[999] md:inset-0 h-modal md:h-full"
     >
       <div class="relative w-full h-full min-w-85 max-w-md md:h-auto">
         <div class="relative bg-white rounded-lg shadow p-4">
           <h2 class="text-lg font-medium mb-4">Confirm action</h2>
-          <h3 class="text-sm font-normal text-[#444444]">
-            Are you sure you want to delete this voicemail?
-          </h3>
+          <h3 class="text-sm font-normal text-[#444444]"></h3>
           <button
-            id="close-voicemail-delete"
+            id="close-confirm-modal"
             type="button"
             class="absolute top-3 right-2.5 text-gray-600 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
           >
@@ -465,17 +487,16 @@
           </button>
           <div class="flex gap-3 justify-center mt-4">
             <button
-              id="delete-voicemail-cancel"
+              id="cancel-action"
               type="button"
               class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg font-medium px-8 py-2 hover:text-gray-900 focus:z-10"
             >
               Cancel
             </button>
             <button
-              id="delete-voicemail-confirm"
+              id="confirm-action"
               type="button"
-              class="text-white focus:ring-4 focus:outline-none font-medium 
-              rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
+              class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
             >
               Delete
             </button>
@@ -484,6 +505,7 @@
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.2/datepicker.min.js"></script>
+    <script src="./js/pagination.js"></script>
     <script src="./js/env.js"></script>
     <script src="./js/mockdata.js"></script>
     <script src="./js/utils.js"></script>
@@ -491,6 +513,46 @@
     <script src="./lib/webphone-plugin.js"></script>
     <script src="./js/audio.js"></script>
     <script src="./js/voicemail.js"></script>
+    <script src="./js/contacts.js"></script>
+    <script>
+      function initMap() {
+        var input = document.getElementById("autocomplete-location");
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        google.maps.event.addListener(
+          autocomplete,
+          "place_changed",
+          function () {
+            var place = autocomplete.getPlace();
+
+            const info = place.address_components;
+            let postalCode = info.find(
+              (el) => el.types[0] === "postal_code"
+            )?.short_name;
+            let country = info.find(
+              (el) => el.types[0] === "country"
+            )?.long_name;
+            let state = info.find(
+              (el) => el.types[0] === "administrative_area_level_1"
+            )?.short_name;
+            let city = info.find((el) => el.types[0] === "locality")?.long_name;
+
+            if (city) {
+              document.querySelector("input[name='city']").value = city;
+            }
+            if (country) {
+              document.querySelector("input[name='country']").value = country;
+            }
+            if (postalCode) {
+              document.querySelector("input[name='zipcode']").value =
+                postalCode;
+            }
+            if (state) {
+              document.querySelector("input[name='state']").value = state;
+            }
+          }
+        );
+      }
+    </script>
     <script src="./js/webphone.js"></script>
   </body>
 </html>
