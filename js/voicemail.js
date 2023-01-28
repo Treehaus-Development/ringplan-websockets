@@ -46,13 +46,15 @@ function showErrorToast(err) {
   }, 4500);
 }
 
-function showSuccessToast(isBulk, isContact, isEdit) {
+function showSuccessToast(isBulk, isContact, isEdit, isAdd) {
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
   successToast.querySelector("span").innerHTML = `${
     isContact ? "Contact" : "Voicemail"
-  }${isBulk ? "s" : ""} ${isEdit ? "updated" : "deleted"} successfuly`;
+  }${isBulk ? "s" : ""} ${
+    isEdit ? "updated" : isAdd ? "added" : "deleted"
+  } successfuly`;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);
@@ -255,7 +257,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   voiceMailDetails.querySelector("#voicemail-number").innerText =
     activeItem.extension_source;
   voiceMailDetails.querySelector("#voicemail-message span").innerText =
-    activeItem.transcription || 'No transcription available';
+    activeItem.transcription || "No transcription available";
   audioDest.innerHTML = "";
   let audio = document.createElement("audio");
   audio.className = "fc-media";

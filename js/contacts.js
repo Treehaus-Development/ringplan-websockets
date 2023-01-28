@@ -74,6 +74,22 @@ async function updateContact(id, data) {
   }
 }
 
+async function addContact(data) {
+  try {
+    let values = fetch(`${backendApi}/company/directory/contacts`, {
+      method: "POST",
+      headers: {
+        Authorization: id_token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    return values;
+  } catch (err) {
+    return err;
+  }
+}
+
 function filterContacts(contacts, input) {
   return contacts.filter(function (contact) {
     return (
@@ -103,9 +119,144 @@ const toggleEmailPhone = (target, value) => {
   }
 };
 
+function addFormGroupListeners() {
+  let fieldWrappers = document.querySelectorAll(".field-wrapper");
+  fieldWrappers.forEach((wrapper) => {
+    wrapper.children[0]
+      .querySelector("img")
+      .classList.add("ease", "duration-300", "transition-transform");
+    wrapper.querySelector(".field-child").classList.remove("flex", "grid");
+    wrapper.querySelector(".field-child").classList.add("hidden");
+    wrapper.children[0].querySelector("img").classList.remove("rotate-180");
+    wrapper.onclick = function (e) {
+      let fieldChild = this.querySelector(".field-child");
+      this.children[0].querySelector("img").classList.toggle("rotate-180");
+      fieldChild.classList.toggle("hidden");
+      if (fieldChild.dataset.grid === "true") {
+        fieldChild.classList.toggle("grid");
+      } else {
+        fieldChild.classList.toggle("flex");
+      }
+      fieldChild.onclick = (e) => {
+        e.stopPropagation();
+      };
+    };
+  });
+}
+
+function handleAddEditContact(target, isAdd, data) {
+  let editMode = document.getElementById(isAdd ? "add-contact" : "edit-mode");
+  let saveEdit = document.getElementById("save-contact-edit");
+  let confirmAction = document.getElementById("confirm-action");
+
+  target.disabled = true;
+  target.innerText = "Loading...";
+
+  target.insertAdjacentHTML(
+    `afterbegin`,
+    `
+    <svg 
+    id="update-contact-loading"
+    class="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    `
+  );
+
+  const inputs = editMode.querySelectorAll("input");
+  const inputValues = Array.from(inputs).map((input) => ({
+    [input.name]: input.value,
+  }));
+
+  let sendData = {};
+
+  inputValues.forEach((item) => {
+    for (const [key, value] of Object.entries(item)) {
+      if (!!value) {
+        switch (key) {
+          case "country":
+          case "state":
+          case "zipcode":
+          case "city":
+          case "street":
+            sendData["address"] = {
+              ...sendData["address"],
+              [key]: value,
+            };
+            break;
+          case "reports_to":
+          case "position":
+          case "department":
+            sendData["job_details"] = {
+              ...sendData["job_details"],
+              [key]: value,
+            };
+            break;
+          case "organization":
+          case "parent_organization":
+            sendData["organization_details"] = {
+              ...sendData["organization_details"],
+              [key]: value,
+            };
+            break;
+          case "autocomplete-location":
+            break;
+          default:
+            sendData[key] = value;
+        }
+      }
+    }
+  });
+
+  if (isAdd) {
+    addContact(sendData)
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        let isError = res.status?.toString().startsWith("4");
+        if (isError) {
+          showErrorToast({ message: res.detail });
+        } else {
+          console.log(res, "res");
+          saveEdit.innerText = "Save";
+          showSuccessToast(null, true, false, true);
+          confirmAction.dataset.isAdd = false;
+          target.dataset.isAdd = false;
+          appendFormToDetails();
+          const newData = [...data, res];
+          toggleContactItemsState();
+          drawContacts(newData);
+        }
+        saveEdit.innerText = "Save";
+      })
+      .catch((err) => {
+        saveEdit.innerText = "Save";
+        showErrorToast(err);
+      });
+    return;
+  }
+  return sendData;
+}
+
 function updateSaveButton(activeContact) {
   let saveEdit = document.getElementById("save-contact-edit");
   let editMode = document.getElementById("edit-mode");
+  let confirmAction = document.getElementById("confirm-action");
+  if (confirmAction.dataset.isAdd === "true") {
+    editMode = document.getElementById("add-contact");
+    let inputs = Array.from(editMode.querySelectorAll("input")).filter((el) => {
+      return (
+        el.id === "first-name" ||
+        el.id === "last-name" ||
+        el.id === "phone-edit"
+      );
+    });
+    let isEmpty = inputs.some((el) => el.value === "");
+    saveEdit.disabled = isEmpty;
+    return;
+  }
 
   let { address, job_details, organization_details, ...rest } = activeContact;
   if (!address) {
@@ -156,6 +307,48 @@ function updateSaveButton(activeContact) {
   });
 
   saveEdit.disabled = match;
+}
+
+function initSelectize(
+  activeContact,
+  selectedSalutation,
+  reportsVals,
+  selectedReportsTo
+) {
+  let items = sessionStorage.getItem("salutations");
+  if (items) {
+    items = JSON.parse(sessionStorage.getItem("salutations"));
+  }
+
+  $("#salutation").selectize({
+    options: items,
+    items: selectedSalutation,
+    maxItems: 1,
+    placeholder: "None",
+    allowEmptyOption: true,
+    labelField: "item",
+    valueField: "item",
+    searchField: "item",
+    plugins: ["clear_button"],
+    onChange: function () {
+      updateSaveButton(activeContact);
+    },
+  });
+
+  $("#reports_to").selectize({
+    options: reportsVals,
+    items: selectedReportsTo,
+    maxItems: 1,
+    allowEmptyOption: true,
+    searchField: ["phone"],
+    labelField: "phone",
+    valueField: "phone",
+    plugins: ["clear_button"],
+    placeholder: "None",
+    onChange: function () {
+      updateSaveButton(activeContact);
+    },
+  });
 }
 
 function toggleContactItemsState(bool) {
@@ -260,7 +453,6 @@ function openContactDetails(id, data, activeContact) {
   let detailActions = document.getElementById("detail-actions");
   let addContactContainer = document.getElementById("add-contact-container");
 
-  let fieldWrappers = document.querySelectorAll(".field-wrapper");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
 
@@ -280,27 +472,7 @@ function openContactDetails(id, data, activeContact) {
   toggleEmailPhone(contactEmail, activeContact.email);
   toggleEmailPhone(contactPhone, activeContact.phone);
 
-  fieldWrappers.forEach((wrapper) => {
-    wrapper.children[0]
-      .querySelector("img")
-      .classList.add("ease", "duration-300", "transition-transform");
-    wrapper.querySelector(".field-child").classList.remove("flex", "grid");
-    wrapper.querySelector(".field-child").classList.add("hidden");
-    wrapper.children[0].querySelector("img").classList.remove("rotate-180");
-    wrapper.onclick = function (e) {
-      let fieldChild = this.querySelector(".field-child");
-      this.children[0].querySelector("img").classList.toggle("rotate-180");
-      fieldChild.classList.toggle("hidden");
-      if (fieldChild.dataset.grid === "true") {
-        fieldChild.classList.toggle("grid");
-      } else {
-        fieldChild.classList.toggle("flex");
-      }
-      fieldChild.onclick = (e) => {
-        e.stopPropagation();
-      };
-    };
-  });
+  addFormGroupListeners();
 
   contactCallBtn.onclick = () => {
     removeActiveMark();
@@ -340,6 +512,7 @@ function openContactDetails(id, data, activeContact) {
     if (this.dataset.isAdd === "true") {
       appendFormToDetails();
       this.dataset.isAdd = false;
+      saveEdit.dataset.isAdd = false;
       closeConfirmModal();
       toggleContactItemsState();
       return;
@@ -435,9 +608,9 @@ function openContactDetails(id, data, activeContact) {
     updateSaveButton(activeContact);
 
     editMode.querySelectorAll("input").forEach((input) => {
-      input.addEventListener("input", () => {
+      input.oninput = () => {
         updateSaveButton(activeContact);
-      });
+      };
     });
   };
   cancelEdit.onclick = function () {
@@ -445,109 +618,55 @@ function openContactDetails(id, data, activeContact) {
   };
 
   saveEdit.onclick = function () {
-    this.disabled = true;
-    this.innerText = "Loading...";
-
-    this.insertAdjacentHTML(
-      `afterbegin`,
-      `
-      <svg 
-      id="update-contact-loading"
-      class="inline w-4 h-4 mr-2 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-          <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-      </svg>
-      `
+    const formValues = handleAddEditContact(
+      this,
+      this.dataset.isAdd === "true",
+      data
     );
-    const inputs = editMode.querySelectorAll("input");
-    const inputValues = Array.from(inputs).map((input) => ({
-      [input.name]: input.value,
-    }));
-
-    let sendData = {};
-
-    inputValues.forEach((item) => {
-      for (const [key, value] of Object.entries(item)) {
-        if (!!value) {
-          switch (key) {
-            case "country":
-            case "state":
-            case "zipcode":
-            case "city":
-            case "street":
-              sendData["address"] = {
-                ...sendData["address"],
-                [key]: value,
-              };
-              break;
-            case "reports_to":
-            case "position":
-            case "department":
-              sendData["job_details"] = {
-                ...sendData["job_details"],
-                [key]: value,
-              };
-              break;
-            case "organization":
-            case "parent_organization":
-              sendData["organization_details"] = {
-                ...sendData["organization_details"],
-                [key]: value,
-              };
-              break;
-            case "autocomplete-location":
-              break;
-            default:
-              sendData[key] = value;
+    if (formValues) {
+      updateContact(id, formValues)
+        .then((res) => {
+          console.log(res, "res");
+          if (res.ok) {
+            saveEdit.innerText = "Save";
+            showSuccessToast(null, true, true);
+            const newData = [...data].map((item) => {
+              if (item.id === id) {
+                return {
+                  ...item,
+                  ...formValues,
+                };
+              }
+              return item;
+            });
+            viewMode.classList.remove("hidden");
+            editMode.classList.add("hidden");
+            contactDetails.classList.add("hidden");
+            contactDetails.classList.remove("flex");
+            drawContacts(newData);
           }
-        }
-      }
-    });
-
-    console.log(sendData, "send");
-
-    updateContact(id, sendData)
-      .then((res) => {
-        console.log(res, "res");
-        if (res.ok) {
+          return res.json();
+        })
+        .then((res) => {
+          let isError = res.status?.toString().startsWith("4");
+          if (isError) {
+            showErrorToast({ message: res.detail });
+          } else {
+            detailActions.classList.remove("hidden");
+            detailActions.classList.add("flex");
+            showSuccessToast(null, true, true);
+          }
           saveEdit.innerText = "Save";
-          showSuccessToast(null, true, true);
-          const newData = [...data].map((item) => {
-            if (item.id === id) {
-              return {
-                ...item,
-                ...sendData,
-              };
-            }
-            return item;
-          });
-          viewMode.classList.remove("hidden");
-          editMode.classList.add("hidden");
-          contactDetails.classList.add("hidden");
-          contactDetails.classList.remove("flex");
-          drawContacts(newData);
-        }
-        return res.json();
-      })
-      .then((res) => {
-        let isError = res.status?.toString().startsWith("4");
-        if (isError) {
-          showErrorToast({ message: res.detail });
-        } else {
-          detailActions.classList.remove("hidden");
-          detailActions.classList.add("flex");
-          showSuccessToast(null, true, true);
-        }
-        saveEdit.innerText = "Save";
-      })
-      .catch((err) => {
-        saveEdit.innerText = "Save";
-        showErrorToast(err);
-      })
-      .finally(() => {
-        addContactTrigger.classList.remove("hidden");
-        addContactTrigger.classList.add("flex");
-      });
+        })
+        .catch((err) => {
+          saveEdit.innerText = "Save";
+          showErrorToast(err);
+        })
+        .finally(() => {
+          addContactTrigger.classList.remove("hidden");
+          addContactTrigger.classList.add("flex");
+        });
+    }
   };
 }
 
@@ -603,6 +722,7 @@ function drawContacts(data, isSearch, prevData) {
   let closeContactModal = document.getElementById("close-confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmAction = document.getElementById("confirm-action");
+  let saveEdit = document.getElementById("save-contact-edit");
 
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
@@ -629,6 +749,14 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.classList.add("hidden");
     emptyContacts.innerText = "";
   }
+
+  let showSelectData = isSearch ? prevData : data;
+  let reportsToVals = showSelectData.map((el) => {
+    return {
+      ...el,
+      phone: el.phone || el.email,
+    };
+  });
 
   $("#contacts-list").pagination({
     dataSource: data,
@@ -660,35 +788,6 @@ function drawContacts(data, isSearch, prevData) {
               });
           }
 
-          let selectedItems = [{ item: activeContact.salutation }];
-          let items = sessionStorage.getItem("salutations");
-          if (items) {
-            items = JSON.parse(sessionStorage.getItem("salutations"));
-          }
-
-          $("#salutation").selectize({
-            options: items,
-            items: selectedItems,
-            maxItems: 1,
-            placeholder: "None",
-            allowEmptyOption: true,
-            labelField: "item",
-            valueField: "item",
-            searchField: "item",
-            plugins: ["clear_button"],
-            onChange: function () {
-              updateSaveButton(activeContact);
-            },
-          });
-
-          let showSelectData = isSearch ? prevData : data;
-          let finalVals = showSelectData.map((el) => {
-            return {
-              ...el,
-              phone: el.phone || el.email,
-            };
-          });
-
           const activeReportsTo = data.find(
             (item) =>
               item.first_name + " " + item.last_name ===
@@ -701,21 +800,14 @@ function drawContacts(data, isSearch, prevData) {
             { phone: activeReportsTo?.phone || activeReportsTo?.email },
           ];
 
-          $("#reports_to").selectize({
-            options: finalVals,
-            items: selectedReportsTo,
-            maxItems: 1,
-            allowEmptyOption: true,
-            searchField: ["phone"],
-            labelField: "phone",
-            valueField: "phone",
-            plugins: ["clear_button"],
-            placeholder: "None",
-            onChange: function () {
-              updateSaveButton(activeContact);
-            },
-          });
+          let selectedSalutation = [{ item: activeContact?.salutation }];
 
+          initSelectize(
+            activeContact,
+            selectedSalutation,
+            reportsToVals,
+            selectedReportsTo
+          );
           openContactDetails(item.dataset.id, data, activeContact);
         });
       });
@@ -737,6 +829,26 @@ function drawContacts(data, isSearch, prevData) {
     form.id = "add-contact";
     document.getElementById("add-contact-wrapper").appendChild(form);
     confirmAction.dataset.isAdd = true;
+    saveEdit.dataset.isAdd = true;
+    addFormGroupListeners();
+    updateSaveButton();
+
+    $("#salutation")[0].selectize?.clear();
+    $("#reports_to")[0].selectize?.clear();
+
+    form.querySelectorAll("input").forEach((input) => {
+      input.oninput = () => {
+        updateSaveButton();
+      };
+    });
+
+    setTimeout(() => {
+      initSelectize(null, null, reportsToVals, null);
+    }, 1000);
+  };
+
+  saveEdit.onclick = function () {
+    handleAddEditContact(this, true, data);
   };
 
   cancelEdit.onclick = function () {
@@ -754,6 +866,7 @@ function drawContacts(data, isSearch, prevData) {
   confirmAction.onclick = function () {
     appendFormToDetails();
     this.dataset.isAdd = false;
+    saveEdit.dataset.isAdd = false;
     toggleContactItemsState();
     closeConfirmModal();
   };
