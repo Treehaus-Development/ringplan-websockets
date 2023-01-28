@@ -158,6 +158,85 @@ function updateSaveButton(activeContact) {
   saveEdit.disabled = match;
 }
 
+function toggleContactItemsState(bool) {
+  if (bool) {
+    document
+      .getElementById("contacts-list-wrapper")
+      .classList.add("cursor-not-allowed");
+    document.querySelector(".paginationjs").classList.add("cursor-not-allowed");
+    document
+      .querySelector(".paginationjs-pages")
+      .classList.add("pointer-events-none");
+    document
+      .querySelectorAll(".contact-list-item")
+      .forEach((el) => el.classList.add("pointer-events-none", "opacity-50"));
+    document
+      .getElementById("create-contact-trigger")
+      .classList.add("pointer-events-none");
+  } else {
+    document
+      .getElementById("contacts-list-wrapper")
+      .classList.remove("cursor-not-allowed");
+    document
+      .querySelector(".paginationjs")
+      .classList.remove("cursor-not-allowed");
+    document
+      .querySelector(".paginationjs-pages")
+      .classList.remove("pointer-events-none");
+    document
+      .querySelectorAll(".contact-list-item")
+      .forEach((el) =>
+        el.classList.remove("pointer-events-none", "opacity-50")
+      );
+    document
+      .getElementById("create-contact-trigger")
+      .classList.remove("pointer-events-none");
+  }
+
+  document.getElementById("contact-search").disabled = !!bool;
+}
+
+const closeConfirmModal = () => {
+  let deleteContactModal = document.getElementById("delete-confirm-modal");
+  let cancelAction = document.getElementById("cancel-action");
+  let confirmDelete = document.getElementById("confirm-action");
+  deleteContactModal.classList.remove("grid");
+  deleteContactModal.classList.add("hidden");
+  confirmDelete.innerText = "Delete";
+  cancelAction.innerText = "Cancel";
+};
+
+const openConfirmModal = (isEdit) => {
+  let deleteContactModal = document.getElementById("delete-confirm-modal");
+  let cancelAction = document.getElementById("cancel-action");
+  let confirmDelete = document.getElementById("confirm-action");
+
+  deleteContactModal.classList.remove("hidden");
+  deleteContactModal.classList.add("grid");
+  confirmDelete.innerText = "Yes";
+  if (confirmDelete.dataset.isAdd !== "true" && isEdit) {
+    confirmDelete.dataset.isEdit = true;
+  }
+  cancelAction.innerText = "No";
+  deleteContactModal.querySelector(
+    "h3"
+  ).innerText = `Are you sure? your changes won't be saved`;
+};
+
+function appendFormToDetails() {
+  let addContactContainer = document.getElementById("add-contact-container");
+  let contactDetails = document.getElementById("contacts-details");
+  addContactContainer.classList.remove("flex");
+  addContactContainer.classList.add("hidden");
+  let form = document.getElementById("add-contact");
+  form.classList.add("hidden");
+  form.children[0].classList.add("max-h-80");
+  form.children[0].classList.remove("max-h-96");
+
+  form.id = "edit-mode";
+  contactDetails.children[0].appendChild(form);
+}
+
 function openContactDetails(id, data, activeContact) {
   let contactDetails = document.getElementById("contacts-details");
   let contactAvatar = document.getElementById("contact-avatar");
@@ -179,10 +258,15 @@ function openContactDetails(id, data, activeContact) {
   let cancelEdit = document.getElementById("cancel-changes");
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
+  let addContactContainer = document.getElementById("add-contact-container");
 
   let fieldWrappers = document.querySelectorAll(".field-wrapper");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
+
+  addContactContainer.classList.remove("flex");
+  addContactContainer.classList.add("hidden");
+
   editMode.classList.add("hidden");
   viewMode.classList.remove("hidden");
 
@@ -225,13 +309,6 @@ function openContactDetails(id, data, activeContact) {
     makeCall(activeContact.phone);
   };
 
-  const closeConfirmModal = () => {
-    deleteContactModal.classList.remove("grid");
-    deleteContactModal.classList.add("hidden");
-    confirmDelete.innerText = "Delete";
-    cancelAction.innerText = "Cancel";
-  };
-
   deleteContactTrigger.onclick = () => {
     deleteContactModal.classList.remove("hidden");
     deleteContactModal.classList.add("grid");
@@ -258,6 +335,13 @@ function openContactDetails(id, data, activeContact) {
 
       this.dataset.isEdit = false;
       closeConfirmModal();
+      return;
+    }
+    if (this.dataset.isAdd === "true") {
+      appendFormToDetails();
+      this.dataset.isAdd = false;
+      closeConfirmModal();
+      toggleContactItemsState();
       return;
     }
     confirmDelete.disabled = true;
@@ -356,16 +440,10 @@ function openContactDetails(id, data, activeContact) {
       });
     });
   };
-  cancelEdit.onclick = () => {
-    deleteContactModal.classList.remove("hidden");
-    deleteContactModal.classList.add("grid");
-    confirmDelete.innerText = "Yes";
-    confirmDelete.dataset.isEdit = true;
-    cancelAction.innerText = "No";
-    deleteContactModal.querySelector(
-      "h3"
-    ).innerText = `Are you sure? your changes won't be saved`;
+  cancelEdit.onclick = function () {
+    openConfirmModal(true);
   };
+
   saveEdit.onclick = function () {
     this.disabled = true;
     this.innerText = "Loading...";
@@ -516,6 +594,15 @@ function drawContacts(data, isSearch, prevData) {
   let searchBar = document.getElementById("search-bar");
   let emptyContacts = document.getElementById("empty-contacts");
   let clearSearch = document.getElementById("clear-search");
+  let cancelEdit = document.getElementById("cancel-changes");
+
+  let addContactTrigger = document.getElementById("create-contact-trigger");
+  let contactDetails = document.getElementById("contacts-details");
+  let addContactContainer = document.getElementById("add-contact-container");
+
+  let closeContactModal = document.getElementById("close-confirm-modal");
+  let cancelAction = document.getElementById("cancel-action");
+  let confirmAction = document.getElementById("confirm-action");
 
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
@@ -634,6 +721,42 @@ function drawContacts(data, isSearch, prevData) {
       });
     },
   });
+
+  addContactTrigger.onclick = function () {
+    removeActiveMark();
+    contactDetails.classList.remove("flex");
+    contactDetails.classList.add("hidden");
+    addContactContainer.classList.remove("hidden");
+    addContactContainer.classList.add("flex");
+    let form = document.getElementById("edit-mode");
+    form.classList.remove("hidden");
+    form.children[0].classList.remove("max-h-80");
+    form.children[0].classList.add("max-h-96");
+    toggleContactItemsState(true);
+    form.querySelectorAll("input").forEach((el) => (el.value = ""));
+    form.id = "add-contact";
+    document.getElementById("add-contact-wrapper").appendChild(form);
+    confirmAction.dataset.isAdd = true;
+  };
+
+  cancelEdit.onclick = function () {
+    openConfirmModal();
+  };
+
+  closeContactModal.onclick = () => {
+    closeConfirmModal();
+  };
+
+  cancelAction.onclick = () => {
+    closeConfirmModal();
+  };
+
+  confirmAction.onclick = function () {
+    appendFormToDetails();
+    this.dataset.isAdd = false;
+    toggleContactItemsState();
+    closeConfirmModal();
+  };
 
   let searchContent = `
   <div class="relative w-full">
