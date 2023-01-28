@@ -30,7 +30,7 @@ function makeCall(num) {
   myContainer.classList.remove("hidden");
   myContainer.classList.add("flex", "active-container");
 
-  document.querySelector(".webphone-digits").innerText = num;
+  document.querySelector(".webphone-digits").value = num;
   document.getElementById("webphone-call-btn").click();
 }
 
@@ -389,7 +389,7 @@ async function updateUI() {
           phoneTab.classList.contains("active-tab") &&
           !pastedContent.includes(".")
         ) {
-          document.querySelector(".webphone-digits").innerText = pastedContent;
+          document.querySelector(".webphone-digits").value = pastedContent;
           document
             .getElementById("webphone-backspace-btn")
             .classList.remove("hidden");

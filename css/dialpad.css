@@ -116,3 +116,13 @@
   color:#576a72 !important;
   border-color: #d3dce0 !important;
 }
+
+.webphone-digits::-webkit-outer-spin-button,
+.webphone-digits::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.webphone-digits {
+    -moz-appearance:textfield; /* Firefox */
+}
