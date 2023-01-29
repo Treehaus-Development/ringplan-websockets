@@ -125,6 +125,7 @@ const setActiveTab = (ele) => {
 };
 
 const removeActiveTab = () => {
+  let versionInfoBtn = document.getElementById("version-info");
   let ele = document.querySelector(".active-tab");
   let activeContainer = document.querySelector(".active-container");
   if (ele.id === "settings-tab") {
@@ -133,6 +134,7 @@ const removeActiveTab = () => {
 
   activeContainer.classList.remove("active-container", "flex");
   activeContainer.classList.add("hidden");
+  versionInfoBtn.classList.remove(...activeSubMenuClasses);
 
   ele.classList.remove(...activeClasses, "gap-16");
   ele.classList.add("gap-5", "font-medium");
@@ -370,6 +372,7 @@ async function updateUI() {
     let phoneTab = document.getElementById("phone-tab");
     let settingsTab = document.getElementById("settings-tab");
     let callHistoryTab = document.getElementById("call-history");
+    let sideCarTab = document.getElementById("sidecar-tab");
     let mainContainer = document.getElementById("main");
     let settingsInfo = document.getElementById("settings-info");
     let mainWrapper = document.getElementById("main-wrapper");
@@ -383,6 +386,8 @@ async function updateUI() {
     let voiceMailContainer = document.getElementById("voicemail-container");
     let contactsTab = document.getElementById("contacts-tab");
     let contactsContainer = document.getElementById("contacts-container");
+    let sidecarContainer = document.getElementById("sidecar-container");
+
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -514,7 +519,6 @@ async function updateUI() {
       removeActiveTab();
       setActiveTab(this);
       mainWrapper.classList.add("overflow-hidden");
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       contactsContainer.classList.remove("hidden");
       contactsContainer.classList.add("flex", "active-container");
     };
@@ -522,7 +526,6 @@ async function updateUI() {
     phoneTab.onclick = function () {
       removeActiveTab();
       setActiveTab(this);
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       $("#my-container").removeClass("hidden");
       $("#my-container").addClass("active-container");
       $("#my-container").addClass("flex");
@@ -541,8 +544,6 @@ async function updateUI() {
       mainWrapper.classList.add("overflow-hidden");
       callHistoryContainer.classList.remove("hidden");
       callHistoryContainer.classList.add("flex", "active-container");
-
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
     };
 
     voiceMailTab.onclick = function () {
@@ -562,9 +563,15 @@ async function updateUI() {
       removeActiveTab();
       setActiveTab(this);
       mainWrapper.classList.add("overflow-hidden");
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       voiceMailContainer.classList.remove("hidden");
       voiceMailContainer.classList.add("flex", "active-container");
+    };
+
+    sideCarTab.onclick = function () {
+      removeActiveTab();
+      setActiveTab(this);
+      sidecarContainer.classList.remove("hidden");
+      sidecarContainer.classList.add("grid", "active-container");
     };
 
     logoutPopupTrigger.onclick = (e) => {
@@ -574,7 +581,6 @@ async function updateUI() {
       modal.classList.remove("hidden");
       modal.classList.add("grid", "active-container");
       settingsInfo.classList.add("!hidden");
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       logoutPopupTrigger.classList.add(...activeSubMenuClasses);
       mainWrapper.classList.remove("grid");
       mainWrapper.classList.add("hidden");
