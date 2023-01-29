@@ -2,8 +2,7 @@
 #apply-filters,
 #confirm-action,
 #edit-trigger,
-#save-contact-edit
-{
+#save-contact-edit {
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 
@@ -99,30 +98,29 @@
   background-color: #83d929 !important;
 }
 
-
-.paginationjs{
+.paginationjs {
   justify-content: center;
   margin-top: 20px;
   user-select: none;
 }
 
-.paginationjs-ellipsis{
+.paginationjs-ellipsis {
   background: white;
 }
 
 .selectize-input {
   background: white !important;
   padding: 12px !important;
-  color:#576a72 !important;
+  color: #576a72 !important;
   border-color: #d3dce0 !important;
 }
 
 .webphone-digits::-webkit-outer-spin-button,
 .webphone-digits::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .webphone-digits {
-    -moz-appearance:textfield; /* Firefox */
+  -moz-appearance: textfield; /* Firefox */
 }
