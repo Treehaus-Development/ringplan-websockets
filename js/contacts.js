@@ -699,7 +699,7 @@ function template(data, isPlugin) {
             }"/>
           </div>
           <div class="flex flex-col">
-              <p class="text-[#232323] ${
+              <p class="text-[#232323] inner-value ${
                 isPlugin ? "text-sm truncate max-w-64" : ""
               }">${
         el.first_name && el.last_name

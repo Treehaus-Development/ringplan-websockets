@@ -351,6 +351,15 @@ async function updateUI() {
     `
     );
 
+    document.getElementById("filter-results").onclick = function (e) {
+      let closest = e.target.closest(".filter-list-item");
+      if (closest) {
+        console.log(closest, "closest");
+        let val = closest.querySelector(".inner-value").innerText;
+        document.querySelector(".webphone-digits").value = removePlus(val);
+      }
+    };
+
     $("#webphone-keypad").removeClass("hidden");
     $("#webphone-keypad").addClass("flex");
 
