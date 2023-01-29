@@ -931,6 +931,10 @@ video {
   height: 4.625rem;
 }
 
+.h-36 {
+  height: 9rem;
+}
+
 .h-11 {
   height: 2.75rem;
 }
@@ -949,10 +953,6 @@ video {
 
 .\!h-screen {
   height: 100vh !important;
-}
-
-.h-36 {
-  height: 9rem;
 }
 
 .max-h-72 {
@@ -1071,6 +1071,10 @@ video {
   width: 4.625rem;
 }
 
+.w-40 {
+  width: 10rem;
+}
+
 .w-fit {
   width: -moz-fit-content;
   width: fit-content;
@@ -1090,14 +1094,6 @@ video {
 
 .w-3 {
   width: 0.75rem;
-}
-
-.w-24 {
-  width: 6rem;
-}
-
-.w-40 {
-  width: 10rem;
 }
 
 .min-w-72 {
@@ -1352,10 +1348,6 @@ video {
   gap: 2.5rem;
 }
 
-.gap-18\.5 {
-  gap: 4.625rem;
-}
-
 .gap-y-3 {
   row-gap: 0.75rem;
 }
@@ -1363,10 +1355,6 @@ video {
 .gap-x-18\.5 {
   -moz-column-gap: 4.625rem;
        column-gap: 4.625rem;
-}
-
-.gap-y-4 {
-  row-gap: 1rem;
 }
 
 .gap-y-6 {
@@ -1514,6 +1502,11 @@ video {
   border-color: rgb(211 220 224 / var(--tw-border-opacity));
 }
 
+.border-\[\#A9A9A9\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(169 169 169 / var(--tw-border-opacity));
+}
+
 .border-\[\#D3D3D3\] {
   --tw-border-opacity: 1;
   border-color: rgb(211 211 211 / var(--tw-border-opacity));
@@ -1522,11 +1515,6 @@ video {
 .border-gray-500 {
   --tw-border-opacity: 1;
   border-color: rgb(173 181 189 / var(--tw-border-opacity));
-}
-
-.border-\[\#A9A9A9\] {
-  --tw-border-opacity: 1;
-  border-color: rgb(169 169 169 / var(--tw-border-opacity));
 }
 
 .bg-white {
@@ -1612,6 +1600,11 @@ video {
   background-color: rgb(59 158 247 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#FDFDFD\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 253 253 / var(--tw-bg-opacity));
+}
+
 .bg-green-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(220 252 231 / var(--tw-bg-opacity));
@@ -1630,15 +1623,6 @@ video {
 .\!bg-\[\#F2F2F2\] {
   --tw-bg-opacity: 1 !important;
   background-color: rgb(242 242 242 / var(--tw-bg-opacity)) !important;
-}
-
-.bg-\[\] {
-  background-color: ;
-}
-
-.bg-\[\#FDFDFD\] {
-  --tw-bg-opacity: 1;
-  background-color: rgb(253 253 253 / var(--tw-bg-opacity));
 }
 
 .fill-blue-600 {
@@ -1692,16 +1676,12 @@ video {
   padding: 0.875rem;
 }
 
-.p-8 {
-  padding: 2rem;
-}
-
-.p-10 {
-  padding: 2.5rem;
-}
-
 .p-14 {
   padding: 3.5rem;
+}
+
+.p-8 {
+  padding: 2rem;
 }
 
 .px-8 {
@@ -1782,16 +1762,6 @@ video {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-.py-12 {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-.py-14 {
-  padding-top: 3.5rem;
-  padding-bottom: 3.5rem;
 }
 
 .pb-6 {
