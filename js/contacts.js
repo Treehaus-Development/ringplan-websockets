@@ -14,7 +14,7 @@ function findActiveReportTo(data, activeContact) {
   );
 }
 
-async function getContacts() {
+async function getContacts(isWebphone) {
   try {
     const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
       headers: {
@@ -23,7 +23,8 @@ async function getContacts() {
     });
     if (contacts.ok) {
       const data = await contacts.json();
-
+      sessionStorage.setItem("contacts", JSON.stringify(data));
+      if (isWebphone) return data;
       drawContacts(data);
     }
   } catch (error) {
@@ -90,8 +91,11 @@ async function addContact(data) {
   }
 }
 
-function filterContacts(contacts, input) {
+function filterContacts(contacts, input, isPlugin) {
   return contacts.filter(function (contact) {
+    if (isPlugin) {
+      return contact.phone && contact.phone.includes(input);
+    }
     return (
       contact.first_name?.toLowerCase()?.includes(input.toLowerCase()) ||
       contact.last_name?.toLowerCase()?.includes(input.toLowerCase()) ||
@@ -670,7 +674,7 @@ function openContactDetails(id, data, activeContact) {
   };
 }
 
-function template(data) {
+function template(data, isPlugin) {
   return data
     .map((el) => {
       let acronym =
@@ -679,11 +683,15 @@ function template(data) {
       return `
       <div 
       data-id="${el.id}" 
-      class="flex contact-list-item cursor-pointer justify-between select-none 
-      px-6 py-2 
+      class="flex ${
+        isPlugin
+          ? "filter-list-item min-w-72 px-2 py-1"
+          : "contact-list-item px-6 py-2"
+      } 
+      cursor-pointer justify-between select-none 
       items-center border-b border-[#D3D3D3]">
         <div class="flex gap-4 items-center">
-          <div class="w-11 h-11">
+          <div class="${isPlugin ? "w-8 h-8" : "w-11 h-11"} ">
             <img class="rounded-full" src="${
               el.first_name && el.last_name
                 ? generateAvatar(acronym)
@@ -691,14 +699,19 @@ function template(data) {
             }"/>
           </div>
           <div class="flex flex-col">
-              <p class="text-[#232323]">${
-                el.first_name && el.last_name
-                  ? el.first_name + " " + el.last_name
-                  : el.phone || el.email
-              }</p>
+              <p class="text-[#232323] ${
+                isPlugin ? "text-sm truncate max-w-64" : ""
+              }">${
+        el.first_name && el.last_name
+          ? el.first_name + " " + el.last_name
+          : el.phone || el.email
+      }</p>
               <span class="text-[#A3A3A3] ${
-                el.first_name && el.last_name ? "inline" : "hidden"
-              }">${el.phone || el.email}</span>
+                isPlugin ? "text-sm truncate max-w-64" : ""
+              }
+              ${el.first_name && el.last_name ? "inline" : "hidden"}">${
+        el.phone || el.email
+      }</span>
           </div>
         </div>
       </div>

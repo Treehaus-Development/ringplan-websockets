@@ -337,6 +337,20 @@ async function updateUI() {
     $("#my-container").removeClass("hidden");
     $("#my-container").addClass("flex px-2 md:px-4 lg:px-6 py-6");
 
+    document.getElementById("my-container").insertAdjacentHTML(
+      "afterbegin",
+      `
+      <div id="filter-results-wrapper" class="absolute hidden top-4 left-4 p-3
+      bg-white shadow-soft-md rounded ">
+        <span class="font-medium text-sm">
+          Filtered results
+        </span>
+        <div id="filter-results" class="max-h-120 overflow-y-auto">
+        </div>
+      </div>
+    `
+    );
+
     $("#webphone-keypad").removeClass("hidden");
     $("#webphone-keypad").addClass("flex");
 
@@ -475,6 +489,12 @@ async function updateUI() {
       }
 
       if (this.dataset.shouldFetch !== "false") {
+        if (sessionStorage.getItem("contacts")) {
+          const data = JSON.parse(sessionStorage.getItem("contacts"));
+          drawContacts(data);
+          this.dataset.shouldFetch = "false";
+          return;
+        }
         getContacts();
         this.dataset.shouldFetch = "false";
       }
