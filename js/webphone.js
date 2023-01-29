@@ -343,7 +343,7 @@ async function updateUI() {
       <div id="filter-results-wrapper" class="absolute hidden top-4 left-4 p-3
       bg-white shadow-soft-md rounded ">
         <span class="font-medium text-sm">
-          Filtered results
+          Filtered contacts
         </span>
         <div id="filter-results" class="max-h-120 overflow-y-auto">
         </div>
