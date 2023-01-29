@@ -357,6 +357,9 @@ async function updateUI() {
         console.log(closest, "closest");
         let val = closest.querySelector(".inner-value").innerText;
         document.querySelector(".webphone-digits").value = removePlus(val);
+        document
+          .querySelector("#webphone-backspace-btn")
+          .classList.remove("hidden");
       }
     };
 
@@ -506,7 +509,7 @@ async function updateUI() {
           drawContacts(data);
         }
       }
-      
+
       removeActiveTab();
       setActiveTab(this);
       mainWrapper.classList.add("overflow-hidden");
