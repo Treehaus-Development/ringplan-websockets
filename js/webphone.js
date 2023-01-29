@@ -498,15 +498,15 @@ async function updateUI() {
       }
 
       if (this.dataset.shouldFetch !== "false") {
-        if (sessionStorage.getItem("contacts")) {
+        if (!sessionStorage.getItem("contacts")) {
+          getContacts();
+          this.dataset.shouldFetch = "false";
+        } else {
           const data = JSON.parse(sessionStorage.getItem("contacts"));
           drawContacts(data);
-          this.dataset.shouldFetch = "false";
-          return;
         }
-        getContacts();
-        this.dataset.shouldFetch = "false";
       }
+      
       removeActiveTab();
       setActiveTab(this);
       mainWrapper.classList.add("overflow-hidden");
