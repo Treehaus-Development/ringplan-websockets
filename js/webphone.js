@@ -456,6 +456,7 @@ async function updateUI() {
     } else {
       callHistoryTab.remove();
       voiceMailTab.remove();
+      contactsTab.remove();
       extensionOpts.querySelector("div:last-child").classList.add("hidden");
     }
 
