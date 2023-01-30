@@ -717,7 +717,7 @@ function template(data, isPlugin) {
           ? el.first_name + " " + el.last_name
           : el.phone || el.email
       }</p>
-              <span class="text-[#A3A3A3] ${
+              <span class="text-[#A3A3A3] inner-number ${
                 isPlugin ? "text-sm truncate max-w-64" : ""
               }
               ${el.first_name && el.last_name ? "inline" : "hidden"}">${
