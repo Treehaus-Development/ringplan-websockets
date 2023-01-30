@@ -1,4 +1,5 @@
 let salutationList = [];
+const cachedContacts = sessionStorage.getItem("contacts");
 
 function removePlus(str) {
   return str.replace(/\+/g, "");
@@ -231,6 +232,7 @@ function handleAddEditContact(target, isAdd, data) {
           appendFormToDetails();
           const newData = [...data, res];
           toggleContactItemsState();
+          sessionStorage.setItem("contacts", JSON.stringify(newData));
           drawContacts(newData);
         }
         saveEdit.innerText = "Save";
@@ -548,6 +550,8 @@ function openContactDetails(id, data, activeContact) {
         if (res.ok) {
           showSuccessToast(null, true);
           const newData = [...data].filter((item) => item.id !== id);
+          sessionStorage.setItem("contacts", JSON.stringify(newData));
+
           drawContacts(newData);
           contactDetails.classList.remove("flex");
           contactDetails.classList.add("hidden");
@@ -652,6 +656,7 @@ function openContactDetails(id, data, activeContact) {
             editMode.classList.add("hidden");
             contactDetails.classList.add("hidden");
             contactDetails.classList.remove("flex");
+            sessionStorage.setItem("contacts", JSON.stringify(newData));
             drawContacts(newData);
           }
           return res.json();
@@ -725,7 +730,7 @@ function template(data, isPlugin) {
     .join(" ");
 }
 
-function drawContacts(data, isSearch, prevData) {
+function drawContacts(data, isSearch) {
   let contactsLoader = document.getElementById("contacts-list-loader");
   let contactsList = document.getElementById("contacts-list");
   let searchBar = document.getElementById("search-bar");
@@ -750,7 +755,9 @@ function drawContacts(data, isSearch, prevData) {
     clearSearch.classList.remove("hidden");
     clearSearch.classList.add("flex");
     clearSearch.onclick = () => {
-      drawContacts(prevData);
+      if (cachedContacts) {
+        drawContacts(JSON.parse(cachedContacts));
+      }
     };
   }
 
@@ -767,7 +774,8 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.innerText = "";
   }
 
-  let showSelectData = isSearch ? prevData : data;
+  let showSelectData =
+    isSearch && cachedContacts ? JSON.parse(cachedContacts) : data;
   let reportsToVals = showSelectData.map((el) => {
     return {
       ...el,
@@ -926,11 +934,10 @@ function drawContacts(data, isSearch, prevData) {
     clearTimeout(timeout);
     timeout = setTimeout(function () {
       let contactDetails = document.getElementById("contacts-details");
-      let prevData = [...data];
       const newData = filterContacts(data, e.target.value);
       contactDetails.classList.remove("flex");
       contactDetails.classList.add("hidden");
-      drawContacts(newData, true, prevData);
+      drawContacts(newData, true);
     }, 500);
   });
 }
