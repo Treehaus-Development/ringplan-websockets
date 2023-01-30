@@ -996,6 +996,7 @@ module.exports = {
       0: "0px",
       6: "1.5rem",
       full: "100%",
+      md:'65vh',
       screen: "100vh",
       "85-screen": "85vh",
       "75-screen": "75vh",

@@ -381,7 +381,8 @@
 
     <div
       id="contacts-container"
-      class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
+      class="hidden w-full h-full flex-col-reverse 
+      lg:flex-row px-4 border-l border-[#dfdede] items-stretch mt-0.5"
     >
       <div id="contact-left-panel" class="pt-4 basis-[40%] bg-white w-auto max-h-box">
         <div id="search-bar" class="hidden mx-auto"></div>
@@ -408,7 +409,7 @@
           class="hidden text-center mt-14 text-[#3C3C3C]"
         ></p>
       </div>
-      <div id="contacts-details" class="hidden flex-1 flex-col relative h-full">
+      <div id="contacts-details" class="hidden min-h-md lg:min-h-auto flex-1 flex-col relative h-full">
         <div class="flex flex-col py-6 items-center h-full">
           <div
             class="flex flex-col select-none items-center w-full justify-center gap-7"

@@ -991,6 +991,10 @@ video {
   max-height: calc(100vh - 150px);
 }
 
+.max-h-md {
+  max-height: 55vh;
+}
+
 .max-h-box-sm {
   max-height: 70vh;
 }
@@ -999,16 +1003,16 @@ video {
   max-height: 15.625rem;
 }
 
-.max-h-md {
-  max-height: 55vh;
-}
-
 .min-h-10 {
   min-height: 2.5rem;
 }
 
 .min-h-24 {
   min-height: 6rem;
+}
+
+.min-h-md {
+  min-height: 65vh;
 }
 
 .w-full {
@@ -1254,6 +1258,10 @@ video {
 
 .flex-col {
   flex-direction: column;
+}
+
+.flex-col-reverse {
+  flex-direction: column-reverse;
 }
 
 .flex-wrap {
@@ -2465,18 +2473,30 @@ video {
     display: none;
   }
 
-  .lg\:w-fit {
-    width: -moz-fit-content;
-    width: fit-content;
+  .lg\:min-h-auto {
+    min-height: auto;
   }
 
   .lg\:w-1\/2 {
     width: 50%;
   }
 
+  .lg\:w-fit {
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+
   .lg\:translate-x-0 {
     --tw-translate-x: 0px;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  .lg\:flex-row {
+    flex-direction: row;
+  }
+
+  .lg\:overflow-hidden {
+    overflow: hidden;
   }
 
   .lg\:px-6 {

@@ -517,6 +517,7 @@ function openContactDetails(id, data, activeContact) {
       addContactTrigger.classList.add("flex");
       contactLeftPanel.classList.remove("hidden", "lg:block");
       this.dataset.isEdit = false;
+      document.getElementById("back-to-list").remove();
       closeConfirmModal();
       return;
     }
@@ -574,7 +575,19 @@ function openContactDetails(id, data, activeContact) {
     editMode.classList.remove("hidden");
     addContactTrigger.classList.remove("flex");
     addContactTrigger.classList.add("hidden");
-
+    if (!document.getElementById("back-to-list")) {
+      contactDetails.insertAdjacentHTML(
+        `afterbegin`,
+        `
+        <div class="absolute left-5 top-3 cursor-pointer" id="back-to-list">
+          <img src="/images/call-icons/back.svg" />
+        </div>
+      `
+      );
+      document.getElementById("back-to-list").onclick = function () {
+        openConfirmModal(true)
+      };
+    }
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
 
