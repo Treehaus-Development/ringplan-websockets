@@ -370,6 +370,9 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("create-contact-trigger")
       .classList.add("pointer-events-none");
+    document
+      .getElementById("contact-left-panel")
+      .classList.add("hidden", "lg:block");
   } else {
     document
       .getElementById("contacts-list-wrapper")
@@ -388,6 +391,9 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("create-contact-trigger")
       .classList.remove("pointer-events-none");
+    document
+      .getElementById("contact-left-panel")
+      .classList.remove("hidden", "lg:block");
   }
 
   document.getElementById("contact-search").disabled = !!bool;
@@ -427,8 +433,6 @@ function appendFormToDetails() {
   addContactContainer.classList.add("hidden");
   let form = document.getElementById("add-contact");
   form.classList.add("hidden");
-  form.children[0].classList.add("max-h-80");
-  form.children[0].classList.remove("max-h-96");
 
   form.id = "edit-mode";
   contactDetails.children[0].appendChild(form);
@@ -519,6 +523,7 @@ function openContactDetails(id, data, activeContact) {
       saveEdit.dataset.isAdd = false;
       closeConfirmModal();
       toggleContactItemsState();
+
       return;
     }
     confirmDelete.disabled = true;
@@ -727,7 +732,6 @@ function drawContacts(data, isSearch, prevData) {
   let emptyContacts = document.getElementById("empty-contacts");
   let clearSearch = document.getElementById("clear-search");
   let cancelEdit = document.getElementById("cancel-changes");
-
   let addContactTrigger = document.getElementById("create-contact-trigger");
   let contactDetails = document.getElementById("contacts-details");
   let addContactContainer = document.getElementById("add-contact-container");
@@ -835,8 +839,6 @@ function drawContacts(data, isSearch, prevData) {
     addContactContainer.classList.add("flex");
     let form = document.getElementById("edit-mode");
     form.classList.remove("hidden");
-    form.children[0].classList.remove("max-h-80");
-    form.children[0].classList.add("max-h-96");
     toggleContactItemsState(true);
     form.querySelectorAll("input").forEach((el) => (el.value = ""));
     form.id = "add-contact";
