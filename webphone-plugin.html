@@ -94,30 +94,40 @@
         <span class="uppercase network-status text-[#00A2DD]"></span>
       </div>
     </div>
-    <div id="call-container" class="w-full bg-[#F5F5F5] h-sidenav grid pb-8 md:px-0 px-5 place-items-end">
+    <div
+      id="call-container"
+      class="w-full bg-[#F5F5F5] h-sidenav grid pb-8 md:px-0 px-5 place-items-end"
+    >
       <div id="call-active" class="w-full hidden">
         <div
           class="w-full relative flex justify-between items-center max-w-md mx-auto py-3"
         >
-        <div id="webphone-xfer-btn" class="flex flex-col gap-2 items-center cursor-pointer w-9">
-          <img class="brightness-0" src="/images/transfer.svg" />
-          <span class="text-[#545454]">Transfer</span>
+          <div
+            id="webphone-xfer-btn"
+            class="flex flex-col gap-2 items-center cursor-pointer w-9"
+          >
+            <img class="brightness-0" src="/images/transfer.svg" />
+            <span class="text-[#545454]">Transfer</span>
+          </div>
+
+          <div
+            class="flex flex-col gap-2 items-center cursor-pointer webphone-mute-btn w-9"
+          >
+            <img class="brightness-0" src="/images/mute.svg" />
+            <span class="text-[#545454]">Mute</span>
+          </div>
+
+          <div
+            class="flex flex-col gap-2 items-center cursor-pointer w-9"
+            id="webphone-hold-btn"
+          >
+            <img class="brightness-0" src="/images/hold.svg" />
+            <span class="text-[#545454]">Hold</span>
+          </div>
         </div>
-      
-        <div class="flex flex-col gap-2 items-center cursor-pointer webphone-mute-btn w-9">
-          <img class="brightness-0" src="/images/mute.svg" />
-          <span class="text-[#545454]">Mute</span>
-        </div>
-      
-        <div class="flex flex-col gap-2 items-center cursor-pointer w-9" id="webphone-hold-btn">
-          <img class="brightness-0" src="/images/hold.svg" />
-          <span class="text-[#545454]">Hold</span>
-        </div>
-      </div>
       </div>
 
-      <div id="keypad-target" class="w-full justify-cente bg-[#F5F5F5]">
-      </div>
+      <div id="keypad-target" class="w-full justify-cente bg-[#F5F5F5]"></div>
 
       <div
         class="w-full relative flex justify-between items-center max-w-md mx-auto py-3"
@@ -135,10 +145,16 @@
           />
         </div>
         <div id="speaker-btn" class="cursor-pointer w-12 h-12">
-          <img id="speaker-img" class="w-full h-full object-contain" src="/images/speaker.svg" />
+          <img
+            id="speaker-img"
+            class="w-full h-full object-contain"
+            src="/images/speaker.svg"
+          />
         </div>
-        <div id="sm-transfer" class="webphone-xfer-btn
-           cursor-pointer w-12 hidden hold-colors">
+        <div
+          id="sm-transfer"
+          class="webphone-xfer-btn cursor-pointer w-12 hidden hold-colors"
+        >
           <img src="/images/transfer.svg" />
         </div>
         <div
@@ -151,31 +167,40 @@
           <img class="w-full h-full object-contain" src="/images/mute.svg" />
         </div>
         <div id="switch-keypad" class="cursor-pointer w-12 hidden">
-          <img src="/images/dialpad.svg"/>
-          <span id="hide-keypad" class="text-[#00A2DD] hidden text-xl font-medium">Hide</span>
+          <img src="/images/dialpad.svg" />
+          <span
+            id="hide-keypad"
+            class="text-[#00A2DD] hidden text-xl font-medium"
+            >Hide</span
+          >
         </div>
       </div>
     </div>
   </div>
-
 </div>
 
 <div
   id="webphone-keypad"
   class="flex-col hidden h-full justify-center text-white"
 >
-
   <div class="w-full text-center flex flex-col gap-2 relative">
     <div id="no-call" class="relative flex justify-center">
+      <div
+        id="add-new-contact"
+        class="bg-[#3B9EF7] ease-in absolute left-0 duration-250 transition-colors
+         hover:bg-blue-500 cursor-pointer select-none 
+         rounded-full p-1 hidden w-10 h-10 justify-center items-center"
+      >
+        <div class="w-5 h-5">
+          <img class="invert" src="../images/contact-new.svg" alt="" />
+        </div>
+      </div>
       <input
         type="text"
-        class="webphone-digits font-medium select-none outline-none border-none
-         text-[#232323] text-4xl bg-transparent mx-2 
-         text-center focus:outline-none min-h-10"
+        class="webphone-digits font-medium select-none outline-none border-none text-[#232323] text-4xl bg-transparent mx-2 text-center focus:outline-none min-h-10"
       />
       <div
-        class="hidden cursor-pointer select-none absolute 
-        bottom-[-5px] right-[-8%] lg:right-[-20%]"
+        class="hidden cursor-pointer select-none absolute bottom-[-5px] right-[-8%] lg:right-[-20%]"
         id="webphone-backspace-btn"
       >
         <img src="./images/backspace.svg" />
@@ -184,16 +209,14 @@
     <div id="dialpad-container" class="inline-grid grid-cols-3 gap-6 mx-auto">
       <div
         id="webphone-call-btn"
-        class="bg-[#72C515] cursor-pointer duration-200 ease-in 
-        p-3 col-start-2 col-end-3 mx-auto justify-center 
-        flex hover:bg-green-400 items-center 
-        h-14 w-14 rounded-full select-none"
+        class="bg-[#72C515] cursor-pointer duration-200 ease-in p-3 col-start-2 col-end-3 mx-auto justify-center flex hover:bg-green-400 items-center h-14 w-14 rounded-full select-none"
       >
         <img src="images/dialer.svg" class="w-full h-full object-cover" />
       </div>
     </div>
   </div>
-  <div id="caller-id" class="mt-4 cursor-pointer select-none
-   text-[#42AAF5] font-medium text-lg flex justify-center">
-  </div>
+  <div
+    id="caller-id"
+    class="mt-4 cursor-pointer select-none text-[#42AAF5] font-medium text-lg flex justify-center"
+  ></div>
 </div>

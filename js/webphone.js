@@ -491,7 +491,7 @@ async function updateUI() {
       mainWrapper.classList.remove("overflow-hidden");
     };
 
-    contactsTab.onclick = function () {
+    contactsTab.onclick = function (e) {
       let contactsLoader = document.getElementById("contacts-list-loader");
       const loaderElement = document.createElement("div");
       loaderElement.id = "contacts-loader";
@@ -517,6 +517,12 @@ async function updateUI() {
       versionInfoBtn.classList.remove(...activeSubMenuClasses);
       contactsContainer.classList.remove("hidden");
       contactsContainer.classList.add("flex", "active-container");
+
+      if (this.props && this.props.isAdd) {
+        document.getElementById("create-contact-trigger").click();
+        document.getElementById("phone-edit").value = this.props.value;
+        this.props = null;
+      }
     };
 
     phoneTab.onclick = function () {
