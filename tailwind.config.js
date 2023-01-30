@@ -461,72 +461,6 @@ module.exports = {
     backgroundColor: ({ theme }) => theme("colors"),
     backgroundImage: ({ theme }) => ({
       none: "none",
-      "gradient-to-t": "linear-gradient(to top, var(--tw-gradient-stops))",
-      "gradient-to-tr":
-        "linear-gradient(to top right, var(--tw-gradient-stops))",
-      "gradient-to-r": "linear-gradient(to right, var(--tw-gradient-stops))",
-      "gradient-to-br":
-        "linear-gradient(to bottom right, var(--tw-gradient-stops))",
-      "gradient-to-b": "linear-gradient(to bottom, var(--tw-gradient-stops))",
-      "gradient-to-bl":
-        "linear-gradient(to bottom left, var(--tw-gradient-stops))",
-      "gradient-to-l": "linear-gradient(to left, var(--tw-gradient-stops))",
-      "gradient-to-tl":
-        "linear-gradient(to top left, var(--tw-gradient-stops))",
-
-      "gradient-fuchsia":
-        "linear-gradient(310deg," +
-        theme("colors.purple.700") +
-        "," +
-        theme("colors.pink.500") +
-        ")",
-      "gradient-cyan":
-        "linear-gradient(310deg," +
-        theme("colors.blue.600") +
-        "," +
-        theme("colors.cyan.400") +
-        ")",
-      "gradient-orange":
-        "linear-gradient(310deg," +
-        theme("colors.red.500") +
-        "," +
-        theme("colors.yellow.400") +
-        ")",
-      "gradient-red":
-        "linear-gradient(310deg," +
-        theme("colors.red.600") +
-        "," +
-        theme("colors.rose.400") +
-        ")",
-      "gradient-lime":
-        "linear-gradient(310deg," +
-        theme("colors.green.600") +
-        "," +
-        theme("colors.lime.400") +
-        ")",
-      "gradient-slate":
-        "linear-gradient(310deg," +
-        theme("colors.slate.600") +
-        "," +
-        theme("colors.slate.300") +
-        ")",
-      "gradient-dark-gray":
-        "linear-gradient(310deg," +
-        theme("colors.gray.900") +
-        "," +
-        theme("colors.slate.800") +
-        ")",
-      "gradient-gray":
-        "linear-gradient(310deg," +
-        theme("colors.gray.400") +
-        "," +
-        theme("colors.gray.100") +
-        ")",
-
-      "gradient-horizontal-dark":
-        "linear-gradient(90deg,transparent,rgba(0,0,0,.4),transparent)",
-      "gradient-horizontal-light":
-        "linear-gradient(90deg,transparent,rgba(0,0,0,.1),transparent)",
     }),
     backgroundOpacity: ({ theme }) => theme("opacity"),
     backgroundPosition: {
@@ -1022,8 +956,9 @@ module.exports = {
     maxHeight: ({ theme }) => ({
       ...theme("spacing"),
       full: "100%",
-      'list':'calc(100vh - 150px)',
-      'box': '90vh',
+      list: "calc(100vh - 150px)",
+      box: "90vh",
+      "box-sm": "70vh",
       content: "95vh",
       screen: "100vh",
       min: "min-content",
