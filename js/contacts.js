@@ -463,7 +463,7 @@ function openContactDetails(id, data, activeContact) {
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
   let addContactContainer = document.getElementById("add-contact-container");
-
+  let contactLeftPanel = document.getElementById("contact-left-panel");
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
 
@@ -515,7 +515,7 @@ function openContactDetails(id, data, activeContact) {
       detailActions.classList.add("flex");
       addContactTrigger.classList.remove("hidden");
       addContactTrigger.classList.add("flex");
-
+      contactLeftPanel.classList.remove("hidden", "lg:block");
       this.dataset.isEdit = false;
       closeConfirmModal();
       return;
@@ -590,6 +590,8 @@ function openContactDetails(id, data, activeContact) {
       }
     }
 
+    contactLeftPanel.classList.add("hidden", "lg:block");
+
     detailActions.classList.remove("flex");
     detailActions.classList.add("hidden");
     editMode.querySelectorAll("input").forEach((el) => {
@@ -658,6 +660,8 @@ function openContactDetails(id, data, activeContact) {
             contactDetails.classList.add("hidden");
             contactDetails.classList.remove("flex");
             sessionStorage.setItem("contacts", JSON.stringify(newData));
+            contactLeftPanel.classList.remove("hidden", "lg:block");
+
             drawContacts(newData);
           }
           return res.json();
