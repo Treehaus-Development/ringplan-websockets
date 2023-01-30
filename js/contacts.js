@@ -435,7 +435,8 @@ function appendFormToDetails() {
   addContactContainer.classList.add("hidden");
   let form = document.getElementById("add-contact");
   form.classList.add("hidden");
-
+  form.children[0].classList.remove("max-h-box-sm");
+  form.children[0].classList.add("max-h-md");
   form.id = "edit-mode";
   contactDetails.children[0].appendChild(form);
 }
@@ -849,6 +850,8 @@ function drawContacts(data, isSearch) {
     form.classList.remove("hidden");
     toggleContactItemsState(true);
     form.querySelectorAll("input").forEach((el) => (el.value = ""));
+    form.children[0].classList.remove("max-h-md");
+    form.children[0].classList.add("max-h-box-sm");
     form.id = "add-contact";
     document.getElementById("add-contact-wrapper").appendChild(form);
     confirmAction.dataset.isAdd = true;

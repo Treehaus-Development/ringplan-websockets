@@ -956,6 +956,8 @@ module.exports = {
     maxHeight: ({ theme }) => ({
       ...theme("spacing"),
       full: "100%",
+      short: "42vh",
+      md:'55vh',
       list: "calc(100vh - 150px)",
       box: "90vh",
       "box-sm": "70vh",

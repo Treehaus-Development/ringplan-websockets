@@ -492,6 +492,7 @@ async function updateUI() {
     };
 
     contactsTab.onclick = function (e) {
+      if (this.classList.contains("active-tab")) return;
       let contactsLoader = document.getElementById("contacts-list-loader");
       const loaderElement = document.createElement("div");
       loaderElement.id = "contacts-loader";
