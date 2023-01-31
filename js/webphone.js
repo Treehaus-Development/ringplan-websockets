@@ -420,7 +420,9 @@ async function updateUI() {
           phoneTab.classList.contains("active-tab") &&
           !pastedContent.includes(".")
         ) {
-          document.querySelector(".webphone-digits").value = pastedContent;
+          setTimeout(() => {
+            document.querySelector(".webphone-digits").value = pastedContent;
+          }, 50);
           document
             .getElementById("webphone-backspace-btn")
             .classList.remove("hidden");
