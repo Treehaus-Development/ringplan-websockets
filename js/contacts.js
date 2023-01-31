@@ -246,6 +246,23 @@ function handleAddEditContact(target, isAdd, data) {
   return sendData;
 }
 
+function addBacktoButton(target, isEdit) {
+  console.log(document.getElementById("back-to-list"));
+  if (!document.getElementById("back-to-list")) {
+    target.insertAdjacentHTML(
+      `afterbegin`,
+      `
+      <div class="absolute left-5 top-3 cursor-pointer" id="back-to-list">
+        <img src="/images/call-icons/back.svg" />
+      </div>
+    `
+    );
+    document.getElementById("back-to-list").onclick = function () {
+      openConfirmModal(isEdit);
+    };
+  }
+}
+
 function updateSaveButton(activeContact) {
   let saveEdit = document.getElementById("save-contact-edit");
   let editMode = document.getElementById("edit-mode");
@@ -263,57 +280,58 @@ function updateSaveButton(activeContact) {
     saveEdit.disabled = isEmpty;
     return;
   }
-  
 
-  let { address, job_details, organization_details, ...rest } = activeContact;
-  if (!address) {
-    address = {
-      country: "",
-      state: "",
-      city: "",
-      street: "",
-      zipcode: "",
-    };
-  }
-  if (!job_details) {
-    job_details = {
-      position: "",
-      department: "",
-      reports_to: "",
-    };
-  }
-  if (!organization_details) {
-    organization_details = {
-      organization: "",
-      parent_organization: "",
-    };
-  }
-  const tmpContact = {
-    ...rest,
-    phone: removePlus(rest.phone || ""),
-    ...address,
-    ...job_details,
-    ...organization_details,
-    mailing_address: rest.mailing_address || "",
-  };
-
-  const inputs = editMode.querySelectorAll("input");
-  const inputValues = Array.from(inputs).map((input) => ({
-    name: input.name,
-    value: input.value,
-  }));
-
-  const match = inputValues.every((inputVal) => {
-    if (tmpContact.hasOwnProperty(inputVal.name)) {
-      if (!inputVal.value && !tmpContact[inputVal.name]) {
-        return true;
-      }
-      return inputVal.value === tmpContact[inputVal.name];
+  if (activeContact) {
+    let { address, job_details, organization_details, ...rest } = activeContact;
+    if (!address) {
+      address = {
+        country: "",
+        state: "",
+        city: "",
+        street: "",
+        zipcode: "",
+      };
     }
-    return true;
-  });
+    if (!job_details) {
+      job_details = {
+        position: "",
+        department: "",
+        reports_to: "",
+      };
+    }
+    if (!organization_details) {
+      organization_details = {
+        organization: "",
+        parent_organization: "",
+      };
+    }
+    const tmpContact = {
+      ...rest,
+      phone: removePlus(rest.phone || ""),
+      ...address,
+      ...job_details,
+      ...organization_details,
+      mailing_address: rest.mailing_address || "",
+    };
 
-  saveEdit.disabled = match;
+    const inputs = editMode.querySelectorAll("input");
+    const inputValues = Array.from(inputs).map((input) => ({
+      name: input.name,
+      value: input.value,
+    }));
+
+    const match = inputValues.every((inputVal) => {
+      if (tmpContact.hasOwnProperty(inputVal.name)) {
+        if (!inputVal.value && !tmpContact[inputVal.name]) {
+          return true;
+        }
+        return inputVal.value === tmpContact[inputVal.name];
+      }
+      return true;
+    });
+
+    saveEdit.disabled = match;
+  }
 }
 
 function initSelectize(
@@ -527,6 +545,7 @@ function openContactDetails(id, data, activeContact) {
       appendFormToDetails();
       this.dataset.isAdd = false;
       saveEdit.dataset.isAdd = false;
+      document.getElementById("back-to-list").remove();
       closeConfirmModal();
       toggleContactItemsState();
 
@@ -577,20 +596,8 @@ function openContactDetails(id, data, activeContact) {
     editMode.classList.remove("hidden");
     addContactTrigger.classList.remove("flex");
     addContactTrigger.classList.add("hidden");
-    toggleContactItemsState(true)
-    if (!document.getElementById("back-to-list")) {
-      contactDetails.insertAdjacentHTML(
-        `afterbegin`,
-        `
-        <div class="absolute left-5 top-3 cursor-pointer" id="back-to-list">
-          <img src="/images/call-icons/back.svg" />
-        </div>
-      `
-      );
-      document.getElementById("back-to-list").onclick = function () {
-        openConfirmModal(true)
-      };
-    }
+    toggleContactItemsState(true);
+    addBacktoButton(contactDetails, true);
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
 
@@ -879,6 +886,8 @@ function drawContacts(data, isSearch) {
     addFormGroupListeners();
     updateSaveButton({});
 
+    addBacktoButton(addContactContainer);
+
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
 
@@ -914,6 +923,7 @@ function drawContacts(data, isSearch) {
     this.dataset.isAdd = false;
     saveEdit.dataset.isAdd = false;
     toggleContactItemsState();
+    document.getElementById("back-to-list").remove();
     closeConfirmModal();
   };
 
