@@ -263,6 +263,7 @@ function updateSaveButton(activeContact) {
     saveEdit.disabled = isEmpty;
     return;
   }
+  
 
   let { address, job_details, organization_details, ...rest } = activeContact;
   if (!address) {
@@ -874,7 +875,7 @@ function drawContacts(data, isSearch) {
     confirmAction.dataset.isAdd = true;
     saveEdit.dataset.isAdd = true;
     addFormGroupListeners();
-    updateSaveButton();
+    updateSaveButton({});
 
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
@@ -886,7 +887,7 @@ function drawContacts(data, isSearch) {
     });
 
     setTimeout(() => {
-      initSelectize(null, null, reportsToVals, null);
+      initSelectize({}, null, reportsToVals, null);
     }, 1000);
   };
 
