@@ -520,6 +520,7 @@ function openContactDetails(id, data, activeContact) {
       this.dataset.isEdit = false;
       document.getElementById("back-to-list").remove();
       closeConfirmModal();
+      toggleContactItemsState();
       return;
     }
     if (this.dataset.isAdd === "true") {
@@ -576,6 +577,7 @@ function openContactDetails(id, data, activeContact) {
     editMode.classList.remove("hidden");
     addContactTrigger.classList.remove("flex");
     addContactTrigger.classList.add("hidden");
+    toggleContactItemsState(true)
     if (!document.getElementById("back-to-list")) {
       contactDetails.insertAdjacentHTML(
         `afterbegin`,
