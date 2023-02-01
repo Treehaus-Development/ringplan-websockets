@@ -5,6 +5,19 @@ function removePlus(str) {
   return str.replace(/\+/g, "");
 }
 
+function getItemInfoTitle(key) {
+  let val = "";
+  switch (key) {
+    case "reports_to":
+    case "parent_organization":
+      val = capitalizeAndRemoveUnderscores(key);
+      break;
+    default:
+      val = toCapitalize(key);
+  }
+  return val;
+}
+
 function findActiveReportTo(data, activeContact) {
   return data.find(
     (item) =>
@@ -15,7 +28,7 @@ function findActiveReportTo(data, activeContact) {
   );
 }
 
-function flattenContactData(contact) {
+function flattenContactData(contact, isView) {
   if (contact) {
     let { address, job_details, organization_details, ...rest } = contact;
     if (!address) {
@@ -40,7 +53,7 @@ function flattenContactData(contact) {
         parent_organization: "",
       };
     }
-    const tmpContact = {
+    let tmpContact = {
       ...rest,
       phone: removePlus(rest.phone || ""),
       ...address,
@@ -48,6 +61,13 @@ function flattenContactData(contact) {
       ...organization_details,
       mailing_address: rest.mailing_address || "",
     };
+
+    if (isView) {
+      let name = tmpContact.first_name + " " + tmpContact.last_name;
+      delete tmpContact.first_name;
+      delete tmpContact.last_name;
+      tmpContact = { name: name.includes("null") ? null : name, ...tmpContact };
+    }
 
     return tmpContact;
   }
@@ -490,7 +510,7 @@ function openContactDetails(id, data, activeContact) {
   removeActiveMark();
 
   activeElem.classList.add("bg-gray-100");
-  const flatedContact = flattenContactData(activeContact);
+  const flatedContact = flattenContactData(activeContact, true);
 
   Object.entries(flatedContact).forEach(([key, value]) => {
     if (
@@ -509,14 +529,7 @@ function openContactDetails(id, data, activeContact) {
             class="flex justify-between detailed-info-item select-none 
             p-3 font-bold text-sm border-gray-200"
           >
-              <span class="text-[#96a5ab]">${
-                key === "first_name" ||
-                key === "last_name" ||
-                key === "reports_to" ||
-                key === "parent_organization"
-                  ? capitalizeAndRemoveUnderscores(key)
-                  : toCapitalize(key)
-              }</span>
+              <span class="text-[#96a5ab]">${getItemInfoTitle(key)}</span>
               <p class="text-[#576a72]">${flatedContact[key]}</p>
         </div>
          `;
