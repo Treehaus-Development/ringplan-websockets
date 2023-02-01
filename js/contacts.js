@@ -15,6 +15,44 @@ function findActiveReportTo(data, activeContact) {
   );
 }
 
+function flattenContactData(contact) {
+  if (contact) {
+    let { address, job_details, organization_details, ...rest } = contact;
+    if (!address) {
+      address = {
+        country: "",
+        state: "",
+        city: "",
+        street: "",
+        zipcode: "",
+      };
+    }
+    if (!job_details) {
+      job_details = {
+        position: "",
+        department: "",
+        reports_to: "",
+      };
+    }
+    if (!organization_details) {
+      organization_details = {
+        organization: "",
+        parent_organization: "",
+      };
+    }
+    const tmpContact = {
+      ...rest,
+      phone: removePlus(rest.phone || ""),
+      ...address,
+      ...job_details,
+      ...organization_details,
+      mailing_address: rest.mailing_address || "",
+    };
+
+    return tmpContact;
+  }
+}
+
 async function getContacts(isWebphone) {
   try {
     const contacts = await fetch(`${backendApi}/company/directory/contacts`, {
@@ -110,18 +148,6 @@ const removeActiveMark = () => {
   document.querySelectorAll(".contact-list-item").forEach((item) => {
     item.classList.remove("bg-gray-100");
   });
-};
-
-const toggleEmailPhone = (target, value) => {
-  if (!!value) {
-    target.classList.remove("hidden");
-    target.classList.add("flex");
-    target.querySelector("p").innerText = value;
-  } else {
-    target.classList.add("hidden");
-    target.classList.remove("flex");
-    target.querySelector("p").innerText = "";
-  }
 };
 
 function addFormGroupListeners() {
@@ -281,57 +307,25 @@ function updateSaveButton(activeContact) {
     return;
   }
 
-  if (activeContact) {
-    let { address, job_details, organization_details, ...rest } = activeContact;
-    if (!address) {
-      address = {
-        country: "",
-        state: "",
-        city: "",
-        street: "",
-        zipcode: "",
-      };
-    }
-    if (!job_details) {
-      job_details = {
-        position: "",
-        department: "",
-        reports_to: "",
-      };
-    }
-    if (!organization_details) {
-      organization_details = {
-        organization: "",
-        parent_organization: "",
-      };
-    }
-    const tmpContact = {
-      ...rest,
-      phone: removePlus(rest.phone || ""),
-      ...address,
-      ...job_details,
-      ...organization_details,
-      mailing_address: rest.mailing_address || "",
-    };
+  const tmpContact = flattenContactData(activeContact);
 
-    const inputs = editMode.querySelectorAll("input");
-    const inputValues = Array.from(inputs).map((input) => ({
-      name: input.name,
-      value: input.value,
-    }));
+  const inputs = editMode.querySelectorAll("input");
+  const inputValues = Array.from(inputs).map((input) => ({
+    name: input.name,
+    value: input.value,
+  }));
 
-    const match = inputValues.every((inputVal) => {
-      if (tmpContact.hasOwnProperty(inputVal.name)) {
-        if (!inputVal.value && !tmpContact[inputVal.name]) {
-          return true;
-        }
-        return inputVal.value === tmpContact[inputVal.name];
+  const match = inputValues.every((inputVal) => {
+    if (tmpContact.hasOwnProperty(inputVal.name)) {
+      if (!inputVal.value && !tmpContact[inputVal.name]) {
+        return true;
       }
-      return true;
-    });
+      return inputVal.value === tmpContact[inputVal.name];
+    }
+    return true;
+  });
 
-    saveEdit.disabled = match;
-  }
+  saveEdit.disabled = match;
 }
 
 function initSelectize(
@@ -466,8 +460,6 @@ function openContactDetails(id, data, activeContact) {
   let activeElem = document.querySelector(`[data-id="${id}"]`);
   let contactNumber = document.getElementById("contact-number");
   let activeImageSrc = activeElem.querySelector("img").src;
-  let contactPhone = document.getElementById("contact-mobile");
-  let contactEmail = document.getElementById("contact-email");
   let contactCallBtn = document.getElementById("call-contact-btn");
   let deleteContactTrigger = document.getElementById("delete-contact-btn");
   let deleteContactModal = document.getElementById("delete-confirm-modal");
@@ -498,9 +490,56 @@ function openContactDetails(id, data, activeContact) {
   removeActiveMark();
 
   activeElem.classList.add("bg-gray-100");
+  const flatedContact = flattenContactData(activeContact);
 
-  toggleEmailPhone(contactEmail, activeContact.email);
-  toggleEmailPhone(contactPhone, activeContact.phone);
+  Object.entries(flatedContact).forEach(([key, value]) => {
+    if (
+      key !== "id" &&
+      key !== "company_id" &&
+      key !== "is_user" &&
+      key !== "group" &&
+      key !== "is_deleted" &&
+      key !== "extension"
+    ) {
+      if (flatedContact[key]) {
+        let optionItem = document.createElement("div");
+        optionItem.id = `info-${key}`;
+        optionItem.innerHTML = `
+         <div
+            class="flex justify-between detailed-info-item select-none 
+            p-3 font-bold text-sm border-gray-200"
+          >
+              <span class="text-[#96a5ab]">${
+                key === "first_name" ||
+                key === "last_name" ||
+                key === "reports_to" ||
+                key === "parent_organization"
+                  ? capitalizeAndRemoveUnderscores(key)
+                  : toCapitalize(key)
+              }</span>
+              <p class="text-[#576a72]">${flatedContact[key]}</p>
+        </div>
+         `;
+        if (document.getElementById(`info-${key}`)) {
+          document.getElementById(`info-${key}`).remove();
+        }
+        document.getElementById("detailed-info").append(optionItem);
+      } else {
+        let option = document.querySelector(`#info-${key}`);
+        if (option) {
+          option.remove();
+        }
+      }
+    }
+  });
+
+  document.querySelectorAll(".detailed-info-item").forEach((item, index) => {
+    if (index % 2 === 0) {
+      item.classList.add("bg-[#96a5ab1a]");
+    } else {
+      item.classList.add("bg-white");
+    }
+  });
 
   addFormGroupListeners();
 

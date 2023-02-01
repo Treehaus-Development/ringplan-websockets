@@ -81,6 +81,17 @@ const additionalStatuses = Object.freeze({
   afk: "AFK",
 });
 
+function toCapitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function capitalizeAndRemoveUnderscores(str) {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 const userApi = getLoginUrl();
 const backendApi = getBackendUrl();
 let prevName;
@@ -92,7 +103,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzUyMDczNTcsIm5iZiI6MTY3NTE3ODU1NywidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1MTc4NTU3LCJhdXRoX3RpbWUiOjE2NzUxNzg1NTYsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiczhFeUVHcjZWWTNXR01ncXJHY0tFQSJ9.wKgA-sGQg8N-ivuBicOOokfQhdjFUrqWAoHwrBaUN8eMf8tuwCrbLQ2BVvhZYU6_Y4otfLJlYTKsqUb1dKvfUv2ZSnilfA3w5aIuGzLKaDpL7VHdKWnwHsfEnrVANrWFJjp87gLFGNlayfHowxj3pZBgikc0b1Ew4T6KGyTjEFgdciTxuRUSu-0gEHzz0FgVH3aLeiZ0crSwwzOgLVBiGAZgI30iOrsLxWj1IIJOaIPe6GVDdCEnuvUgep39y481A9IS8pdviLnFJWXpavwI6graO-2fU1RoBOyVfoOWx13-tdhC44K1o926Dcyae0uQXlJVaeG4YC1kjb49hCzz-A";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzUyOTk1NzQsIm5iZiI6MTY3NTI3MDc3NCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1MjcwNzc0LCJhdXRoX3RpbWUiOjE2NzUyNzA3NzMsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiOXUxdlNtYVFlMFVydWdWRnRkVzNrQSJ9.TCp9l-jdNSIrEH9E9lZez3IvKzgNFlGZYlJ-gu0jx-bqzmTsC8aUzZekyDu5iFZ7ua1YA-F0CgoEL5mDnZgSQUCkOT1ry_kZuUJDandfOT1kWICfQR2Li3bwR5Aa2ac3HahjjjDrn74EItVfL3w3I-24ZXFeH2F_swdVvVY6XEEUYPEhfk6wS76-sQn9iaTdNohnGIPnD-reB3d0FqCTiqJwDoStCwAhxdmb5zKWSdL46wWCQMvC7UBSv54K-Z_jm6iumlCevco-p_NREOnlryA8y1WEydFfHSLCHjIOVr1sadZTb2I9jwzypRDTbh4T1LhsohuI4j7OCOMqco2CFw";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -538,11 +549,11 @@ const triggerModalUpdates = (target, listValues, isLoggedIn, isCallerId) => {
     }
     editModal.classList.remove("hidden");
     editModal.classList.add("grid");
-    let activeExt = localStorage.getItem('activeExtension')
+    let activeExt = localStorage.getItem("activeExtension");
     let exts = JSON.parse(activeExt);
-    if(isCallerId){
-      activeNumber = exts.outbound_callerid.number
-      name = exts.data.name
+    if (isCallerId) {
+      activeNumber = exts.outbound_callerid.number;
+      name = exts.data.name;
     }
     await getAvailableNumbers();
     nameInput.placeholder = name;
