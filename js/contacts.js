@@ -495,7 +495,7 @@ function openContactDetails(id, data, activeContact) {
   let detailActions = document.getElementById("detail-actions");
   let addContactContainer = document.getElementById("add-contact-container");
   let contactLeftPanel = document.getElementById("contact-left-panel");
- 
+
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
 
@@ -651,8 +651,8 @@ function openContactDetails(id, data, activeContact) {
     addContactTrigger.classList.add("hidden");
     saveEdit.dataset.isAdd = false;
     toggleContactItemsState(true);
-    confirmDelete.dataset.isEdit = true
-  
+    confirmDelete.dataset.isEdit = true;
+
     addBacktoButton(contactDetails, true);
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
@@ -829,6 +829,7 @@ function drawContacts(data, isSearch) {
   let cancelAction = document.getElementById("cancel-action");
   let confirmAction = document.getElementById("confirm-action");
   let saveEdit = document.getElementById("save-contact-edit");
+  let contactLeftPanel = document.getElementById("contact-left-panel");
 
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
@@ -975,13 +976,23 @@ function drawContacts(data, isSearch) {
   };
 
   confirmAction.onclick = function () {
-    if(this.dataset.isEdit !== 'true'){
+    if (this.dataset.isEdit !== "true") {
       appendFormToDetails();
       this.dataset.isAdd = false;
       saveEdit.dataset.isAdd = false;
       toggleContactItemsState();
       document.getElementById("back-to-list").remove();
       closeConfirmModal();
+    } else {
+      document.getElementById("view-mode").classList.remove("hidden");
+      document.getElementById("edit-mode").classList.add("hidden");
+      addContactTrigger.classList.remove("hidden");
+      addContactTrigger.classList.add("flex");
+      contactLeftPanel.classList.remove("hidden", "lg:block");
+      this.dataset.isEdit = false;
+      document.getElementById("back-to-list").remove();
+      closeConfirmModal();
+      toggleContactItemsState();
     }
   };
 
