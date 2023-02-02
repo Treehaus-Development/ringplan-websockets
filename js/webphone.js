@@ -2,6 +2,7 @@ let classesStr = `items-center text-[#0D0D54] font-bold bg-[#F7F7FB] border-r-4 
 let activeClasses = classesStr.split(" ");
 let subMenuClassesStr = `bg-[#F7F7FB] text-[#0D0D54] active-submenu`;
 let activeSubMenuClasses = subMenuClassesStr.split(" ");
+let sidecarEnabled = localStorage.getItem("sidecarEnabled");
 
 const svgLoader = `<svg
 aria-hidden="true"
@@ -125,16 +126,18 @@ const setActiveTab = (ele) => {
 };
 
 const removeActiveTab = () => {
-  let versionInfoBtn = document.getElementById("version-info");
   let ele = document.querySelector(".active-tab");
   let activeContainer = document.querySelector(".active-container");
+  let activeSubMenu = document.querySelector(".active-submenu");
   if (ele.id === "settings-tab") {
     ele = ele.children[0];
   }
 
   activeContainer.classList.remove("active-container", "flex");
   activeContainer.classList.add("hidden");
-  versionInfoBtn.classList.remove(...activeSubMenuClasses);
+  if (activeSubMenu) {
+    activeSubMenu.classList.remove(...activeSubMenuClasses);
+  }
 
   ele.classList.remove(...activeClasses, "gap-16");
   ele.classList.add("gap-5", "font-medium");
@@ -214,6 +217,15 @@ const openDetailedOptions = async (id) => {
 
   drawDetailedLog(data);
 };
+
+function handleSidecarTabClick(self) {
+  removeActiveTab();
+  setActiveTab(self);
+  document.getElementById("sidecar-container").classList.remove("hidden");
+  document
+    .getElementById("sidecar-container")
+    .classList.add("grid", "active-container");
+}
 
 const drawCallHistory = () => {
   let historyListContainer = document.getElementById("history-list");
@@ -392,6 +404,9 @@ async function updateUI() {
     let contactsTab = document.getElementById("contacts-tab");
     let contactsContainer = document.getElementById("contacts-container");
     let sidecarContainer = document.getElementById("sidecar-container");
+    let sidecarSettingsTab = document.getElementById("sidecar-settings-tab");
+    let sidecarSettingsContainer = document.getElementById("sidecar-settings");
+    let sidecarToggle = document.getElementById("toggle-sidecar");
 
     mainWrapper.appendChild(container);
 
@@ -465,6 +480,9 @@ async function updateUI() {
           editExtension(vals._id, activeNum, name, vals.location?.id);
         };
       }
+      if (sidecarEnabled === "false") {
+        sideCarTab.remove();
+      }
     } else {
       callHistoryTab.remove();
       voiceMailTab.remove();
@@ -527,7 +545,6 @@ async function updateUI() {
       removeActiveTab();
       setActiveTab(this);
       mainWrapper.classList.add("lg:overflow-hidden");
-      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       contactsContainer.classList.remove("hidden");
       contactsContainer.classList.add("flex", "active-container");
 
@@ -583,10 +600,7 @@ async function updateUI() {
     };
 
     sideCarTab.onclick = function () {
-      removeActiveTab();
-      setActiveTab(this);
-      sidecarContainer.classList.remove("hidden");
-      sidecarContainer.classList.add("grid", "active-container");
+      handleSidecarTabClick(this);
     };
 
     logoutPopupTrigger.onclick = (e) => {
@@ -600,6 +614,18 @@ async function updateUI() {
       mainWrapper.classList.remove("grid");
       mainWrapper.classList.add("hidden");
     };
+
+    sidecarSettingsTab.onclick = function (e) {
+      removeActiveTab();
+      setActiveTab(settingsTab.children[0]);
+      e.stopPropagation();
+      this.classList.add(...activeSubMenuClasses);
+      sidecarSettingsContainer.classList.remove("hidden");
+      sidecarSettingsContainer.classList.add("active-container");
+      sidecarToggle.checked = sidecarEnabled !== "false";
+    };
+
+    sidecarToggle.onchange = handleToggleSidecar;
 
     logoutConfirm.onclick = () => {
       logout();

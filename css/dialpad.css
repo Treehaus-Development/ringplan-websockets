@@ -2,7 +2,9 @@
 #apply-filters,
 #confirm-action,
 #edit-trigger,
-#save-contact-edit {
+#save-contact-edit,
+#export-btn,
+#import-btn {
   background: linear-gradient(101.26deg, #83d929 14.93%, #0099d1 80.68%);
 }
 

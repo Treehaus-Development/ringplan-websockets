@@ -92,8 +92,8 @@
       </li>
 
       <li
-      id="sidecar-tab"
-      class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-5 items-center font-bold bg-white"
+        id="sidecar-tab"
+        class="mt-0.5 cursor-pointer w-full px-6 py-3 flex gap-5 items-center font-bold bg-white"
       >
         <div class="flex items-center w-7">
           <img class="grayscale" src="../images/sidecar.svg" />
@@ -111,6 +111,12 @@
           <span>Settings</span>
         </li>
         <div id="settings-submenu" class="mt-4.5 pl-12 pr-4">
+          <li
+            id="sidecar-settings-tab"
+            class="font-medium p-3 cursor-pointer rounded-xl"
+          >
+            Sidecar
+          </li>
           <li
             id="version-info"
             class="font-medium p-3 cursor-pointer rounded-xl"
@@ -134,6 +140,64 @@
   class="ease-soft-in-out bg-[#fafafa] xl:ml-62.5 relative h-full max-h-screen rounded-xl transition-all duration-200"
 >
   <div id="main-wrapper" class="w-full mx-auto h-screen grid">
+    <div
+      id="sidecar-settings"
+      class="hidden w-full h-full bg-white border-l border-[F1F1F1]"
+    >
+      <div class="p-10">
+        <h3 class="text-[#00A2DD] font-medium text-2xl">
+          Sidecar (beta version)
+        </h3>
+        <div class="pl-14 mt-12 flex flex-col gap-8">
+          <div class="flex items-center gap-10">
+            <span class="text-sm font-medium text-gray-900"
+              >Enable sidecar</span
+            >
+            <label
+              for="toggle-sidecar"
+              class="relative inline-flex items-center cursor-pointer"
+            >
+              <input
+                checked="true"
+                id="toggle-sidecar"
+                type="checkbox"
+                value=""
+                class="sr-only peer"
+              />
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"
+              ></div>
+            </label>
+          </div>
+          <div class="flex items-center gap-10">
+            <span class="text-sm font-medium text-gray-900">Import/Export</span>
+            <div class="flex gap-2 items-center">
+              <div>
+                <input
+                  type="file"
+                  accept=".xml"
+                  name="import"
+                  id="import-sidecar"
+                  class="hidden"
+                />
+                <button
+                  id="import-btn"
+                  class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-10 py-1.5 text-center mr-2"
+                >
+                  Import
+                </button>
+              </div>
+              <button
+                class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-10 py-1.5 text-center mr-2"
+                id="export-btn"
+              >
+                Export
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div
       id="settings-info"
       class="hidden justify-center items-center bg-white flex-col rounded-2.5 w-full m-auto p-4 max-w-md max-h-120 shadow-info"
@@ -200,7 +264,10 @@
             id="spinner-loader"
             class="w-full h-40 hidden place-items-center"
           ></div>
-          <div id="call-log-list" class="hidden max-h-short overflow-y-auto"></div>
+          <div
+            id="call-log-list"
+            class="hidden max-h-short overflow-y-auto"
+          ></div>
         </div>
         <div class="absolute right-8 bottom-8">
           <div
@@ -391,10 +458,12 @@
 
     <div
       id="contacts-container"
-      class="hidden w-full h-full flex-col-reverse 
-      lg:flex-row px-4 lg:px-0 border-l border-[#dfdede] items-stretch mt-0.5"
+      class="hidden w-full h-full flex-col-reverse lg:flex-row px-4 lg:px-0 border-l border-[#dfdede] items-stretch mt-0.5"
     >
-      <div id="contact-left-panel" class="pt-4 basis-[40%] bg-white w-auto max-h-box">
+      <div
+        id="contact-left-panel"
+        class="pt-4 basis-[40%] bg-white w-auto max-h-box"
+      >
         <div id="search-bar" class="hidden mx-auto"></div>
         <div class="hidden h-full relative" id="contacts-list">
           <div
@@ -419,7 +488,10 @@
           class="hidden text-center mt-14 text-[#3C3C3C]"
         ></p>
       </div>
-      <div id="contacts-details" class="hidden min-h-md lg:min-h-auto flex-1 flex-col relative h-full">
+      <div
+        id="contacts-details"
+        class="hidden min-h-md lg:min-h-auto flex-1 flex-col relative h-full"
+      >
         <div class="flex flex-col py-6 items-center h-full">
           <div
             class="flex flex-col select-none items-center w-full justify-center gap-7"
@@ -463,7 +535,10 @@
             </div>
           </div>
           <div id="view-mode" class="mt-10 w-full pr-10 pl-4 h-full relative">
-            <div class="max-h-[30vh] overflow-y-auto customScroller" id="detailed-info"></div>
+            <div
+              class="max-h-[30vh] overflow-y-auto customScroller"
+              id="detailed-info"
+            ></div>
             <div class="absolute bottom-10 w-full pr-10 flex justify-end">
               <button
                 class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
@@ -487,9 +562,7 @@
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm
-                   placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] 
-                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   name="first_name"
                   id="first-name"
                   placeholder="Enter a first name..."
@@ -503,9 +576,7 @@
                 </span>
 
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm 
-                  placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd]
-                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   name="last_name"
                   id="last-name"
                   placeholder="Enter a last name..."
@@ -518,9 +589,7 @@
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab]
-                   text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color
-                    ease-in w-full lg:w-1/2"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   type="number"
                   name="phone"
                   id="phone-edit"
@@ -533,9 +602,7 @@
                   >Fax No.</span
                 >
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm
-                   placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] 
-                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   type="number"
                   name="fax"
                   id="fax-edit"
@@ -803,33 +870,66 @@
         id="add-contact-container"
         class="hidden flex-1 flex-col relative h-full"
       >
-        <div id="add-contact-wrapper" class="flex flex-col py-6 items-center h-full">
+        <div
+          id="add-contact-wrapper"
+          class="flex flex-col py-6 items-center h-full"
+        >
           <h3 class="text-center mt-4 text-xl font-semibold select-none">
             Add new contact
           </h3>
-
         </div>
       </div>
     </div>
-    <div id="sidecar-container" class="hidden grid-cols-5 place-items-center p-14 
-    gap-x-18.5 gap-y-6 bg-[#F2F2F2]">
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
+    <div
+      id="sidecar-container"
+      class="hidden grid-cols-5 place-items-center p-14 gap-x-18.5 gap-y-6 bg-[#F2F2F2]"
+    >
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
 
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-      <div class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"></div>
-
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
+      <div
+        class="w-40 h-36 bg-[#FDFDFD] rounded-xl border border-[#A9A9A9]"
+      ></div>
     </div>
   </div>
 </main>
