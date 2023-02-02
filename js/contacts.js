@@ -18,14 +18,15 @@ function getItemInfoTitle(key) {
   return val;
 }
 
-function findActiveReportTo(data, activeContact) {
-  return data.find(
-    (item) =>
-      item.first_name + " " + item.last_name ===
-        activeContact.job_details?.reports_to ||
-      item.phone === activeContact.job_details?.reports_to ||
-      item.email === activeContact.job_details?.reports_to
-  );
+function findActiveReportTo(reportsto) {
+  if (cachedContacts) {
+    return JSON.parse(cachedContacts).find(
+      (item) =>
+        item.first_name + " " + item.last_name === reportsto ||
+        item.phone === reportsto ||
+        item.email === reportsto
+    );
+  }
 }
 
 function flattenContactData(contact, isView) {
@@ -293,7 +294,6 @@ function handleAddEditContact(target, isAdd, data) {
 }
 
 function addBacktoButton(target, isEdit) {
-  console.log(document.getElementById("back-to-list"));
   if (!document.getElementById("back-to-list")) {
     target.insertAdjacentHTML(
       `afterbegin`,
@@ -337,6 +337,8 @@ function updateSaveButton(activeContact) {
 
   const match = inputValues.every((inputVal) => {
     if (tmpContact.hasOwnProperty(inputVal.name)) {
+      console.log(tmpContact[inputVal.name], "key");
+      console.log(inputVal.value, "value");
       if (!inputVal.value && !tmpContact[inputVal.name]) {
         return true;
       }
@@ -661,7 +663,10 @@ function openContactDetails(id, data, activeContact) {
       $("#salutation")[0].selectize.setValue(activeContact.salutation);
     }
     if (activeContact.job_details?.reports_to) {
-      const activeReportsTo = findActiveReportTo(data, activeContact);
+      const activeReportsTo = findActiveReportTo(
+        activeContact.job_details.reports_to
+      );
+
       if (activeReportsTo) {
         $("#reports_to")[0].selectize.setValue(
           activeReportsTo.phone || activeReportsTo.email
@@ -695,6 +700,12 @@ function openContactDetails(id, data, activeContact) {
         case "zipcode":
         case "state":
           el.value = activeContact.address?.[el.name] || "";
+          break;
+        case "birthday":
+          let formatDateStr = new Date(activeContact["birthday"])
+            .toISOString()
+            .split("T")[0];
+          el.value = formatDateStr;
           break;
         default:
           el.value = finalVal;
