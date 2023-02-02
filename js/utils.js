@@ -70,7 +70,7 @@ function generateAvatar(text) {
 let beforeHistory = new Date(
   new Date().getFullYear(),
   new Date().getMonth(),
-  new Date().getDay() - 15
+  new Date().getDay() - 10
 ).toISOString();
 
 const additionalStatuses = Object.freeze({
@@ -80,6 +80,17 @@ const additionalStatuses = Object.freeze({
   holiday: "Holiday",
   afk: "AFK",
 });
+
+function toCapitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function capitalizeAndRemoveUnderscores(str) {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 const userApi = getLoginUrl();
 const backendApi = getBackendUrl();
@@ -92,7 +103,7 @@ const cookiesObj = Object.fromEntries(
 );
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzUwMzY0NTIsIm5iZiI6MTY3NTAwNzY1MiwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1MDA3NjUyLCJhdXRoX3RpbWUiOjE2NzUwMDc2NTIsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoibHU2V25VSmFDaHNWdzBjTzNsVy1KUSJ9.BgZOtHhww0CtJJaaGSZFizh-zB_vMLv0ATOHnp5f-JIJwIQRDPC8h3nVZJm74zzI8VThSaXsHPCfHluot6ljul6vV8bADMb9S0RXQ5UhEWUcYglhaM2g0DJfs02jZ4Br4OTYxLAAOO_B60ipiMAY5RGvSB-PbdVxwOJjUq83OuFG-oBs6KkuI8-mJQkCu2iwUTbaT_09sh_x1QN3W1p2b-pZFyHK6LLVS3o7e1VAulcppEiyvkiuk2uvVHljVt5FWzCXEeQTrIIv6IHWOfvZjhmWTo0waWsR6eDcv_BflV2ehP78MxqjwK-Gb0jWfltdobD8VYs8E-awAqbceizb9Q";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzUzODAyNDgsIm5iZiI6MTY3NTM1MTQ0OCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1MzUxNDQ4LCJhdXRoX3RpbWUiOjE2NzUzNTE0NDYsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoidmtmZ3NuS1VqZmJnc010eWFuUXFOQSJ9.MO72kqlwZm1XP3IuL8Ef5Z4dwcEGMw7rCuY3hzmHs9nlcCNSbDqPlATf0VRI__3p54kdu33KszIoP6YSeXz8-eoiWeqgtQUDItNm3ruEZQBmGA_eKYlAyZ1sXr3tG_5vW7ZAyJX_0c7pJXP84uj3RcvrRZ0irxkalhonbajdhBGn-QwmKsqk8Pusf4yJdm03zkA7qkX6JIfH1IE3yUoZzBNinREFatiPuwW7VvPOIM54M6uDJAMuMHANaJTgxfIzFDnH1jqhAgkKLlI5BiBdneHep7FYq0nq0mSeyKbO21TlzcmsCMEU1Qq1ww862hM78df-yNzLFdKWuTBmrsc4wA";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
@@ -538,11 +549,11 @@ const triggerModalUpdates = (target, listValues, isLoggedIn, isCallerId) => {
     }
     editModal.classList.remove("hidden");
     editModal.classList.add("grid");
-    let activeExt = localStorage.getItem('activeExtension')
+    let activeExt = localStorage.getItem("activeExtension");
     let exts = JSON.parse(activeExt);
-    if(isCallerId){
-      activeNumber = exts.outbound_callerid.number
-      name = exts.data.name
+    if (isCallerId) {
+      activeNumber = exts.outbound_callerid.number;
+      name = exts.data.name;
     }
     await getAvailableNumbers();
     nameInput.placeholder = name;

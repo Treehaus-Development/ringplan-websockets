@@ -1,17 +1,86 @@
 let salutationList = [];
+const cachedContacts = sessionStorage.getItem("contacts");
 
 function removePlus(str) {
   return str.replace(/\+/g, "");
 }
 
-function findActiveReportTo(data, activeContact) {
-  return data.find(
-    (item) =>
-      item.first_name + " " + item.last_name ===
-        activeContact.job_details?.reports_to ||
-      item.phone === activeContact.job_details?.reports_to ||
-      item.email === activeContact.job_details?.reports_to
-  );
+function getItemInfoTitle(key) {
+  let val = "";
+  switch (key) {
+    case "reports_to":
+    case "parent_organization":
+      val = capitalizeAndRemoveUnderscores(key);
+      break;
+    default:
+      val = toCapitalize(key);
+  }
+  return val;
+}
+
+function findActiveReportTo(reportsto) {
+  if (cachedContacts) {
+    return JSON.parse(cachedContacts).find(
+      (item) =>
+        item.first_name + " " + item.last_name === reportsto ||
+        item.phone === reportsto ||
+        item.email === reportsto
+    );
+  }
+}
+
+function flattenContactData(contact, isView, isEdit) {
+  if (contact) {
+    let { address, job_details, organization_details, ...rest } = contact;
+    if (!address) {
+      address = {
+        country: "",
+        state: "",
+        city: "",
+        street: "",
+        zipcode: "",
+      };
+    }
+    if (!job_details) {
+      job_details = {
+        position: "",
+        department: "",
+        reports_to: "",
+      };
+    }
+    if (!organization_details) {
+      organization_details = {
+        organization: "",
+        parent_organization: "",
+      };
+    }
+    let tmpContact = {
+      ...rest,
+      phone: removePlus(rest.phone || ""),
+      ...address,
+      ...job_details,
+      ...organization_details,
+      mailing_address: rest.mailing_address || "",
+    };
+
+    if (isView) {
+      let name = tmpContact.first_name + " " + tmpContact.last_name;
+      delete tmpContact.first_name;
+      delete tmpContact.last_name;
+      tmpContact = { name: name.includes("null") ? null : name, ...tmpContact };
+    }
+
+    if (isEdit) {
+      let birthday = new Date(tmpContact["birthday"]);
+      if (!isNaN(birthday.getTime()) && !!tmpContact["birthday"]) {
+        tmpContact.birthday = new Date(tmpContact["birthday"])
+          .toISOString()
+          .split("T")[0];
+      }
+    }
+
+    return tmpContact;
+  }
 }
 
 async function getContacts(isWebphone) {
@@ -109,18 +178,6 @@ const removeActiveMark = () => {
   document.querySelectorAll(".contact-list-item").forEach((item) => {
     item.classList.remove("bg-gray-100");
   });
-};
-
-const toggleEmailPhone = (target, value) => {
-  if (!!value) {
-    target.classList.remove("hidden");
-    target.classList.add("flex");
-    target.querySelector("p").innerText = value;
-  } else {
-    target.classList.add("hidden");
-    target.classList.remove("flex");
-    target.querySelector("p").innerText = "";
-  }
 };
 
 function addFormGroupListeners() {
@@ -231,6 +288,7 @@ function handleAddEditContact(target, isAdd, data) {
           appendFormToDetails();
           const newData = [...data, res];
           toggleContactItemsState();
+          sessionStorage.setItem("contacts", JSON.stringify(newData));
           drawContacts(newData);
         }
         saveEdit.innerText = "Save";
@@ -242,6 +300,22 @@ function handleAddEditContact(target, isAdd, data) {
     return;
   }
   return sendData;
+}
+
+function addBacktoButton(target, isEdit) {
+  if (!document.getElementById("back-to-list")) {
+    target.insertAdjacentHTML(
+      `afterbegin`,
+      `
+      <div class="absolute left-5 top-3 cursor-pointer" id="back-to-list">
+        <img src="/images/call-icons/back.svg" />
+      </div>
+    `
+    );
+    document.getElementById("back-to-list").onclick = function () {
+      openConfirmModal(isEdit);
+    };
+  }
 }
 
 function updateSaveButton(activeContact) {
@@ -262,43 +336,15 @@ function updateSaveButton(activeContact) {
     return;
   }
 
-  let { address, job_details, organization_details, ...rest } = activeContact;
-  if (!address) {
-    address = {
-      country: "",
-      state: "",
-      city: "",
-      street: "",
-      zipcode: "",
-    };
-  }
-  if (!job_details) {
-    job_details = {
-      position: "",
-      department: "",
-      reports_to: "",
-    };
-  }
-  if (!organization_details) {
-    organization_details = {
-      organization: "",
-      parent_organization: "",
-    };
-  }
-  const tmpContact = {
-    ...rest,
-    phone: removePlus(rest.phone || ""),
-    ...address,
-    ...job_details,
-    ...organization_details,
-    mailing_address: rest.mailing_address || "",
-  };
+  const tmpContact = flattenContactData(activeContact, false, true);
 
   const inputs = editMode.querySelectorAll("input");
-  const inputValues = Array.from(inputs).map((input) => ({
-    name: input.name,
-    value: input.value,
-  }));
+  const inputValues = Array.from(inputs)
+    .map((input) => ({
+      name: input.name,
+      value: input.value,
+    }))
+    .filter((item) => !!item.name && !!item.value);
 
   const match = inputValues.every((inputVal) => {
     if (tmpContact.hasOwnProperty(inputVal.name)) {
@@ -370,6 +416,12 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("create-contact-trigger")
       .classList.add("pointer-events-none");
+    document
+      .getElementById("contact-left-panel")
+      .classList.add("hidden", "lg:block");
+    document
+      .getElementById("clear-search")
+      .classList.add("pointer-events-none", "opacity-50");
   } else {
     document
       .getElementById("contacts-list-wrapper")
@@ -388,6 +440,12 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("create-contact-trigger")
       .classList.remove("pointer-events-none");
+    document
+      .getElementById("contact-left-panel")
+      .classList.remove("hidden", "lg:block");
+    document
+      .getElementById("clear-search")
+      .classList.remove("pointer-events-none", "opacity-50");
   }
 
   document.getElementById("contact-search").disabled = !!bool;
@@ -427,9 +485,8 @@ function appendFormToDetails() {
   addContactContainer.classList.add("hidden");
   let form = document.getElementById("add-contact");
   form.classList.add("hidden");
-  form.children[0].classList.add("max-h-80");
-  form.children[0].classList.remove("max-h-96");
-
+  form.children[0].classList.remove("max-h-box-sm");
+  form.children[0].classList.add("max-h-md");
   form.id = "edit-mode";
   contactDetails.children[0].appendChild(form);
 }
@@ -440,8 +497,6 @@ function openContactDetails(id, data, activeContact) {
   let activeElem = document.querySelector(`[data-id="${id}"]`);
   let contactNumber = document.getElementById("contact-number");
   let activeImageSrc = activeElem.querySelector("img").src;
-  let contactPhone = document.getElementById("contact-mobile");
-  let contactEmail = document.getElementById("contact-email");
   let contactCallBtn = document.getElementById("call-contact-btn");
   let deleteContactTrigger = document.getElementById("delete-contact-btn");
   let deleteContactModal = document.getElementById("delete-confirm-modal");
@@ -456,6 +511,7 @@ function openContactDetails(id, data, activeContact) {
   let saveEdit = document.getElementById("save-contact-edit");
   let detailActions = document.getElementById("detail-actions");
   let addContactContainer = document.getElementById("add-contact-container");
+  let contactLeftPanel = document.getElementById("contact-left-panel");
 
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
@@ -472,9 +528,49 @@ function openContactDetails(id, data, activeContact) {
   removeActiveMark();
 
   activeElem.classList.add("bg-gray-100");
+  const flatedContact = flattenContactData(activeContact, true);
 
-  toggleEmailPhone(contactEmail, activeContact.email);
-  toggleEmailPhone(contactPhone, activeContact.phone);
+  Object.entries(flatedContact).forEach(([key, value]) => {
+    if (
+      key !== "id" &&
+      key !== "company_id" &&
+      key !== "is_user" &&
+      key !== "group" &&
+      key !== "is_deleted" &&
+      key !== "extension"
+    ) {
+      if (flatedContact[key]) {
+        let optionItem = document.createElement("div");
+        optionItem.id = `info-${key}`;
+        optionItem.innerHTML = `
+         <div
+            class="flex justify-between detailed-info-item select-none 
+            p-3 font-bold text-sm border-gray-200"
+          >
+              <span class="text-[#96a5ab]">${getItemInfoTitle(key)}</span>
+              <p class="text-[#576a72]">${flatedContact[key]}</p>
+        </div>
+         `;
+        if (document.getElementById(`info-${key}`)) {
+          document.getElementById(`info-${key}`).remove();
+        }
+        document.getElementById("detailed-info").append(optionItem);
+      } else {
+        let option = document.querySelector(`#info-${key}`);
+        if (option) {
+          option.remove();
+        }
+      }
+    }
+  });
+
+  document.querySelectorAll(".detailed-info-item").forEach((item, index) => {
+    if (index % 2 === 0) {
+      item.classList.add("bg-[#96a5ab1a]");
+    } else {
+      item.classList.add("bg-white");
+    }
+  });
 
   addFormGroupListeners();
 
@@ -508,17 +604,21 @@ function openContactDetails(id, data, activeContact) {
       detailActions.classList.add("flex");
       addContactTrigger.classList.remove("hidden");
       addContactTrigger.classList.add("flex");
-
+      contactLeftPanel.classList.remove("hidden", "lg:block");
       this.dataset.isEdit = false;
+      document.getElementById("back-to-list").remove();
       closeConfirmModal();
+      toggleContactItemsState();
       return;
     }
     if (this.dataset.isAdd === "true") {
       appendFormToDetails();
       this.dataset.isAdd = false;
       saveEdit.dataset.isAdd = false;
+      document.getElementById("back-to-list").remove();
       closeConfirmModal();
       toggleContactItemsState();
+
       return;
     }
     confirmDelete.disabled = true;
@@ -543,6 +643,8 @@ function openContactDetails(id, data, activeContact) {
         if (res.ok) {
           showSuccessToast(null, true);
           const newData = [...data].filter((item) => item.id !== id);
+          sessionStorage.setItem("contacts", JSON.stringify(newData));
+
           drawContacts(newData);
           contactDetails.classList.remove("flex");
           contactDetails.classList.add("hidden");
@@ -564,7 +666,11 @@ function openContactDetails(id, data, activeContact) {
     editMode.classList.remove("hidden");
     addContactTrigger.classList.remove("flex");
     addContactTrigger.classList.add("hidden");
+    saveEdit.dataset.isAdd = false;
+    toggleContactItemsState(true);
+    confirmDelete.dataset.isEdit = true;
 
+    addBacktoButton(contactDetails, true);
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
 
@@ -572,13 +678,18 @@ function openContactDetails(id, data, activeContact) {
       $("#salutation")[0].selectize.setValue(activeContact.salutation);
     }
     if (activeContact.job_details?.reports_to) {
-      const activeReportsTo = findActiveReportTo(data, activeContact);
+      const activeReportsTo = findActiveReportTo(
+        activeContact.job_details.reports_to
+      );
+
       if (activeReportsTo) {
         $("#reports_to")[0].selectize.setValue(
           activeReportsTo.phone || activeReportsTo.email
         );
       }
     }
+
+    contactLeftPanel.classList.add("hidden", "lg:block");
 
     detailActions.classList.remove("flex");
     detailActions.classList.add("hidden");
@@ -604,6 +715,15 @@ function openContactDetails(id, data, activeContact) {
         case "zipcode":
         case "state":
           el.value = activeContact.address?.[el.name] || "";
+          break;
+        case "birthday":
+          let birthday = new Date(activeContact[el.name]);
+          if (!isNaN(birthday.getTime()) && !!activeContact[el.name]) {
+            let formatDateStr = birthday.toISOString().split("T")[0];
+            el.value = formatDateStr;
+          } else {
+            el.value = finalVal;
+          }
           break;
         default:
           el.value = finalVal;
@@ -647,6 +767,9 @@ function openContactDetails(id, data, activeContact) {
             editMode.classList.add("hidden");
             contactDetails.classList.add("hidden");
             contactDetails.classList.remove("flex");
+            sessionStorage.setItem("contacts", JSON.stringify(newData));
+            contactLeftPanel.classList.remove("hidden", "lg:block");
+
             drawContacts(newData);
           }
           return res.json();
@@ -706,7 +829,7 @@ function template(data, isPlugin) {
           ? el.first_name + " " + el.last_name
           : el.phone || el.email
       }</p>
-              <span class="text-[#A3A3A3] ${
+              <span class="text-[#A3A3A3] inner-number ${
                 isPlugin ? "text-sm truncate max-w-64" : ""
               }
               ${el.first_name && el.last_name ? "inline" : "hidden"}">${
@@ -720,14 +843,13 @@ function template(data, isPlugin) {
     .join(" ");
 }
 
-function drawContacts(data, isSearch, prevData) {
+function drawContacts(data, isSearch) {
   let contactsLoader = document.getElementById("contacts-list-loader");
   let contactsList = document.getElementById("contacts-list");
   let searchBar = document.getElementById("search-bar");
   let emptyContacts = document.getElementById("empty-contacts");
   let clearSearch = document.getElementById("clear-search");
   let cancelEdit = document.getElementById("cancel-changes");
-
   let addContactTrigger = document.getElementById("create-contact-trigger");
   let contactDetails = document.getElementById("contacts-details");
   let addContactContainer = document.getElementById("add-contact-container");
@@ -736,6 +858,7 @@ function drawContacts(data, isSearch, prevData) {
   let cancelAction = document.getElementById("cancel-action");
   let confirmAction = document.getElementById("confirm-action");
   let saveEdit = document.getElementById("save-contact-edit");
+  let contactLeftPanel = document.getElementById("contact-left-panel");
 
   contactsLoader.classList.add("hidden");
   contactsLoader.classList.remove("grid");
@@ -746,7 +869,9 @@ function drawContacts(data, isSearch, prevData) {
     clearSearch.classList.remove("hidden");
     clearSearch.classList.add("flex");
     clearSearch.onclick = () => {
-      drawContacts(prevData);
+      if (cachedContacts) {
+        drawContacts(JSON.parse(cachedContacts));
+      }
     };
   }
 
@@ -763,7 +888,8 @@ function drawContacts(data, isSearch, prevData) {
     emptyContacts.innerText = "";
   }
 
-  let showSelectData = isSearch ? prevData : data;
+  let showSelectData =
+    isSearch && cachedContacts ? JSON.parse(cachedContacts) : data;
   let reportsToVals = showSelectData.map((el) => {
     return {
       ...el,
@@ -835,16 +961,18 @@ function drawContacts(data, isSearch, prevData) {
     addContactContainer.classList.add("flex");
     let form = document.getElementById("edit-mode");
     form.classList.remove("hidden");
-    form.children[0].classList.remove("max-h-80");
-    form.children[0].classList.add("max-h-96");
     toggleContactItemsState(true);
     form.querySelectorAll("input").forEach((el) => (el.value = ""));
+    form.children[0].classList.remove("max-h-md");
+    form.children[0].classList.add("max-h-box-sm");
     form.id = "add-contact";
     document.getElementById("add-contact-wrapper").appendChild(form);
     confirmAction.dataset.isAdd = true;
     saveEdit.dataset.isAdd = true;
     addFormGroupListeners();
-    updateSaveButton();
+    updateSaveButton({});
+
+    addBacktoButton(addContactContainer);
 
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
@@ -856,7 +984,7 @@ function drawContacts(data, isSearch, prevData) {
     });
 
     setTimeout(() => {
-      initSelectize(null, null, reportsToVals, null);
+      initSelectize({}, null, reportsToVals, null);
     }, 1000);
   };
 
@@ -877,11 +1005,24 @@ function drawContacts(data, isSearch, prevData) {
   };
 
   confirmAction.onclick = function () {
-    appendFormToDetails();
-    this.dataset.isAdd = false;
-    saveEdit.dataset.isAdd = false;
-    toggleContactItemsState();
-    closeConfirmModal();
+    if (this.dataset.isEdit !== "true") {
+      appendFormToDetails();
+      this.dataset.isAdd = false;
+      saveEdit.dataset.isAdd = false;
+      toggleContactItemsState();
+      document.getElementById("back-to-list").remove();
+      closeConfirmModal();
+    } else {
+      document.getElementById("view-mode").classList.remove("hidden");
+      document.getElementById("edit-mode").classList.add("hidden");
+      addContactTrigger.classList.remove("hidden");
+      addContactTrigger.classList.add("flex");
+      contactLeftPanel.classList.remove("hidden", "lg:block");
+      this.dataset.isEdit = false;
+      document.getElementById("back-to-list").remove();
+      closeConfirmModal();
+      toggleContactItemsState();
+    }
   };
 
   let searchContent = `
@@ -924,11 +1065,10 @@ function drawContacts(data, isSearch, prevData) {
     clearTimeout(timeout);
     timeout = setTimeout(function () {
       let contactDetails = document.getElementById("contacts-details");
-      let prevData = [...data];
       const newData = filterContacts(data, e.target.value);
       contactDetails.classList.remove("flex");
       contactDetails.classList.add("hidden");
-      drawContacts(newData, true, prevData);
+      drawContacts(newData, true);
     }, 500);
   });
 }

@@ -159,7 +159,7 @@
       id="history-container"
       class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
     >
-      <div class="pt-4 basis-[30%] bg-white block w-auto max-h-content">
+      <div class="pt-4 basis-[30%] bg-white block w-auto max-h-box">
         <span class="text-[#00A2DD] font-medium text-xl ml-10">Recents</span>
         <div
           class="flex-col overflow-y-auto customScroller max-h-full mt-2 hidden"
@@ -200,7 +200,7 @@
             id="spinner-loader"
             class="w-full h-40 hidden place-items-center"
           ></div>
-          <div id="call-log-list" class="hidden max-h-72 overflow-y-auto"></div>
+          <div id="call-log-list" class="hidden max-h-short overflow-y-auto"></div>
         </div>
         <div class="absolute right-8 bottom-8">
           <div
@@ -283,7 +283,7 @@
           </div>
         </div>
         <div
-          class="flex-col overflow-y-auto customScroller max-h-full mt-2 hidden"
+          class="flex-col overflow-y-auto customScroller bg-white h-full mt-2 hidden"
           id="voicemail-list"
         ></div>
         <div
@@ -391,9 +391,10 @@
 
     <div
       id="contacts-container"
-      class="hidden w-full h-full border-l border-[#dfdede] items-stretch mt-0.5"
+      class="hidden w-full h-full flex-col-reverse 
+      lg:flex-row px-4 lg:px-0 border-l border-[#dfdede] items-stretch mt-0.5"
     >
-      <div class="pt-4 basis-[40%] bg-white block w-auto max-h-box">
+      <div id="contact-left-panel" class="pt-4 basis-[40%] bg-white w-auto max-h-box">
         <div id="search-bar" class="hidden mx-auto"></div>
         <div class="hidden h-full relative" id="contacts-list">
           <div
@@ -418,7 +419,7 @@
           class="hidden text-center mt-14 text-[#3C3C3C]"
         ></p>
       </div>
-      <div id="contacts-details" class="hidden flex-1 flex-col relative h-full">
+      <div id="contacts-details" class="hidden min-h-md lg:min-h-auto flex-1 flex-col relative h-full">
         <div class="flex flex-col py-6 items-center h-full">
           <div
             class="flex flex-col select-none items-center w-full justify-center gap-7"
@@ -462,20 +463,7 @@
             </div>
           </div>
           <div id="view-mode" class="mt-10 w-full pr-10 pl-4 h-full relative">
-            <div
-              id="contact-mobile"
-              class="hidden gap-10 border-b border-gray-200"
-            >
-              <span>Mobile</span>
-              <p></p>
-            </div>
-            <div
-              id="contact-email"
-              class="hidden gap-10 border-b border-gray-200"
-            >
-              <span>Email</span>
-              <p></p>
-            </div>
+            <div class="max-h-[30vh] overflow-y-auto customScroller" id="detailed-info"></div>
             <div class="absolute bottom-10 w-full pr-10 flex justify-end">
               <button
                 class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed px-8 py-2 text-center mr-2"
@@ -491,7 +479,7 @@
             class="mt-10 w-full pr-10 pl-4 h-full hidden relative"
           >
             <div
-              class="flex flex-col max-h-80 overflow-y-auto overflow-x-hidden customScroller"
+              class="flex flex-col max-h-md overflow-y-auto overflow-x-hidden customScroller"
             >
               <div class="flex gap-10 border-b border-gray-200 pb-2">
                 <span class="text-[#96a5ab] font-bold text-sm min-w-[74px]"
@@ -499,7 +487,9 @@
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm
+                   placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] 
+                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   name="first_name"
                   id="first-name"
                   placeholder="Enter a first name..."
@@ -513,7 +503,9 @@
                 </span>
 
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm 
+                  placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd]
+                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   name="last_name"
                   id="last-name"
                   placeholder="Enter a last name..."
@@ -526,7 +518,9 @@
                   <sup class="text-red-500">*</sup>
                 </span>
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab]
+                   text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color
+                    ease-in w-full lg:w-1/2"
                   type="number"
                   name="phone"
                   id="phone-edit"
@@ -539,7 +533,9 @@
                   >Fax No.</span
                 >
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm
+                   placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] 
+                   duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   type="number"
                   name="fax"
                   id="fax-edit"
@@ -551,7 +547,7 @@
                   >Email</span
                 >
                 <input
-                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                  class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-1/2"
                   type="email"
                   name="email"
                   id="email-edit"
@@ -584,7 +580,7 @@
                       type="date"
                       id="birthday"
                       name="birthday"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full"
                       placeholder="Select date"
                     />
                   </div>
@@ -601,7 +597,7 @@
                     <input
                       name="position"
                       id="position"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full"
                       type="text"
                       placeholder="Enter a position..."
                     />
@@ -613,7 +609,7 @@
                     <input
                       name="department"
                       id="department"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full"
                       type="text"
                       placeholder="Enter a department..."
                     />
@@ -625,7 +621,7 @@
                     <input
                       name="description"
                       id="description"
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full"
                       type="text"
                       placeholder="Enter a description..."
                     />
@@ -651,7 +647,7 @@
                       >Organization</span
                     >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       name="organization"
                       id="organization"
                       type="text"
@@ -662,7 +658,7 @@
                       >Parent Organization</span
                     >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       name="parent_organization"
                       id="parent_organization"
                       type="text"
@@ -713,7 +709,7 @@
                       >Location</span
                     >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       type="text"
                       id="autocomplete-location"
                       name="autocomplete-location"
@@ -724,7 +720,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">City</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       type="text"
                       id="city"
                       name="city"
@@ -735,7 +731,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">State</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       type="text"
                       id="state"
                       name="state"
@@ -746,7 +742,7 @@
                   <div class="flex flex-col">
                     <span class="text-[#96a5ab] font-bold text-sm">Zip</span>
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       type="number"
                       id="zipcode"
                       name="zipcode"
@@ -759,7 +755,7 @@
                       >Country</span
                     >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       type="text"
                       id="country"
                       name="country"
@@ -772,7 +768,7 @@
                       >Mailing address</span
                     >
                     <input
-                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in"
+                      class="outline-none border-[#d3dce0] border py-2 px-3 rounded-sm placeholder-[#96a5ab] text-[#576a72] focus:border-[#00a2dd] duration-250 transition-border-color ease-in w-full lg:w-fit"
                       id="street"
                       name="street"
                       placeholder="Enter mailing address"

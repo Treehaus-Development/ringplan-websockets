@@ -183,6 +183,9 @@ const openDetailedOptions = async (id) => {
   goBack.onclick = () => {
     callDetailsContainer.classList.add("hidden");
     callDetailsContainer.classList.remove("flex");
+    document
+      .querySelectorAll(".history-list-item")
+      .forEach((el) => el.classList.remove("pointer-events-none"));
   };
   spinnerLoader.classList.remove("hidden");
   spinnerLoader.classList.add("grid");
@@ -347,7 +350,7 @@ async function updateUI() {
         <span class="font-medium text-sm">
           Filtered contacts
         </span>
-        <div id="filter-results" class="max-h-120 overflow-y-auto">
+        <div id="filter-results" class="max-h-box overflow-y-auto">
         </div>
       </div>
     `
@@ -356,8 +359,10 @@ async function updateUI() {
     document.getElementById("filter-results").onclick = function (e) {
       let closest = e.target.closest(".filter-list-item");
       if (closest) {
-        console.log(closest, "closest");
         let val = closest.querySelector(".inner-value").innerText;
+        if (isNaN(Number(val))) {
+          val = closest.querySelector(".inner-number").innerText;
+        }
         document.querySelector(".webphone-digits").value = removePlus(val);
         document
           .querySelector("#webphone-backspace-btn")
@@ -420,7 +425,9 @@ async function updateUI() {
           phoneTab.classList.contains("active-tab") &&
           !pastedContent.includes(".")
         ) {
-          document.querySelector(".webphone-digits").value = pastedContent;
+          setTimeout(() => {
+            document.querySelector(".webphone-digits").value = pastedContent;
+          }, 50);
           document
             .getElementById("webphone-backspace-btn")
             .classList.remove("hidden");
@@ -496,7 +503,8 @@ async function updateUI() {
       mainWrapper.classList.remove("overflow-hidden");
     };
 
-    contactsTab.onclick = function () {
+    contactsTab.onclick = function (e) {
+      if (this.classList.contains("active-tab")) return;
       let contactsLoader = document.getElementById("contacts-list-loader");
       const loaderElement = document.createElement("div");
       loaderElement.id = "contacts-loader";
@@ -518,9 +526,16 @@ async function updateUI() {
 
       removeActiveTab();
       setActiveTab(this);
-      mainWrapper.classList.add("overflow-hidden");
+      mainWrapper.classList.add("lg:overflow-hidden");
+      versionInfoBtn.classList.remove(...activeSubMenuClasses);
       contactsContainer.classList.remove("hidden");
       contactsContainer.classList.add("flex", "active-container");
+
+      if (this.props && this.props.isAdd) {
+        document.getElementById("create-contact-trigger").click();
+        document.getElementById("phone-edit").value = this.props.value;
+        this.props = null;
+      }
     };
 
     phoneTab.onclick = function () {
