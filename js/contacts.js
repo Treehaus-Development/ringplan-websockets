@@ -29,7 +29,7 @@ function findActiveReportTo(reportsto) {
   }
 }
 
-function flattenContactData(contact, isView) {
+function flattenContactData(contact, isView, isEdit) {
   if (contact) {
     let { address, job_details, organization_details, ...rest } = contact;
     if (!address) {
@@ -68,6 +68,15 @@ function flattenContactData(contact, isView) {
       delete tmpContact.first_name;
       delete tmpContact.last_name;
       tmpContact = { name: name.includes("null") ? null : name, ...tmpContact };
+    }
+
+    if (isEdit) {
+      let birthday = new Date(tmpContact["birthday"]);
+      if (!isNaN(birthday.getTime()) && !!tmpContact["birthday"]) {
+        tmpContact.birthday = new Date(tmpContact["birthday"])
+          .toISOString()
+          .split("T")[0];
+      }
     }
 
     return tmpContact;
@@ -327,18 +336,18 @@ function updateSaveButton(activeContact) {
     return;
   }
 
-  const tmpContact = flattenContactData(activeContact);
+  const tmpContact = flattenContactData(activeContact, false, true);
 
   const inputs = editMode.querySelectorAll("input");
-  const inputValues = Array.from(inputs).map((input) => ({
-    name: input.name,
-    value: input.value,
-  }));
+  const inputValues = Array.from(inputs)
+    .map((input) => ({
+      name: input.name,
+      value: input.value,
+    }))
+    .filter((item) => !!item.name && !!item.value);
 
   const match = inputValues.every((inputVal) => {
     if (tmpContact.hasOwnProperty(inputVal.name)) {
-      console.log(tmpContact[inputVal.name], "key");
-      console.log(inputVal.value, "value");
       if (!inputVal.value && !tmpContact[inputVal.name]) {
         return true;
       }
@@ -410,6 +419,9 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("contact-left-panel")
       .classList.add("hidden", "lg:block");
+    document
+      .getElementById("clear-search")
+      .classList.add("pointer-events-none", "opacity-50");
   } else {
     document
       .getElementById("contacts-list-wrapper")
@@ -431,6 +443,9 @@ function toggleContactItemsState(bool) {
     document
       .getElementById("contact-left-panel")
       .classList.remove("hidden", "lg:block");
+    document
+      .getElementById("clear-search")
+      .classList.remove("pointer-events-none", "opacity-50");
   }
 
   document.getElementById("contact-search").disabled = !!bool;
@@ -702,10 +717,13 @@ function openContactDetails(id, data, activeContact) {
           el.value = activeContact.address?.[el.name] || "";
           break;
         case "birthday":
-          let formatDateStr = new Date(activeContact["birthday"])
-            .toISOString()
-            .split("T")[0];
-          el.value = formatDateStr;
+          let birthday = new Date(activeContact[el.name]);
+          if (!isNaN(birthday.getTime()) && !!activeContact[el.name]) {
+            let formatDateStr = birthday.toISOString().split("T")[0];
+            el.value = formatDateStr;
+          } else {
+            el.value = finalVal;
+          }
           break;
         default:
           el.value = finalVal;
