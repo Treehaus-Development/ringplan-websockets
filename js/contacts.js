@@ -495,6 +495,7 @@ function openContactDetails(id, data, activeContact) {
   let detailActions = document.getElementById("detail-actions");
   let addContactContainer = document.getElementById("add-contact-container");
   let contactLeftPanel = document.getElementById("contact-left-panel");
+ 
   contactDetails.classList.remove("hidden");
   contactDetails.classList.add("flex");
 
@@ -648,7 +649,10 @@ function openContactDetails(id, data, activeContact) {
     editMode.classList.remove("hidden");
     addContactTrigger.classList.remove("flex");
     addContactTrigger.classList.add("hidden");
+    saveEdit.dataset.isAdd = false;
     toggleContactItemsState(true);
+    confirmDelete.dataset.isEdit = true
+  
     addBacktoButton(contactDetails, true);
     $("#salutation")[0].selectize?.clear();
     $("#reports_to")[0].selectize?.clear();
@@ -971,12 +975,14 @@ function drawContacts(data, isSearch) {
   };
 
   confirmAction.onclick = function () {
-    appendFormToDetails();
-    this.dataset.isAdd = false;
-    saveEdit.dataset.isAdd = false;
-    toggleContactItemsState();
-    document.getElementById("back-to-list").remove();
-    closeConfirmModal();
+    if(this.dataset.isEdit !== 'true'){
+      appendFormToDetails();
+      this.dataset.isAdd = false;
+      saveEdit.dataset.isAdd = false;
+      toggleContactItemsState();
+      document.getElementById("back-to-list").remove();
+      closeConfirmModal();
+    }
   };
 
   let searchContent = `
