@@ -403,11 +403,12 @@ async function updateUI() {
     let voiceMailContainer = document.getElementById("voicemail-container");
     let contactsTab = document.getElementById("contacts-tab");
     let contactsContainer = document.getElementById("contacts-container");
-    let sidecarContainer = document.getElementById("sidecar-container");
+
     let sidecarSettingsTab = document.getElementById("sidecar-settings-tab");
     let sidecarSettingsContainer = document.getElementById("sidecar-settings");
     let sidecarToggle = document.getElementById("toggle-sidecar");
-
+    let importConfigBtn = document.getElementById("import-btn");
+    let importConfigInput = document.getElementById("import-sidecar");
     mainWrapper.appendChild(container);
 
     let versionInfoBtn = document.getElementById("version-info");
@@ -626,6 +627,19 @@ async function updateUI() {
     };
 
     sidecarToggle.onchange = handleToggleSidecar;
+    importConfigBtn.onclick = function () {
+      this.parentNode.querySelector("input").click();
+    };
+
+    importConfigInput.onchange = function (e) {
+      let reader = new FileReader();
+      reader.onload = function (e) {
+        let xmlString = reader.result;
+        const result = validateXML(xmlString);
+        console.log(result, "result");
+      };
+      reader.readAsText(e.target.files[0]);
+    };
 
     logoutConfirm.onclick = () => {
       logout();
