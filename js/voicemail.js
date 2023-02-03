@@ -46,15 +46,17 @@ function showErrorToast(err) {
   }, 4500);
 }
 
-function showSuccessToast(isBulk, isContact, isEdit, isAdd) {
+function showSuccessToast(isBulk, isContact, isEdit, isAdd, isFile) {
+  let resultStr = `${isContact ? "Contact" : "Voicemail"}${isBulk ? "s" : ""} ${
+    isEdit ? "updated" : isAdd ? "added" : "deleted"
+  } successfuly`;
+  if (isFile) {
+    resultStr = "File was uploaded successfully";
+  }
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
-  successToast.querySelector("span").innerHTML = `${
-    isContact ? "Contact" : "Voicemail"
-  }${isBulk ? "s" : ""} ${
-    isEdit ? "updated" : isAdd ? "added" : "deleted"
-  } successfuly`;
+  successToast.querySelector("span").innerHTML = resultStr;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);
