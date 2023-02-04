@@ -696,6 +696,22 @@ video {
   right: 0px !important;
 }
 
+.left-\[\] {
+  left: ;
+}
+
+.left-\[-\] {
+  left: -;
+}
+
+.left-\[-2rem\] {
+  left: -2rem;
+}
+
+.left-\[-1\.5rem\] {
+  left: -1.5rem;
+}
+
 .z-\[999\] {
   z-index: 999;
 }

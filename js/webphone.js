@@ -219,9 +219,10 @@ const openDetailedOptions = async (id) => {
 };
 
 function handleSidecarTabClick(self) {
-  let sidecarContainer = document.getElementById("sidecar-container");
   if (self.classList.contains("active-tab")) return;
-
+  let sidecarContainer = document.getElementById("sidecar-container");
+  removeActiveTab();
+  setActiveTab(self);
   if (!document.getElementById("sidecar-loader")) {
     sidecarContainer.classList.remove("hidden");
     sidecarContainer.insertAdjacentHTML(
@@ -254,8 +255,6 @@ function handleSidecarTabClick(self) {
       drawSidecarButtons(xml);
     }
   }
-  removeActiveTab();
-  setActiveTab(self);
 }
 
 const drawCallHistory = () => {

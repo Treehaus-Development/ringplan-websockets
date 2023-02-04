@@ -213,7 +213,8 @@ function drawSidecarButtons(xml) {
       "flex-col",
       "items-center",
       "justify-between",
-      "p-6"
+      "p-6",
+      "relative"
     );
     buttonElem.id = `button_${name}_${extension}`;
     buttonElem.dataset.name = name;
@@ -241,15 +242,25 @@ function drawSidecarButtons(xml) {
       sidecarContainer.appendChild(buttonElem);
     }
     buttonElem.innerHTML = `
-      <div class="flex justify-between w-full">
+      <div class="flex justify-between w-full items-center">
         <span class="text-[#000000] font-medium">
-          Button ${index + 1}
+          ${name}
         </span>
-        <div class="w-6 h-6">
+        <div id="options-btn" class="w-6 h-6">
           <img src="../images/options.svg" />
         </div>
+        <div class="absolute hidden flex-col top-3 left-[-1.5rem] w-full">
+          <div class="py-3 px-1 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
+           cursor-pointer shadow bg-white">
+            Edit
+          </div>
+          <div class="py-3 px-1 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
+          cursor-pointer shadow bg-white">
+            Delete
+         </div>
+        </div>
       </div>
-      <div class="flex justify-between w-full items-center">
+      <div class="flex justify-between w-full items-center relative">
         <div>
           <img src="../images/call-sm.svg"/>
         </div>
