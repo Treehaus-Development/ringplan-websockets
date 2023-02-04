@@ -644,8 +644,8 @@ async function updateUI() {
         }
 
         const formData = new FormData();
-        formData.append("upfile", selectedFile);
-        formData.append("unique_name", `sidecar_config_${uuid}`);
+        formData.append("upfile", selectedFile, selectedFile.name);
+        formData.append("unique_name", `Sidecar_${uuid}`);
 
         importConfigBtn.disabled = true;
         importConfigBtn.innerText = "Loading";
@@ -661,18 +661,18 @@ async function updateUI() {
         `
         );
 
-        fetch(
-          `https://storage-service.ringplan.com/resources
+        axios
+          .post(
+            `https://storage-service.ringplan.com/resources
         `,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: id_token,
-            },
-            body: formData,
-          }
-        )
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: id_token,
+              },
+            }
+          )
           .then((res) => {
             showSuccessToast(false, false, false, false, true);
             localStorage.setItem("sidecarConfig", JSON.stringify(xmlString));
