@@ -1,3 +1,26 @@
+function getSidecarConfig() {
+  return axios
+    .get(`https://storage-service.ringplan.com/resources`, {
+      params: {
+        unique_name: `Sidecar_${uuid}`,
+      },
+      headers: {
+        Authorization: id_token,
+      },
+    })
+    .then((res) => {
+      const fileUrl = res.data.url;
+      return axios.get(fileUrl, { responseType: "blob" }).then((res) => {
+        const blob = new Blob([res.data], { type: "application/xml" });
+        return { success: true, blob };
+      });
+    })
+    .catch((err) => {
+      console.log(err, "err");
+      return err;
+    });
+}
+
 function handleToggleSidecar(e) {
   localStorage.setItem("sidecarEnabled", e.target.checked);
   if (e.target.checked) {
@@ -162,4 +185,8 @@ function validateXML(xmlString) {
   });
 
   return result;
+}
+
+function drawSidecarButtons(xml) {
+  console.log(xml, "xml");
 }

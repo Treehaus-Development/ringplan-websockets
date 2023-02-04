@@ -219,6 +219,28 @@ const openDetailedOptions = async (id) => {
 };
 
 function handleSidecarTabClick(self) {
+  if (self.classList.contains("active-tab")) return;
+  if (self.dataset.shouldFetch !== "false") {
+    getSidecarConfig().then((res) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = reader.result;
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, "text/xml");
+        localStorage.setItem("sidecarConfig", JSON.stringify(text));
+        drawSidecarButtons(xml);
+      };
+      reader.readAsText(res.blob);
+    });
+    self.dataset.shouldFetch = false;
+  } else {
+    if (localStorage.getItem("sidecarConfig")) {
+      let text = JSON.parse(localStorage.getItem("sidecarConfig"));
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(text, "text/xml");
+      drawSidecarButtons(xml);
+    }
+  }
   removeActiveTab();
   setActiveTab(self);
   document.getElementById("sidecar-container").classList.remove("hidden");
@@ -690,7 +712,7 @@ async function updateUI() {
       importConfigInput.value = "";
     });
 
-    exportConfigBtn.addEventListener("click", function () {
+    exportConfigBtn.addEventListener("click", async function () {
       this.disabled = true;
       this.innerText = "Loading";
       this.insertAdjacentHTML(
@@ -703,36 +725,21 @@ async function updateUI() {
   </svg>
       `
       );
-      axios
-        .get(`https://storage-service.ringplan.com/resources`, {
-          params: {
-            unique_name: `Sidecar_${uuid}`,
-          },
-          headers: {
-            Authorization: id_token,
-          },
-        })
-        .then((res) => {
-          const fileUrl = res.data.url;
-          axios.get(fileUrl, { responseType: "blob" }).then((res) => {
-            const blob = new Blob([res.data], { type: "application/xml" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.style.display = "none";
-            a.href = url;
-            a.download = "sidecarConfig.xml";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          });
-        })
-        .catch((err) => {
-          console.log(err, "err");
-        })
-        .finally(() => {
-          exportConfigBtn.innerText = "Export";
-          exportConfigBtn.disabled = false;
-        });
+
+      const data = await getSidecarConfig();
+      if (data.success) {
+        const url = URL.createObjectURL(data.blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = "sidecarConfig.xml";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      exportConfigBtn.innerText = "Export";
+      exportConfigBtn.disabled = false;
     });
 
     logoutConfirm.onclick = () => {
