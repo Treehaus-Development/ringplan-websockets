@@ -1,3 +1,38 @@
+let addBtnClasses =
+  `rounded-full p-4 cursor-pointer bg-blue-500 shadow-soft-md absolute bottom-12 right-12 w-14 h-14 flex justify-center items-center`.split(
+    " "
+  );
+
+let sidecarBtnClasses =
+  `w-40 h-36 bg-[#FDFDFD] rounded-xl sidecar-btn border border-[#A9A9A9] cursor-pointer flex flex-col items-center justify-between p-6 relative`.split(
+    " "
+  );
+
+function removeOptionsSubmenu() {
+  document.querySelectorAll(".sidecar-sub-menu").forEach((el) => {
+    el.classList.remove("flex");
+    el.classList.add("hidden");
+  });
+}
+
+function modifySidecarConfig(data) {
+  return axios
+    .put(`https://storage-service.ringplan.com/resources`, data, {
+      params: {
+        unique_name: `Sidecar_${uuid}`,
+      },
+      headers: {
+        Authorization: id_token,
+      },
+    })
+    .then((res) => {
+      return res.data;
+    })
+    .catch((err) => {
+      return err.response.data;
+    });
+}
+
 function getSidecarConfig() {
   return axios
     .get(`https://storage-service.ringplan.com/resources`, {
@@ -196,26 +231,12 @@ function drawSidecarButtons(xml) {
     return el.tagName.startsWith("Button_");
   });
 
-  buttons.forEach((button, index) => {
+  buttons.forEach((button) => {
     const name = button.getAttribute("name");
     const extension = button.getAttribute("extension");
 
     let buttonElem = document.createElement("div");
-    buttonElem.classList.add(
-      "w-40",
-      "h-36",
-      "bg-[#FDFDFD]",
-      "rounded-xl",
-      "border",
-      "border-[#A9A9A9]",
-      "cursor-pointer",
-      "flex",
-      "flex-col",
-      "items-center",
-      "justify-between",
-      "p-6",
-      "relative"
-    );
+    buttonElem.classList.add(...sidecarBtnClasses);
     buttonElem.id = `button_${name}_${extension}`;
     buttonElem.dataset.name = name;
     buttonElem.dataset.extension = extension;
@@ -246,15 +267,16 @@ function drawSidecarButtons(xml) {
         <span class="text-[#000000] font-medium">
           ${name}
         </span>
-        <div id="options-btn" class="w-6 h-6">
+        <div class="w-6 h-6 sidecar-options-trigger">
           <img src="../images/options.svg" />
         </div>
-        <div class="absolute hidden flex-col top-3 left-[-1.5rem] w-full">
-          <div class="py-3 px-1 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
+        <div 
+        class="absolute sidecar-sub-menu hidden flex-col top-3 left-[-1.5rem] w-full z-100">
+          <div data-edit="true" class="py-3 px-2 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
            cursor-pointer shadow bg-white">
             Edit
           </div>
-          <div class="py-3 px-1 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
+          <div data-edit="false" class="py-3 px-2 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
           cursor-pointer shadow bg-white">
             Delete
          </div>
@@ -268,7 +290,41 @@ function drawSidecarButtons(xml) {
           <img src="../images/play-sm.svg"/>
         </div>
       </div>
-    `;
+      `;
+
+    const addButton = document.createElement("div");
+    addButton.classList.add(...addBtnClasses);
+
+    addButton.innerHTML = `<span class="text-3xl text-white">+</span>`;
+    sidecarContainer.appendChild(addButton);
     sidecarContainer.classList.add("grid", "active-container");
+
+    document.querySelectorAll(".sidecar-btn").forEach((el) => {
+      el.onclick = function (e) {
+        console.log(e, "e");
+        if (
+          e.target.parentNode.classList.contains("sidecar-options-trigger") ||
+          e.target.classList.contains("sidecar-options-trigger")
+        ) {
+          e.stopPropagation();
+          removeOptionsSubmenu();
+          this.querySelector(
+            ".sidecar-options-trigger"
+          ).nextElementSibling.classList.remove("hidden");
+          this.querySelector(
+            ".sidecar-options-trigger"
+          ).nextElementSibling.classList.remove("flex");
+        }
+      };
+    });
+
+    document.addEventListener("click", function (e) {
+      if (
+        !e.target.parentNode.classList.contains("sidecar-options-trigger") ||
+        !e.target.classList.contains("sidecar-options-trigger")
+      ) {
+        removeOptionsSubmenu();
+      }
+    });
   });
 }
