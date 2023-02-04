@@ -219,7 +219,20 @@ const openDetailedOptions = async (id) => {
 };
 
 function handleSidecarTabClick(self) {
+  let sidecarContainer = document.getElementById("sidecar-container");
   if (self.classList.contains("active-tab")) return;
+
+  if (!document.getElementById("sidecar-loader")) {
+    sidecarContainer.classList.remove("hidden");
+    sidecarContainer.insertAdjacentHTML(
+      "afterbegin",
+      `
+      <div id="sidecar-loader" class="w-full h-full flex justify-center items-center">
+        ${svgLoader}
+      </div>
+    `
+    );
+  }
   if (self.dataset.shouldFetch !== "false") {
     getSidecarConfig().then((res) => {
       const reader = new FileReader();
@@ -243,10 +256,6 @@ function handleSidecarTabClick(self) {
   }
   removeActiveTab();
   setActiveTab(self);
-  document.getElementById("sidecar-container").classList.remove("hidden");
-  document
-    .getElementById("sidecar-container")
-    .classList.add("grid", "active-container");
 }
 
 const drawCallHistory = () => {

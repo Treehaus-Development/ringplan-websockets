@@ -188,5 +188,76 @@ function validateXML(xmlString) {
 }
 
 function drawSidecarButtons(xml) {
-  console.log(xml, "xml");
+  let sidecarContainer = document.getElementById("sidecar-container");
+  const root = xml.documentElement;
+
+  let buttons = root.querySelectorAll("*");
+  buttons = Array.from(buttons).filter(function (el) {
+    return el.tagName.startsWith("Button_");
+  });
+
+  buttons.forEach((button, index) => {
+    const name = button.getAttribute("name");
+    const extension = button.getAttribute("extension");
+
+    let buttonElem = document.createElement("div");
+    buttonElem.classList.add(
+      "w-40",
+      "h-36",
+      "bg-[#FDFDFD]",
+      "rounded-xl",
+      "border",
+      "border-[#A9A9A9]",
+      "cursor-pointer",
+      "flex",
+      "flex-col",
+      "items-center",
+      "justify-between",
+      "p-6"
+    );
+    buttonElem.id = `button_${name}_${extension}`;
+    buttonElem.dataset.name = name;
+    buttonElem.dataset.extension = extension;
+    let actions = button.children;
+    for (let j = 0; j < actions.length; j++) {
+      let action = actions[j];
+
+      let actionName = action.nodeName.toLowerCase();
+      let actionAttributes = action.attributes;
+
+      var attrObj = {};
+      for (var i = 0; i < actionAttributes.length; i++) {
+        attrObj[actionAttributes[i].name] = actionAttributes[i].value;
+      }
+
+      buttonElem.dataset[actionName] = JSON.stringify(attrObj);
+    }
+
+    if (document.getElementById("sidecar-loader")) {
+      document.getElementById("sidecar-loader").remove();
+    }
+
+    if (!document.getElementById(`button_${name}_${extension}`)) {
+      sidecarContainer.appendChild(buttonElem);
+    }
+    buttonElem.innerHTML = `
+      <div class="flex justify-between w-full">
+        <span class="text-[#000000] font-medium">
+          Button ${index + 1}
+        </span>
+        <div class="w-6 h-6">
+          <img src="../images/options.svg" />
+        </div>
+      </div>
+      <div class="flex justify-between w-full items-center">
+        <div>
+          <img src="../images/call-sm.svg"/>
+        </div>
+        <div>
+          <img src="../images/play-sm.svg"/>
+        </div>
+      </div>
+    `;
+    sidecarContainer.classList.add("grid", "active-container");
+  });
 }
