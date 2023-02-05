@@ -11,6 +11,9 @@ let actions = [
   "send_message",
   "modify_status",
 ];
+
+let activeActions = [];
+
 let addBtnClasses =
   `rounded-full p-4 cursor-pointer bg-blue-500 shadow-soft-md absolute bottom-12 right-12 w-14 h-14 flex justify-center items-center`.split(
     " "
@@ -26,6 +29,94 @@ function removeOptionsSubmenu() {
     el.classList.remove("flex");
     el.classList.add("hidden");
   });
+}
+
+function openDialActionModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Dial";
+
+  let dialContent = `
+  
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col">
+        <span class="text-sm text-[#686868]">Select contact</span>
+        <input id="select-contact" />
+      </div>
+      <div class="flex gap-2 items-center">
+        <input id="type-number" type="checkbox" />
+        <label for="type-number" class="text-[#898989] text-sm select-none">
+          Or type a number
+        </label>
+      </div>
+      <input 
+      id="dial-number"
+      disabled 
+      type="number"
+      class="p-3 border select-none disabled:text-gray-500 border-gray-200 rounded-2.5 outline-none"/>
+    </div>
+  `;
+
+  modal.querySelector("main").innerHTML = dialContent;
+  if (cachedContacts) {
+    let showData = JSON.parse(cachedContacts)
+      .filter((el) => !!el.phone)
+      .map((el) => {
+        return {
+          phone: el.phone,
+        };
+      });
+
+    $("#select-contact").selectize({
+      options: showData,
+      maxItems: 1,
+      allowEmptyOption: true,
+      searchField: ["phone"],
+      labelField: "phone",
+      valueField: "phone",
+      plugins: ["clear_button"],
+      placeholder: "None",
+      onChange: function () {
+        saveBtn.disabled = $("#select-contact").val().length === 0;
+      },
+    });
+  }
+
+  let dialInput = document.getElementById("dial-number");
+
+  document.querySelector("#type-number").onchange = function (e) {
+    dialInput.disabled = !e.target.checked;
+    saveBtn.disabled = dialInput.value.length === 0;
+    if (e.target.checked) {
+      $("#select-contact")[0].selectize.disable();
+    } else {
+      $("#select-contact")[0].selectize.enable();
+    }
+  };
+
+  dialInput.oninput = function () {
+    saveBtn.disabled = this.value.length === 0;
+  };
+}
+
+function handleActions(key) {
+  let actionModal = document.getElementById("sidecar-action-modal");
+  let closeModal = document.getElementById("close-select-sidecar");
+  switch (key) {
+    case "dial":
+      openDialActionModal(actionModal);
+      break;
+    default:
+      break;
+  }
+
+  closeModal.onclick = function () {
+    actionModal.classList.remove("grid");
+    actionModal.classList.add("hidden");
+    actionModal.querySelector("h2").innerText = "";
+    actionModal.querySelector("main").innerHTML = "";
+  };
 }
 
 function modifySidecarConfig(data) {
@@ -307,6 +398,7 @@ function drawSidecarButtons(xml) {
       `;
     sidecarContainer.classList.add("grid");
   });
+
   document.querySelectorAll(".sidecar-btn").forEach((el) => {
     el.onclick = function (e) {
       if (
@@ -377,8 +469,8 @@ function drawSidecarButtons(xml) {
   let actionlistData = actions
     .map((el) => {
       return `
-    <div data-${el}="true" class="w-full p-3 bg-white border-b
-     duration-200 ease-in border-[#D9D9D9] transition-background hover:bg-gray-100">
+    <div data-action="${el}" class="w-full p-3 bg-white border-b
+     duration-200 ease-in border-[#D9D9D9] action-list-item transition-background hover:bg-gray-100">
       ${capitalizeAndRemoveUnderscores(el)}
     </div>
     `;
@@ -417,9 +509,13 @@ function drawSidecarButtons(xml) {
     }
   };
 
-  actionListTrigger.onclick = function () {
-    actionsList.classList.toggle("hidden");
-    actionsList.classList.toggle("flex");
-    this.querySelector("img").classList.toggle('rotate-180')
+  actionListTrigger.onclick = function (e) {
+    if (e.target.classList.contains("action-list-item")) {
+      handleActions(e.target.dataset.action);
+    } else {
+      this.querySelector("img").classList.toggle("rotate-180");
+      actionsList.classList.toggle("hidden");
+      actionsList.classList.toggle("flex");
+    }
   };
 }
