@@ -221,9 +221,14 @@ const openDetailedOptions = async (id) => {
 function handleSidecarTabClick(self) {
   if (self.classList.contains("active-tab")) return;
   let sidecarContainer = document.getElementById("sidecar-container");
+  let sidecarWrapper = document.getElementById("sidecar-wrapper");
+
   removeActiveTab();
   setActiveTab(self);
   if (!document.getElementById("sidecar-loader")) {
+    sidecarWrapper.classList.add("flex", "active-container");
+    sidecarWrapper.classList.remove("hidden");
+
     sidecarContainer.classList.remove("hidden");
     sidecarContainer.insertAdjacentHTML(
       "afterbegin",

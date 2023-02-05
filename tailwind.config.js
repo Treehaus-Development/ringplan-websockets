@@ -428,6 +428,7 @@ module.exports = {
       90: "22.5rem",
       96: "24rem",
       120: "30rem",
+      130:'32rem',
       135: "33.75rem", //sm
       180: "45rem", //md
       240: "60rem", //lg

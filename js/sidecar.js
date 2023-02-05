@@ -1,3 +1,16 @@
+let extensionsData = localStorage.getItem("extensions");
+let actions = [
+  "dial",
+  "pause",
+  "transfer",
+  "conference",
+  "merge",
+  "hangup",
+  "keypress",
+  "hold",
+  "send_message",
+  "modify_status",
+];
 let addBtnClasses =
   `rounded-full p-4 cursor-pointer bg-blue-500 shadow-soft-md absolute bottom-12 right-12 w-14 h-14 flex justify-center items-center`.split(
     " "
@@ -223,6 +236,7 @@ function validateXML(xmlString) {
 }
 
 function drawSidecarButtons(xml) {
+  let addEditContainer = document.getElementById("add-edit-container");
   let sidecarContainer = document.getElementById("sidecar-container");
   const root = xml.documentElement;
 
@@ -291,13 +305,7 @@ function drawSidecarButtons(xml) {
         </div>
       </div>
       `;
-
-    const addButton = document.createElement("div");
-    addButton.classList.add(...addBtnClasses);
-
-    addButton.innerHTML = `<span class="text-3xl text-white">+</span>`;
-    sidecarContainer.appendChild(addButton);
-    sidecarContainer.classList.add("grid", "active-container");
+    sidecarContainer.classList.add("grid");
   });
   document.querySelectorAll(".sidecar-btn").forEach((el) => {
     el.onclick = function (e) {
@@ -350,10 +358,68 @@ function drawSidecarButtons(xml) {
   });
   document.addEventListener("click", function (e) {
     if (
-      !e.target.parentNode.classList.contains("sidecar-options-trigger") ||
+      !e.target.parentNode?.classList.contains("sidecar-options-trigger") ||
       !e.target.classList.contains("sidecar-options-trigger")
     ) {
       removeOptionsSubmenu();
     }
   });
+
+  const addButton = document.createElement("div");
+  addButton.classList.add(...addBtnClasses);
+  addButton.id = "add-sidecar-btn";
+
+  const actionListTrigger = document.getElementById("add-action");
+
+  addButton.innerHTML = `<span class="text-3xl text-white">+</span>`;
+  sidecarContainer.appendChild(addButton);
+  let actionsList = document.getElementById("actions-list");
+  let actionlistData = actions
+    .map((el) => {
+      return `
+    <div data-${el}="true" class="w-full p-3 bg-white border-b
+     duration-200 ease-in border-[#D9D9D9] transition-background hover:bg-gray-100">
+      ${capitalizeAndRemoveUnderscores(el)}
+    </div>
+    `;
+    })
+    .join(" ");
+
+  actionsList.innerHTML = actionlistData;
+
+  addButton.onclick = function (e) {
+    addEditContainer.classList.toggle("hidden");
+    addEditContainer.querySelector("#header-title").innerText = `Button ${
+      buttons.length + 1
+    } programming`;
+
+    if (extensionsData) {
+      console.log(JSON.parse(extensionsData, "exts"));
+      let showExtVals = JSON.parse(extensionsData).map((el) => {
+        return {
+          ext: el.data.extension,
+        };
+      });
+      console.log(showExtVals, "extVals");
+      $("#watch-extension").selectize({
+        options: showExtVals,
+        maxItems: 1,
+        searchField: ["ext"],
+        labelField: "ext",
+        valueField: "ext",
+        plugins: ["clear_button"],
+        placeholder: "Select extension",
+        onChange: function () {
+          // updateSaveButton(activeContact);
+          console.log("change");
+        },
+      });
+    }
+  };
+
+  actionListTrigger.onclick = function () {
+    actionsList.classList.toggle("hidden");
+    actionsList.classList.toggle("flex");
+    this.querySelector("img").classList.toggle('rotate-180')
+  };
 }
