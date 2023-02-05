@@ -276,7 +276,7 @@ function drawSidecarButtons(xml) {
            cursor-pointer shadow bg-white">
             Edit
           </div>
-          <div data-edit="false" class="py-3 px-2 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
+          <div data-delete="true" class="py-3 px-2 duration-200 ease-in transition-colors sidecar-submenu-item hover:bg-gray-300
           cursor-pointer shadow bg-white">
             Delete
          </div>
@@ -298,33 +298,62 @@ function drawSidecarButtons(xml) {
     addButton.innerHTML = `<span class="text-3xl text-white">+</span>`;
     sidecarContainer.appendChild(addButton);
     sidecarContainer.classList.add("grid", "active-container");
-
-    document.querySelectorAll(".sidecar-btn").forEach((el) => {
-      el.onclick = function (e) {
-        console.log(e, "e");
-        if (
-          e.target.parentNode.classList.contains("sidecar-options-trigger") ||
-          e.target.classList.contains("sidecar-options-trigger")
-        ) {
-          e.stopPropagation();
-          removeOptionsSubmenu();
-          this.querySelector(
-            ".sidecar-options-trigger"
-          ).nextElementSibling.classList.remove("hidden");
-          this.querySelector(
-            ".sidecar-options-trigger"
-          ).nextElementSibling.classList.remove("flex");
-        }
-      };
-    });
-
-    document.addEventListener("click", function (e) {
+  });
+  document.querySelectorAll(".sidecar-btn").forEach((el) => {
+    el.onclick = function (e) {
       if (
-        !e.target.parentNode.classList.contains("sidecar-options-trigger") ||
-        !e.target.classList.contains("sidecar-options-trigger")
+        e.target.parentNode.classList.contains("sidecar-options-trigger") ||
+        e.target.classList.contains("sidecar-options-trigger")
       ) {
+        e.stopPropagation();
         removeOptionsSubmenu();
+        this.querySelector(
+          ".sidecar-options-trigger"
+        ).nextElementSibling.classList.remove("hidden");
+        this.querySelector(
+          ".sidecar-options-trigger"
+        ).nextElementSibling.classList.remove("flex");
       }
-    });
+      if (
+        e.target.classList.contains("sidecar-submenu-item") ||
+        e.target.parentNode.classList.contains("sidecar-submenu-item")
+      ) {
+        console.log(e.target);
+        e.stopPropagation();
+        if (e.target.dataset.delete === "true") {
+          console.log(el, "el");
+          let btnName = el.dataset.name;
+          let elementToRemove = root.querySelector(`[name='${btnName}']`);
+          elementToRemove.parentNode.removeChild(elementToRemove);
+
+          let updatedXmlText = new XMLSerializer().serializeToString(xml);
+          let blob = new Blob([updatedXmlText], { type: "application/xml" });
+          const formData = new FormData();
+          formData.append("upfile", blob, "sidecarConfig.xml");
+          formData.append("unique_name", `Sidecar_${uuid}`);
+          modifySidecarConfig(formData)
+            .then((res) => {
+              showSuccessToast("Button was deleted successfully");
+              localStorage.setItem(
+                "sidecarConfig",
+                JSON.stringify(updatedXmlText)
+              );
+              el.remove();
+            })
+            .catch((err) => {
+              console.log(err, "err");
+              showErrorToast({ message: "Something went wrong" });
+            });
+        }
+      }
+    };
+  });
+  document.addEventListener("click", function (e) {
+    if (
+      !e.target.parentNode.classList.contains("sidecar-options-trigger") ||
+      !e.target.classList.contains("sidecar-options-trigger")
+    ) {
+      removeOptionsSubmenu();
+    }
   });
 }

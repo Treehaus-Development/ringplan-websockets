@@ -705,7 +705,7 @@ async function updateUI() {
             }
           )
           .then((res) => {
-            showSuccessToast(false, false, false, false, true);
+            showSuccessToast(`Config file was uploaded successfully`);
             localStorage.setItem("sidecarConfig", JSON.stringify(xmlString));
           })
           .catch((err) => {

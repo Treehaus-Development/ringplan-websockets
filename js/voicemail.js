@@ -46,17 +46,11 @@ function showErrorToast(err) {
   }, 4500);
 }
 
-function showSuccessToast(isBulk, isContact, isEdit, isAdd, isFile) {
-  let resultStr = `${isContact ? "Contact" : "Voicemail"}${isBulk ? "s" : ""} ${
-    isEdit ? "updated" : isAdd ? "added" : "deleted"
-  } successfuly`;
-  if (isFile) {
-    resultStr = "File was uploaded successfully";
-  }
+function showSuccessToast(message) {
   let successToast = document.getElementById("toast-success");
   successToast.classList.remove("animate-fade-out");
   successToast.classList.add("animate-fade-up");
-  successToast.querySelector("span").innerHTML = resultStr;
+  successToast.querySelector("span").innerHTML = message;
   setTimeout(() => {
     successToast.classList.add("animate-fade-out");
   }, 3000);
@@ -204,7 +198,7 @@ async function handleBulkActions(action, listItems, cb) {
           (item) => !checkedIds.includes(item._id)
         );
         cb();
-        showSuccessToast(true);
+        showSuccessToast(`Voicemails were deleted successfully`);
         drawVoicemails(newData);
       })
       .catch((err) => {
@@ -319,7 +313,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
         confirmDeleteVoicemailBtn.disabled = false;
         closeVoicemailModal();
         if (res.ok) {
-          showSuccessToast();
+          showSuccessToast(`Voicemail was deleted successfully`);
           const newData = [...data].filter((item) => item._id !== id);
           drawVoicemails(newData);
           voiceMailDetails.classList.remove("flex");

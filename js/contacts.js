@@ -282,7 +282,7 @@ function handleAddEditContact(target, isAdd, data) {
         } else {
           console.log(res, "res");
           saveEdit.innerText = "Save";
-          showSuccessToast(null, true, false, true);
+          showSuccessToast(`Contact was added successfully`);
           confirmAction.dataset.isAdd = false;
           target.dataset.isAdd = false;
           appendFormToDetails();
@@ -641,7 +641,7 @@ function openContactDetails(id, data, activeContact) {
         confirmDelete.disabled = false;
         closeConfirmModal();
         if (res.ok) {
-          showSuccessToast(null, true);
+          showSuccessToast(`Contact was deleted successfully`);
           const newData = [...data].filter((item) => item.id !== id);
           sessionStorage.setItem("contacts", JSON.stringify(newData));
 
@@ -753,7 +753,7 @@ function openContactDetails(id, data, activeContact) {
           console.log(res, "res");
           if (res.ok) {
             saveEdit.innerText = "Save";
-            showSuccessToast(null, true, true);
+            showSuccessToast(`Contact was updated successfully`);
             const newData = [...data].map((item) => {
               if (item.id === id) {
                 return {
@@ -781,7 +781,7 @@ function openContactDetails(id, data, activeContact) {
           } else {
             detailActions.classList.remove("hidden");
             detailActions.classList.add("flex");
-            showSuccessToast(null, true, true);
+            showSuccessToast(`Contact was updated successfully`);
           }
           saveEdit.innerText = "Save";
         })
