@@ -31,6 +31,67 @@ function removeOptionsSubmenu() {
   });
 }
 
+function drawActiveActionsList() {
+  let activeActionList = document.getElementById("active-actions");
+  activeActionList.classList.remove("hidden");
+  activeActionList.classList.add("flex");
+
+  let html = activeActions
+    .map((el) => {
+      return `
+      <div data-value="${el.value}" data-id="${
+        el.id
+      }" class="flex w-full py-6 px-8 active-action-item cursor-pointer select-none 
+      justify-between items-center
+     rounded-1.5 bg-opacity-5 bg-[#00A2DD]">
+        <span class="text-lg">${capitalizeAndRemoveUnderscores(el.type)}: ${
+        typeof el.value === "string" ? el.value : ""
+      }</span>
+        <div class="w-5 h-5 delete-active-action">
+          <img
+            src="/images/delete.svg"
+            class="w-full h-full object-contain brightness-50"
+          />
+        </div>
+      </div>
+    `;
+    })
+    .join(" ");
+
+  activeActionList.innerHTML = html;
+  if (activeActions.length === 0) {
+    activeActionList.classList.remove("flex");
+    activeActionList.classList.add("hidden");
+  }
+
+  new Sortable(activeActionList, {
+    animation: 150,
+    ghostClass: "blue-background-class",
+    onEnd: function (evt) {
+      var oldIndex = evt.oldIndex;
+      var newIndex = evt.newIndex;
+
+      var temp = activeActions[oldIndex];
+      activeActions[oldIndex] = activeActions[newIndex];
+      activeActions[newIndex] = temp;
+    },
+  });
+
+  document.querySelectorAll(".active-action-item").forEach((el) => {
+    el.onclick = function (e) {
+      if (
+        e.target.classList.contains("delete-active-action") ||
+        e.target.parentNode.classList.contains("delete-active-action")
+      ) {
+        activeActions = activeActions.filter((el) => el.id !== this.dataset.id);
+        drawActiveActionsList();
+      }
+    };
+  });
+
+  console.log(activeActions, "active");
+}
+
 function openDialActionModal(modal) {
   let saveBtn = modal.querySelector("#save-action-btn");
   modal.classList.remove("hidden");
@@ -68,6 +129,8 @@ function openDialActionModal(modal) {
         };
       });
 
+    console.log(showData, "showdata");
+
     $("#select-contact").selectize({
       options: showData,
       maxItems: 1,
@@ -97,6 +160,24 @@ function openDialActionModal(modal) {
 
   dialInput.oninput = function () {
     saveBtn.disabled = this.value.length === 0;
+  };
+
+  saveBtn.onclick = function () {
+    let isManualNumber = document.querySelector("#type-number").checked;
+
+    let finalValue = isManualNumber
+      ? dialInput.value
+      : document.getElementById("select-contact").value;
+
+    activeActions.push({
+      type: "dial",
+      value: finalValue,
+      id: generateUUID(),
+    });
+
+    modal.querySelector("#close-select-sidecar").click();
+
+    drawActiveActionsList();
   };
 }
 
@@ -421,7 +502,6 @@ function drawSidecarButtons(xml) {
         console.log(e.target);
         e.stopPropagation();
         if (e.target.dataset.delete === "true") {
-          console.log(el, "el");
           let btnName = el.dataset.name;
           let elementToRemove = root.querySelector(`[name='${btnName}']`);
           elementToRemove.parentNode.removeChild(elementToRemove);
@@ -469,8 +549,10 @@ function drawSidecarButtons(xml) {
   let actionlistData = actions
     .map((el) => {
       return `
-    <div data-action="${el}" class="w-full p-3 bg-white border-b
-     duration-200 ease-in border-[#D9D9D9] action-list-item transition-background hover:bg-gray-100">
+    <div data-action="${el}" class="w-full cursor-pointer select-none
+     p-3 bg-white border-b
+     duration-200 ease-in border-[#D9D9D9] action-list-item 
+     transition-background hover:bg-gray-100">
       ${capitalizeAndRemoveUnderscores(el)}
     </div>
     `;
@@ -486,7 +568,6 @@ function drawSidecarButtons(xml) {
     } programming`;
 
     if (extensionsData) {
-      console.log(JSON.parse(extensionsData, "exts"));
       let showExtVals = JSON.parse(extensionsData).map((el) => {
         return {
           ext: el.data.extension,
@@ -512,10 +593,9 @@ function drawSidecarButtons(xml) {
   actionListTrigger.onclick = function (e) {
     if (e.target.classList.contains("action-list-item")) {
       handleActions(e.target.dataset.action);
-    } else {
-      this.querySelector("img").classList.toggle("rotate-180");
-      actionsList.classList.toggle("hidden");
-      actionsList.classList.toggle("flex");
     }
+    this.querySelector("img").classList.toggle("rotate-180");
+    actionsList.classList.toggle("hidden");
+    actionsList.classList.toggle("flex");
   };
 }

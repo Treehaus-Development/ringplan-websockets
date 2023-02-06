@@ -101,9 +101,24 @@ const cookiesObj = Object.fromEntries(
     .split("; ")
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
+
+function generateUUID() {
+  let d = new Date().getTime();
+  if (
+    typeof performance !== "undefined" &&
+    typeof performance.now === "function"
+  ) {
+    d += performance.now();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    let r = (d + Math.random() * 16) % 16 | 0;
+    d = Math.floor(d / 16);
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
 const id_token =
   cookiesObj.id_token ||
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzU2NDIxNzQsIm5iZiI6MTY3NTYxMzM3NCwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1NjEzMzc0LCJhdXRoX3RpbWUiOjE2NzU2MTMzNzMsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoid21lMy0yb19jbmFzUEZFSENCLTlWZyJ9.GvofWP2t7WgP42Tvkv6RMTknFElWTBd9Ild0rx0DiHcNzNjnVoV5wHNTSq4bJBvt_A4JB-LmwnJG1leTO-n7GVrlTMX2omMOqB36FCVpZ9-tGmOxnPJCpFfjneV-cOKA_O2Yd8YPF5Udksul1CY1W-qZsGj7A72MqqDhblnkl7gk7aqpBCNzBsiXDs48Sh5rV1GAsTJ_ZG0X7mJ9_amY2lah3IemcrvnSiTemzwB65JRaYeUOIjkGxA-kp9heX1LBEZ5w5Hreix172JLZ6D-na-OrQRc9QlLhyYiwaE6lN4XFxoWQBSZkcmtu1sW5L5DQ7l7hQNEd4Ced-VN5XW0XQ";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImVHeXkwR1Z0YXZHeFVnX3FMbUdqXzgyODNDWEoyWTdnLW1CdVFSZlNjV0EifQ.eyJleHAiOjE2NzU3Mzc0MzUsIm5iZiI6MTY3NTcwODYzNSwidmVyIjoiMS4wIiwiaXNzIjoiaHR0cHM6Ly9yaW5ncGxhbi5iMmNsb2dpbi5jb20vZGQ4Mzk3ODktMWMxMS00OGFmLWE0MTMtZWU1YThkYzNiOTE5L3YyLjAvIiwic3ViIjoiZjZkNzE1ZGMtZDRlZi00MzU0LTkxN2EtMzI4NjA5MmEzMWY0IiwiYXVkIjoiNzM2YzM3ZDMtY2ExYy00NjViLThiMzYtNWVkZDA0ZDEyOWYzIiwiaWF0IjoxNjc1NzA4NjM1LCJhdXRoX3RpbWUiOjE2NzU3MDg2MzQsImdpdmVuX25hbWUiOiJIZWxsbyIsImZhbWlseV9uYW1lIjoiU3RhcnR4bGFicyIsImV4dGVuc2lvbl9jb21wYW55IjoiU3RhcnR4bGFicyIsImVtYWlscyI6WyJoZWxsb0BzdGFydHhsYWJzLmNvbSJdLCJ0aWQiOiJkZDgzOTc4OS0xYzExLTQ4YWYtYTQxMy1lZTVhOGRjM2I5MTkiLCJhdF9oYXNoIjoiYnpQdktuN0pHNVE3cHJPdU9RTzJiQSJ9.MaMYZiuvwyIh7cPeW5VJhDR-tX9RKtl2c1asOnKAoGEYX0h4DjpQYD5X6rRrV04ibDfqqkPR0NeVSrnQUy83a09Fn67X2tNkiFTrct8Op2aM2f5jstHL1drIgb0-bhGPlfKxnpDn_JrCv4eTGou1imSPXIIOXIjgp9JbdNloBanLGy9VKmQx8kCNgfq_dKzpixYz7plCl1vof8RNgRRQ_uwpWD_7jrt04G-ctmevlThcYmSDaZKmhZtZ5N2SB17U6ggPS4SqItVt20ncDNNOfIClenIjrGGTF5k881HPTpVv7rI26-spoVRxA1dcpw6i2tekVtjK4kFLtseqpMqz-A";
 let activeExtension = localStorage.getItem("activeExtension");
 
 const reDrawList = (data, editFn, isLoggedIn) => {
