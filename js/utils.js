@@ -102,6 +102,10 @@ const cookiesObj = Object.fromEntries(
     .map((v) => v.split(/=(.*)/s).map(decodeURIComponent))
 );
 
+function blockInvalidChar(e) {
+  ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
+}
+
 function generateUUID() {
   let d = new Date().getTime();
   if (

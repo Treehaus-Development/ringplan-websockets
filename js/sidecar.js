@@ -104,6 +104,44 @@ function drawActiveActionsList() {
   console.log(activeActions, "active");
 }
 
+function openPauseModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Pause";
+
+  let pauseContent = `
+    <div class="flex w-full justify-center">
+      <input min="0" max="500" class="px-10 py-6 outline-none w-44 text-2xl 
+      border border-[#4CA3EB] rounded-2.5" type="number" id="pause-value" />
+    </div>
+  `;
+
+  modal.querySelector("main").innerHTML = pauseContent;
+
+  let pauseInput = document.getElementById("pause-value");
+
+  pauseInput.onkeydown = function (e) {
+    blockInvalidChar(e);
+  };
+
+  pauseInput.oninput = function (e) {
+    saveBtn.disabled = e.target.valueAsNumber === 0;
+  };
+
+  saveBtn.onclick = function () {
+    activeActions.push({
+      type: "pause",
+      value: pauseInput.value,
+      id: generateUUID(),
+    });
+
+    modal.querySelector("#close-select-sidecar").click();
+
+    drawActiveActionsList();
+  };
+}
+
 function openDialActionModal(modal) {
   let saveBtn = modal.querySelector("#save-action-btn");
   modal.classList.remove("hidden");
@@ -199,6 +237,9 @@ function handleActions(key) {
   switch (key) {
     case "dial":
       openDialActionModal(actionModal);
+      break;
+    case "pause":
+      openPauseModal(actionModal);
       break;
     default:
       break;
@@ -555,7 +596,7 @@ function drawSidecarButtons(xml) {
 
   const actionListTrigger = document.getElementById("add-action");
 
-  addButton.innerHTML = `<span class="text-3xl text-white">+</span>`;
+  addButton.innerHTML = `<span class="text-3xl text-white select-none">+</span>`;
   sidecarContainer.appendChild(addButton);
   let actionsList = document.getElementById("actions-list");
   let actionlistData = actions
@@ -574,6 +615,7 @@ function drawSidecarButtons(xml) {
   actionsList.innerHTML = actionlistData;
 
   addButton.onclick = function (e) {
+    if (!addEditContainer.classList.contains("hidden")) return;
     updateAddEditSaveButton(true);
     addEditContainer.classList.remove("hidden");
     addEditContainer.querySelector("#header-title").innerText = `Button ${
