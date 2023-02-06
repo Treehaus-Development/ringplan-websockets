@@ -40,6 +40,140 @@ function updateAddEditSaveButton(isAdd) {
   }
 }
 
+function addDialTransferActions() {
+  let saveBtn = document.querySelector("#save-action-btn");
+
+  if (cachedContacts) {
+    let showData = JSON.parse(cachedContacts)
+      .filter((el) => !!el.phone)
+      .map((el) => {
+        return {
+          phone: el.phone,
+        };
+      });
+
+    console.log(showData, "showdata");
+
+    $("#select-contact").selectize({
+      options: showData,
+      maxItems: 1,
+      allowEmptyOption: true,
+      searchField: ["phone"],
+      labelField: "phone",
+      valueField: "phone",
+      plugins: ["clear_button"],
+      placeholder: "None",
+      onChange: function () {
+        saveBtn.disabled = $("#select-contact").val().length === 0;
+      },
+    });
+  }
+
+  let dialInput = document.getElementById("dial-number");
+
+  document.querySelector("#type-number").onchange = function (e) {
+    dialInput.disabled = !e.target.checked;
+    saveBtn.disabled = dialInput.value.length === 0;
+    if (e.target.checked) {
+      $("#select-contact")[0].selectize.disable();
+    } else {
+      $("#select-contact")[0].selectize.enable();
+    }
+  };
+
+  dialInput.oninput = function () {
+    saveBtn.disabled = this.value.length === 0;
+  };
+}
+
+function openTransferModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Transfer";
+
+  let transferHtml = `
+    <div class="flex flex-col gap-2">
+      <div
+        id="transfer-toggle-btn"
+        class="w-full flex justify-between p-3 bg-white border-b
+        border-[#BBBBBB] select-none cursor-pointer relative"
+      >
+        <span class="text-[#686868] text-lg transfer-call-val">Transfer Call</span>
+        <img
+          class="duration-200 ease-in transition-transform"
+          src="../images/chevron-down.svg"
+        />
+      <div
+        id="transfer-options"
+        class="absolute w-full top-10
+        left-0 hidden bg-white shadow-nav flex-col z-100"
+      >
+        <div class="flex p-4 justify-between cursor-pointer border-b border-gray-500">
+          <input
+            type="radio" 
+            class="peer" 
+            name="transfer-call" 
+            value="Transfer Call"
+            id="transfer_call" /> 
+          <label 
+            class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+            select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
+            for="transfer_call">Transfer call
+          </label>
+        </div>
+
+        <div class="flex p-4 justify-between cursor-pointer border-b border-gray-500">
+          <input
+            type="radio" 
+            class="peer" 
+            name="transfer-call" 
+            value="Transfer Attended Call"
+            id="transfer_attended" /> 
+          <label 
+            class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+            select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
+            for="transfer_attended">Transfer attended call
+          </label>
+        </div>
+      </div>
+    </div>
+      <div class="flex flex-col gap-3">
+        <div class="flex flex-col">
+          <span class="text-sm text-[#686868]">Select contact</span>
+          <input id="select-contact" />
+        </div>
+        <div class="flex gap-2 items-center">
+          <input id="type-number" type="checkbox" />
+          <label for="type-number" class="text-[#898989] text-sm select-none">
+            Or type a number
+          </label>
+        </div>
+        <input 
+        id="dial-number"
+        disabled 
+        type="number"
+        class="p-3 border select-none disabled:text-gray-500 border-gray-200 rounded-2.5 outline-none"/>
+      </div>
+    </div>
+  `;
+
+  modal.querySelector("main").innerHTML = transferHtml;
+  let transferCallInput = document.querySelector("[name='transfer-call']");
+  let transferToggleBtn = document.getElementById("transfer-toggle-btn");
+  transferCallInput.checked =
+    transferCallInput.value ===
+    transferToggleBtn.querySelector(".transfer-call-val").innerText;
+
+  let transferRadioList = document.getElementById("transfer-options");
+  transferToggleBtn.onclick = function () {
+    this.querySelector("img").classList.toggle("rotate-180");
+    transferRadioList.classList.toggle("hidden");
+    transferRadioList.classList.toggle("flex");
+  };
+  addDialTransferActions();
+}
+
 function drawActiveActionsList() {
   let activeActionList = document.getElementById("active-actions");
   activeActionList.classList.remove("hidden");
@@ -170,47 +304,8 @@ function openDialActionModal(modal) {
   `;
 
   modal.querySelector("main").innerHTML = dialContent;
-  if (cachedContacts) {
-    let showData = JSON.parse(cachedContacts)
-      .filter((el) => !!el.phone)
-      .map((el) => {
-        return {
-          phone: el.phone,
-        };
-      });
 
-    console.log(showData, "showdata");
-
-    $("#select-contact").selectize({
-      options: showData,
-      maxItems: 1,
-      allowEmptyOption: true,
-      searchField: ["phone"],
-      labelField: "phone",
-      valueField: "phone",
-      plugins: ["clear_button"],
-      placeholder: "None",
-      onChange: function () {
-        saveBtn.disabled = $("#select-contact").val().length === 0;
-      },
-    });
-  }
-
-  let dialInput = document.getElementById("dial-number");
-
-  document.querySelector("#type-number").onchange = function (e) {
-    dialInput.disabled = !e.target.checked;
-    saveBtn.disabled = dialInput.value.length === 0;
-    if (e.target.checked) {
-      $("#select-contact")[0].selectize.disable();
-    } else {
-      $("#select-contact")[0].selectize.enable();
-    }
-  };
-
-  dialInput.oninput = function () {
-    saveBtn.disabled = this.value.length === 0;
-  };
+  addDialTransferActions();
 
   saveBtn.onclick = function () {
     let isManualNumber = document.querySelector("#type-number").checked;
@@ -240,6 +335,9 @@ function handleActions(key) {
       break;
     case "pause":
       openPauseModal(actionModal);
+      break;
+    case "transfer":
+      openTransferModal(actionModal);
       break;
     default:
       break;
