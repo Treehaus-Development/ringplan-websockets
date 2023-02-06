@@ -31,6 +31,15 @@ function removeOptionsSubmenu() {
   });
 }
 
+function updateAddEditSaveButton(isAdd) {
+  let saveBtn = document.getElementById("save-sidecar-btn");
+  let btnName = document.getElementById("button-name");
+  if (isAdd) {
+    saveBtn.disabled = activeActions.length === 0 || btnName.length === 0;
+    return;
+  }
+}
+
 function drawActiveActionsList() {
   let activeActionList = document.getElementById("active-actions");
   activeActionList.classList.remove("hidden");
@@ -58,10 +67,13 @@ function drawActiveActionsList() {
     })
     .join(" ");
 
+  updateAddEditSaveButton(true);
+
   activeActionList.innerHTML = html;
   if (activeActions.length === 0) {
     activeActionList.classList.remove("flex");
     activeActionList.classList.add("hidden");
+    return;
   }
 
   new Sortable(activeActionList, {
@@ -562,7 +574,8 @@ function drawSidecarButtons(xml) {
   actionsList.innerHTML = actionlistData;
 
   addButton.onclick = function (e) {
-    addEditContainer.classList.toggle("hidden");
+    updateAddEditSaveButton(true);
+    addEditContainer.classList.remove("hidden");
     addEditContainer.querySelector("#header-title").innerText = `Button ${
       buttons.length + 1
     } programming`;
@@ -573,7 +586,6 @@ function drawSidecarButtons(xml) {
           ext: el.data.extension,
         };
       });
-      console.log(showExtVals, "extVals");
       $("#watch-extension").selectize({
         options: showExtVals,
         maxItems: 1,
@@ -582,12 +594,12 @@ function drawSidecarButtons(xml) {
         valueField: "ext",
         plugins: ["clear_button"],
         placeholder: "Select extension",
-        onChange: function () {
-          // updateSaveButton(activeContact);
-          console.log("change");
-        },
       });
     }
+  };
+
+  document.getElementById("button-name").oninput = function () {
+    updateAddEditSaveButton(true);
   };
 
   actionListTrigger.onclick = function (e) {
