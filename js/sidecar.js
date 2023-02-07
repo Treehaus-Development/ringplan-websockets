@@ -3,7 +3,6 @@ let actions = [
   "dial",
   "pause",
   "transfer",
-  "conference",
   "merge",
   "hangup",
   "keypress",
@@ -12,6 +11,25 @@ let actions = [
   "modify_status",
 ];
 
+let numberOrContactHtml = `  
+    <div class="flex flex-col gap-3">
+      <div class="flex flex-col">
+        <span class="text-sm text-[#686868]">Select contact</span>
+        <input id="select-contact" />
+      </div>
+      <div class="flex gap-2 items-center">
+        <input id="type-number" type="checkbox" />
+        <label for="type-number" class="text-[#898989] text-sm select-none">
+          Or type a number
+        </label>
+      </div>
+      <input 
+      id="dial-number"
+      disabled 
+      type="number"
+      class="p-3 border select-none disabled:text-gray-500 border-gray-200 rounded-2.5 outline-none"/>
+    </div>
+  `;
 let activeActions = [];
 
 let addBtnClasses =
@@ -35,9 +53,20 @@ function updateAddEditSaveButton(isAdd) {
   let saveBtn = document.getElementById("save-sidecar-btn");
   let btnName = document.getElementById("button-name");
   if (isAdd) {
-    saveBtn.disabled = activeActions.length === 0 || btnName.length === 0;
+    saveBtn.disabled = activeActions.length === 0 || btnName.value.length === 0;
     return;
   }
+}
+
+function getContactOrInputValue() {
+  let dialInput = document.getElementById("dial-number");
+  let isManualNumber = document.querySelector("#type-number").checked;
+
+  let finalValue = isManualNumber
+    ? dialInput.value
+    : document.getElementById("select-contact").value;
+
+  return finalValue;
 }
 
 function addDialTransferActions() {
@@ -93,68 +122,38 @@ function openTransferModal(modal) {
   modal.querySelector("h2").innerText = "Transfer";
 
   let transferHtml = `
-    <div class="flex flex-col gap-2">
-      <div
-        id="transfer-toggle-btn"
-        class="w-full flex justify-between p-3 bg-white border-b
-        border-[#BBBBBB] select-none cursor-pointer relative"
-      >
-        <span class="text-[#686868] text-lg transfer-call-val">Transfer Call</span>
-        <img
-          class="duration-200 ease-in transition-transform"
-          src="../images/chevron-down.svg"
-        />
-      <div
-        id="transfer-options"
-        class="absolute w-full top-10
-        left-0 hidden bg-white shadow-nav flex-col z-100"
-      >
-        <div class="flex p-4 justify-between cursor-pointer border-b border-gray-500">
-          <input
-            type="radio" 
-            class="peer" 
-            name="transfer-call" 
-            value="Transfer Call"
-            id="transfer_call" /> 
-          <label 
-            class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
-            select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
-            for="transfer_call">Transfer call
-          </label>
-        </div>
-
-        <div class="flex p-4 justify-between cursor-pointer border-b border-gray-500">
-          <input
-            type="radio" 
-            class="peer" 
-            name="transfer-call" 
-            value="Transfer Attended Call"
-            id="transfer_attended" /> 
-          <label 
-            class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
-            select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
-            for="transfer_attended">Transfer attended call
-          </label>
+      <div class="flex flex-col gap-2">
+        <div
+          id="transfer-toggle-btn"
+          class="w-full flex justify-between p-3 bg-white border-b
+          border-[#BBBBBB] select-none cursor-pointer relative"
+        >
+          <span class="text-[#686868] text-lg transfer-call-val">Transfer Call</span>
+          <img
+            class="duration-200 ease-in transition-transform"
+            src="../images/chevron-down.svg"
+          />
+        <div
+          id="transfer-options"
+          class="absolute w-full top-10
+          left-0 hidden bg-white shadow-nav flex-col z-100"
+        >
+          <div class="flex p-4 justify-between cursor-pointer border-b border-gray-500">
+            <input
+              type="radio" 
+              class="peer" 
+              name="transfer-call" 
+              value="Transfer Call"
+              id="transfer_call" /> 
+            <label 
+              class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+              select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
+              for="transfer_call">Transfer call
+            </label>
+          </div>
         </div>
       </div>
-    </div>
-      <div class="flex flex-col gap-3">
-        <div class="flex flex-col">
-          <span class="text-sm text-[#686868]">Select contact</span>
-          <input id="select-contact" />
-        </div>
-        <div class="flex gap-2 items-center">
-          <input id="type-number" type="checkbox" />
-          <label for="type-number" class="text-[#898989] text-sm select-none">
-            Or type a number
-          </label>
-        </div>
-        <input 
-        id="dial-number"
-        disabled 
-        type="number"
-        class="p-3 border select-none disabled:text-gray-500 border-gray-200 rounded-2.5 outline-none"/>
-      </div>
+      ${numberOrContactHtml}
     </div>
   `;
 
@@ -171,7 +170,21 @@ function openTransferModal(modal) {
     transferRadioList.classList.toggle("hidden");
     transferRadioList.classList.toggle("flex");
   };
+
   addDialTransferActions();
+
+  saveBtn.onclick = function () {
+    const finalValue = getContactOrInputValue();
+
+    activeActions.push({
+      type: "transfer",
+      value: finalValue,
+      id: generateUUID(),
+    });
+
+    modal.querySelector("#close-select-sidecar").click();
+    drawActiveActionsList();
+  };
 }
 
 function drawActiveActionsList() {
@@ -187,9 +200,14 @@ function drawActiveActionsList() {
       }" class="flex w-full py-6 px-8 active-action-item cursor-pointer select-none 
       justify-between items-center
      rounded-1.5 bg-opacity-5 bg-[#00A2DD]">
-        <span class="text-lg">${capitalizeAndRemoveUnderscores(el.type)}: ${
-        typeof el.value === "string" ? el.value : ""
-      }</span>
+        <div class="flex gap-2 items-center">
+          <div class="w-5 h-5">
+            <img src="../images/drag.svg"/>
+          </div>
+          <span class="text-lg">${capitalizeAndRemoveUnderscores(el.type)}: ${
+          typeof el.value === "string" ? el.value : ""
+        } </span>
+        </div>
         <div class="w-5 h-5 delete-active-action">
           <img
             src="/images/delete.svg"
@@ -261,7 +279,7 @@ function openPauseModal(modal) {
 
   pauseInput.oninput = function (e) {
     saveBtn.disabled =
-      e.target.valueAsNumber === 0 && e.target.value.length > 0;
+      e.target.valueAsNumber === 0 || e.target.value.length < 1;
   };
 
   saveBtn.onclick = function () {
@@ -283,37 +301,13 @@ function openDialActionModal(modal) {
   modal.classList.add("grid");
   modal.querySelector("h2").innerText = "Dial";
 
-  let dialContent = `
-  
-    <div class="flex flex-col gap-3">
-      <div class="flex flex-col">
-        <span class="text-sm text-[#686868]">Select contact</span>
-        <input id="select-contact" />
-      </div>
-      <div class="flex gap-2 items-center">
-        <input id="type-number" type="checkbox" />
-        <label for="type-number" class="text-[#898989] text-sm select-none">
-          Or type a number
-        </label>
-      </div>
-      <input 
-      id="dial-number"
-      disabled 
-      type="number"
-      class="p-3 border select-none disabled:text-gray-500 border-gray-200 rounded-2.5 outline-none"/>
-    </div>
-  `;
+  let dialContent = numberOrContactHtml;
 
   modal.querySelector("main").innerHTML = dialContent;
 
   addDialTransferActions();
-  let dialInput = document.getElementById("dial-number");
   saveBtn.onclick = function () {
-    let isManualNumber = document.querySelector("#type-number").checked;
-
-    let finalValue = isManualNumber
-      ? dialInput.value
-      : document.getElementById("select-contact").value;
+    const finalValue = getContactOrInputValue();
 
     activeActions.push({
       type: "dial",
@@ -330,6 +324,8 @@ function openDialActionModal(modal) {
 function handleActions(key) {
   let actionModal = document.getElementById("sidecar-action-modal");
   let closeModal = document.getElementById("close-select-sidecar");
+  let saveBtn = document.querySelector("#save-action-btn");
+
   switch (key) {
     case "dial":
       openDialActionModal(actionModal);
@@ -349,6 +345,7 @@ function handleActions(key) {
     actionModal.classList.add("hidden");
     actionModal.querySelector("h2").innerText = "";
     actionModal.querySelector("main").innerHTML = "";
+    saveBtn.disabled = true;
   };
 }
 
