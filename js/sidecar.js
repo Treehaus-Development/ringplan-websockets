@@ -321,6 +321,69 @@ function openDialActionModal(modal) {
   };
 }
 
+function openKeyPressModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Keypress";
+
+  let keypressContainer = document.createElement("div");
+  keypressContainer.classList.add("grid", "grid-cols-3", "place-items-center");
+
+  let html = dialpadArr
+    .map((el) => {
+      return `
+      <label 
+      for="keypress-${el}"
+      class="w-16 h-16 text-2xl 
+      items-center select-none duration-200 transition-colors 
+      ease-in flex justify-center cursor-pointer 
+      rounded-full before:!hidden after:!hidden">
+        <input 
+          value="${el}" 
+          type="radio" 
+          class="hidden" 
+          name="keypress-num"
+          id="keypress-${el}"
+        />
+        <span>${el}</span>
+      </label>
+    `;
+    })
+    .join(" ");
+
+  keypressContainer.innerHTML = html;
+
+  modal.querySelector("main").appendChild(keypressContainer);
+  var previouslyChecked;
+
+  keypressContainer.querySelectorAll("input").forEach((el) => {
+    el.onchange = function () {
+      if (previouslyChecked) {
+        previouslyChecked.parentElement.classList.remove(
+          "bg-blue-400",
+          "text-white"
+        );
+      }
+      this.parentElement.classList.add("bg-blue-400", "text-white");
+      previouslyChecked = this;
+      saveBtn.disabled = false;
+    };
+  });
+
+  saveBtn.onclick = function () {
+    const activeValue = keypressContainer.querySelector("input:checked").value;
+    activeActions.push({
+      type: "keypress",
+      value: activeValue,
+      id: generateUUID(),
+    });
+
+    modal.querySelector("#close-select-sidecar").click();
+    drawActiveActionsList();
+  };
+}
+
 function handleActions(key) {
   let actionModal = document.getElementById("sidecar-action-modal");
   let closeModal = document.getElementById("close-select-sidecar");
@@ -335,6 +398,19 @@ function handleActions(key) {
       break;
     case "transfer":
       openTransferModal(actionModal);
+      break;
+    case "merge":
+    case "hangup":
+    case "hold":
+      activeActions.push({
+        type: key,
+        value: "",
+        id: generateUUID(),
+      });
+      drawActiveActionsList();
+      break;
+    case "keypress":
+      openKeyPressModal(actionModal);
       break;
     default:
       break;
@@ -776,5 +852,7 @@ function drawSidecarButtons(xml) {
     activeActions = [];
     $("#watch-extension")[0].selectize?.clear();
     document.getElementById("button-name").value = "";
+    actionsList.classList.remove("flex");
+    actionsList.classList.add("hidden");
   };
 }
