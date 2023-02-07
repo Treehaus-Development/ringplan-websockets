@@ -452,7 +452,7 @@ function toggleContactItemsState(bool) {
 }
 
 const closeConfirmModal = () => {
-  let deleteContactModal = document.getElementById("delete-confirm-modal");
+  let deleteContactModal = document.getElementById("confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");
   deleteContactModal.classList.remove("grid");
@@ -462,7 +462,7 @@ const closeConfirmModal = () => {
 };
 
 const openConfirmModal = (isEdit) => {
-  let deleteContactModal = document.getElementById("delete-confirm-modal");
+  let deleteContactModal = document.getElementById("confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");
 
@@ -499,7 +499,7 @@ function openContactDetails(id, data, activeContact) {
   let activeImageSrc = activeElem.querySelector("img").src;
   let contactCallBtn = document.getElementById("call-contact-btn");
   let deleteContactTrigger = document.getElementById("delete-contact-btn");
-  let deleteContactModal = document.getElementById("delete-confirm-modal");
+  let deleteContactModal = document.getElementById("confirm-modal");
   let closeContactModal = document.getElementById("close-confirm-modal");
   let cancelAction = document.getElementById("cancel-action");
   let confirmDelete = document.getElementById("confirm-action");

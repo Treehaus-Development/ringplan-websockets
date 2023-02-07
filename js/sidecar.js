@@ -205,8 +205,8 @@ function drawActiveActionsList() {
             <img src="../images/drag.svg"/>
           </div>
           <span class="text-lg">${capitalizeAndRemoveUnderscores(el.type)}: ${
-          typeof el.value === "string" ? el.value : ""
-        } </span>
+        typeof el.value === "string" ? el.value : ""
+      } </span>
         </div>
         <div class="w-5 h-5 delete-active-action">
           <img
@@ -740,6 +740,12 @@ function drawSidecarButtons(xml) {
     updateAddEditSaveButton(true);
   };
 
+  let revertChanges = document.getElementById("revert-changes");
+  let confirmModal = document.getElementById("confirm-modal");
+  let confirmAction = document.getElementById("confirm-action");
+  let cancelAction = document.getElementById("cancel-action");
+  let activeActionList = document.getElementById("active-actions");
+
   actionListTrigger.onclick = function (e) {
     if (e.target.classList.contains("action-list-item")) {
       handleActions(e.target.dataset.action);
@@ -747,5 +753,33 @@ function drawSidecarButtons(xml) {
     this.querySelector("img").classList.toggle("rotate-180");
     actionsList.classList.toggle("hidden");
     actionsList.classList.toggle("flex");
+  };
+
+  revertChanges.onclick = function () {
+    confirmModal.classList.remove("hidden");
+    confirmModal.classList.add("grid");
+    confirmModal.querySelector("h3").innerText =
+      "You will lose all of your changes. Are you sure?";
+    confirmAction.innerText = "Yes";
+  };
+
+  cancelAction.onclick = function () {
+    confirmModal.classList.remove("grid");
+    confirmModal.classList.add("hidden");
+    confirmModal.querySelector("h3").innerText = "";
+    confirmAction.innerText = "Delete";
+  };
+
+  document.getElementById("close-confirm-modal").onclick = function () {
+    cancelAction.click();
+  };
+
+  confirmAction.onclick = function () {
+    cancelAction.click()
+    addEditContainer.classList.add("hidden");
+    activeActionList.innerHTML = "";
+    activeActions = [];
+    $("#watch-extension")[0].selectize?.clear();
+    document.getElementById("button-name").value = "";
   };
 }

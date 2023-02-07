@@ -241,7 +241,7 @@ async function openVoicemailDetails(data, id, isListened, target) {
   let closeDeleteVoicemailBtn = document.getElementById("close-confirm-modal");
   let cancelDeleteVoicemailBtn = document.getElementById("cancel-action");
   let confirmDeleteVoicemailBtn = document.getElementById("confirm-action");
-  let voicemailModal = document.getElementById("delete-confirm-modal");
+  let voicemailModal = document.getElementById("confirm-modal");
 
   let shareVoiceMailBtn = document.getElementById("share-voicemail-btn");
   let callVoiceMailBtn = document.getElementById("call-voicemail-btn");
