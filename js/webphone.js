@@ -670,7 +670,7 @@ async function updateUI() {
     importConfigInput.addEventListener("change", function (e) {
       let selectedFile = e.target.files[0];
       let reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         let xmlString = reader.result;
         const result = validateXML(xmlString);
         console.log(result, "result");
@@ -697,35 +697,30 @@ async function updateUI() {
         `
         );
 
-        // if(importConfigBtn.dataset.isModified === 'true'){
+        const data = await getSidecarConfig();
+        console.log(data, "data");
 
-        // }
-
-        axios
-          .post(
-            `https://storage-service.ringplan.com/resources
+        const uploadInfo = await axios[data.success ? "put" : "post"](
+          `https://storage-service.ringplan.com/resources
         `,
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: id_token,
-              },
-            }
-          )
-          .then((res) => {
-            showSuccessToast(`Config file was uploaded successfully`);
-            localStorage.setItem("sidecarConfig", JSON.stringify(xmlString));
-          })
-          .catch((err) => {
-            console.log(err);
-          })
-          .finally(() => {
-            importConfigBtn.disabled = false;
-            importConfigBtn.innerText = "Import";
-          });
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: id_token,
+            },
+          }
+        );
+
+        if (uploadInfo.data) {
+          showSuccessToast(`Config file was uploaded successfully`);
+          localStorage.setItem("sidecarConfig", JSON.stringify(xmlString));
+        }
+
+        importConfigBtn.disabled = false;
+        importConfigBtn.innerText = "Import";
       };
-      importConfigBtn.dataset.isModified = true
+
       reader.readAsText(selectedFile);
       importConfigInput.value = "";
     });

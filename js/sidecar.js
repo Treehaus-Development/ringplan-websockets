@@ -494,8 +494,10 @@ function validateXML(xmlString) {
           hasValidAction = true;
           break;
         case "HOLD":
-          const holdActive = child.getAttribute("active");
-          if (!holdActive || !/^[01]$/.test(holdActive)) {
+        case "MERGE":
+        case "HANGUP":
+          const activeAttr = child.getAttribute("active");
+          if (!activeAttr || !/^[01]$/.test(activeAttr)) {
             return false;
           }
           hasValidAction = true;
@@ -527,13 +529,6 @@ function validateXML(xmlString) {
             return false;
           }
           if (!toStatus || typeof toStatus !== "string") {
-            return false;
-          }
-          hasValidAction = true;
-          break;
-        case "HANGUP":
-          const hangupActive = child.getAttribute("active");
-          if (!hangupActive || !/^[01]$/.test(hangupActive)) {
             return false;
           }
           hasValidAction = true;
@@ -775,7 +770,7 @@ function drawSidecarButtons(xml) {
   };
 
   confirmAction.onclick = function () {
-    cancelAction.click()
+    cancelAction.click();
     addEditContainer.classList.add("hidden");
     activeActionList.innerHTML = "";
     activeActions = [];
