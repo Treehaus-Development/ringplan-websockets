@@ -697,6 +697,10 @@ async function updateUI() {
         `
         );
 
+        // if(importConfigBtn.dataset.isModified === 'true'){
+
+        // }
+
         axios
           .post(
             `https://storage-service.ringplan.com/resources
@@ -721,6 +725,7 @@ async function updateUI() {
             importConfigBtn.innerText = "Import";
           });
       };
+      importConfigBtn.dataset.isModified = true
       reader.readAsText(selectedFile);
       importConfigInput.value = "";
     });

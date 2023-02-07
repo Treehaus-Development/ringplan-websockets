@@ -246,7 +246,7 @@ function openPauseModal(modal) {
 
   let pauseContent = `
     <div class="flex w-full justify-center">
-      <input min="0" max="500" class="px-10 py-6 outline-none w-44 text-2xl 
+      <input min="0" max="20" class="px-10 py-6 outline-none w-44 text-2xl 
       border border-[#4CA3EB] rounded-2.5" type="number" id="pause-value" />
     </div>
   `;
@@ -260,7 +260,8 @@ function openPauseModal(modal) {
   };
 
   pauseInput.oninput = function (e) {
-    saveBtn.disabled = e.target.valueAsNumber === 0;
+    saveBtn.disabled =
+      e.target.valueAsNumber === 0 && e.target.value.length > 0;
   };
 
   saveBtn.onclick = function () {
@@ -306,7 +307,7 @@ function openDialActionModal(modal) {
   modal.querySelector("main").innerHTML = dialContent;
 
   addDialTransferActions();
-
+  let dialInput = document.getElementById("dial-number");
   saveBtn.onclick = function () {
     let isManualNumber = document.querySelector("#type-number").checked;
 
