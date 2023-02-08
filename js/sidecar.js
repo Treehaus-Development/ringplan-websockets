@@ -58,6 +58,25 @@ function updateAddEditSaveButton(isAdd) {
   }
 }
 
+async function getTextingNumbers() {
+  try {
+    const getNums = await fetch(
+      `${backendApi}/texting/numbers?numformat=international`,
+      {
+        headers: {
+          Authorization: id_token,
+        },
+      }
+    );
+
+    const data = await getNums.json();
+
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 function getContactOrInputValue() {
   let dialInput = document.getElementById("dial-number");
   let isManualNumber = document.querySelector("#type-number").checked;
@@ -69,9 +88,9 @@ function getContactOrInputValue() {
   return finalValue;
 }
 
-function addDialTransferActions() {
+function addDialTransferActions(isMessage) {
   let saveBtn = document.querySelector("#save-action-btn");
-
+  let message = document.getElementById("send-message-text");
   if (cachedContacts) {
     let showData = JSON.parse(cachedContacts)
       .filter((el) => !!el.phone)
@@ -93,7 +112,12 @@ function addDialTransferActions() {
       plugins: ["clear_button"],
       placeholder: "None",
       onChange: function () {
-        saveBtn.disabled = $("#select-contact").val().length === 0;
+        let emptySelect = $("#select-contact").val().length === 0;
+        let disabled = isMessage
+          ? emptySelect || message.value.trim().length === 0
+          : emptySelect;
+        console.log(disabled, "disabled");
+        saveBtn.disabled = disabled;
       },
     });
   }
@@ -102,7 +126,13 @@ function addDialTransferActions() {
 
   document.querySelector("#type-number").onchange = function (e) {
     dialInput.disabled = !e.target.checked;
-    saveBtn.disabled = dialInput.value.length === 0;
+    let isEmpty = dialInput.value.length === 0;
+    let isContactEmpty = $("#select-contact").val().length === 0;
+    let isDisabled = isMessage
+      ? (e.target.checked ? isEmpty : isContactEmpty) ||
+        message.value.trim().length < 1
+      : isEmpty;
+    saveBtn.disabled = isDisabled;
     if (e.target.checked) {
       $("#select-contact")[0].selectize.disable();
     } else {
@@ -111,7 +141,9 @@ function addDialTransferActions() {
   };
 
   dialInput.oninput = function () {
-    saveBtn.disabled = this.value.length === 0;
+    let isEmpty = this.value.length === 0;
+    let isDisabled = isMessage ? isEmpty || message.value.length < 1 : isEmpty;
+    saveBtn.disabled = isDisabled;
   };
 }
 
@@ -321,6 +353,131 @@ function openDialActionModal(modal) {
   };
 }
 
+async function openSendMessageModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Send Message";
+  let textingNumbers = sessionStorage.getItem("textingNumbers");
+  let activeTextingNumber;
+  if (!textingNumbers) {
+    const numbers = await getTextingNumbers();
+    sessionStorage.setItem("textingNumbers", JSON.stringify(numbers));
+  }
+  if (textingNumbers) {
+    let numberVals = JSON.parse(textingNumbers).map((el) => el.number);
+    console.log(numberVals, "numbercals");
+    activeTextingNumber = numberVals[0];
+    let html = `
+      <div class="flex flex-col">
+        <div class="flex flex-col mb-2">
+          <span class="text-sm text-[#686868]">From</span>
+
+          <div
+            id="message-toggle-btn"
+            class="w-full flex justify-between p-3 bg-white border-b
+            border-[#BBBBBB] select-none cursor-pointer relative"
+          >
+            <span class="text-[#686868] text-lg active-texting-number">${activeTextingNumber}</span>
+            <img
+              class="duration-200 ease-in transition-transform"
+              src="../images/chevron-down.svg"
+            />
+            <div
+              id="message-options"
+              class="absolute w-full top-10
+              left-0 hidden bg-white shadow-nav flex-col z-100"
+            >
+            </div>
+          </div>
+        </div>
+        <span class="text-sm text-[#686868] mb-2">To</span>
+        ${numberOrContactHtml}
+
+        <textarea id="send-message-text" class="resize-none mt-3 outline-none border border-[#979797] p-2 min-h-36" placeholder="Message..."></textarea>
+
+      </div>
+    `;
+
+    let messageDropdown = numberVals
+      .map((el) => {
+        let isChecked = el === activeTextingNumber ? "checked" : "";
+
+        return `
+        <div class="flex p-4 justify-between cursor-pointer message-option-item border-b border-gray-500">
+            <input
+              type="radio" 
+              class="peer" 
+              name="texting-number" 
+              value="${el}"
+              ${isChecked}
+              id="texting-num-${el}" /> 
+            <label 
+              class="text-sm label-item relative font-medium pl-10 duration-200 ease-in transition-colors
+              select-none text-[#3C3C3C] cursor-pointer peer-checked:text-[#3B9EF7]"
+              for="texting-num-${el}">${el}
+            </label>
+        </div>
+      `;
+      })
+      .join(" ");
+
+    modal.querySelector("main").innerHTML = html;
+    addDialTransferActions(true);
+
+    let messageInput = document.getElementById("send-message-text");
+
+    let messageToggleBtn = document.getElementById("message-toggle-btn");
+    let messageOptionsWrapper = document.getElementById("message-options");
+    messageOptionsWrapper.innerHTML = messageDropdown;
+    messageOptionsWrapper.onclick = function (e) {
+      e.stopPropagation();
+      if (e.target.localName === "label") {
+        activeTextingNumber = e.target.control.value;
+      } else if (e.target.classList.contains("message-option-item")) {
+        console.log(e.target);
+        e.target.querySelector("input").checked = true;
+        activeTextingNumber = e.target.querySelector("input").value;
+      }
+      document.querySelector(".active-texting-number").innerText =
+        activeTextingNumber;
+    };
+
+    messageToggleBtn.onclick = function () {
+      messageOptionsWrapper.classList.toggle("flex");
+      messageOptionsWrapper.classList.toggle("hidden");
+      this.querySelector("img").classList.toggle("rotate-180");
+    };
+
+    messageInput.oninput = function () {
+      let isChecked = document.getElementById("type-number").checked;
+      let emptyContact = $("#select-contact").val().length === 0;
+      let emptyDialInput =
+        document.getElementById("dial-number").value.trim().length === 0;
+      saveBtn.disabled =
+        (isChecked ? emptyDialInput : emptyContact) ||
+        this.value.trim().length === 0;
+    };
+
+    saveBtn.onclick = function () {
+      let to = getContactOrInputValue();
+      let from = messageOptionsWrapper.querySelector("input:checked").value;
+
+      let message = messageInput.value;
+      
+      activeActions.push({
+        type: "send_message",
+        value: to,
+        id: generateUUID(),
+        data: { from, message },
+      });
+
+      modal.querySelector("#close-select-sidecar").click();
+      drawActiveActionsList();
+    };
+  }
+}
+
 function openKeyPressModal(modal) {
   let saveBtn = modal.querySelector("#save-action-btn");
   modal.classList.remove("hidden");
@@ -411,6 +568,9 @@ function handleActions(key) {
       break;
     case "keypress":
       openKeyPressModal(actionModal);
+      break;
+    case "send_message":
+      openSendMessageModal(actionModal);
       break;
     default:
       break;
