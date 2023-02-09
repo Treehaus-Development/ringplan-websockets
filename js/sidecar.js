@@ -8,7 +8,8 @@ let actions = [
   "keypress",
   "hold",
   "send_message",
-  "modify_status",
+  "modify_main_status",
+  "modify_additional_status",
 ];
 
 let numberOrContactHtml = `  
@@ -541,11 +542,149 @@ function openKeyPressModal(modal) {
   };
 }
 
-function openModifyStatusModal(modal) {
+function openModifyStatusModal(modal, key) {
   let saveBtn = modal.querySelector("#save-action-btn");
   modal.classList.remove("hidden");
   modal.classList.add("grid");
-  modal.querySelector("h2").innerText = "Modify status";
+  modal.querySelector("h2").innerText =
+    key === "modify_main_status"
+      ? "Modify main status"
+      : "Modify additional status";
+
+  let activeFocusedBox = "from-status-box";
+
+  let html = `
+      <div class="flex flex-col">
+        <div class="flex justify-between items-center">
+            <label>Use toggle mode</label>
+            <label
+              for="toggle-mode"
+              class="relative inline-flex items-center cursor-pointer"
+            >
+              <input
+                id="toggle-mode"
+                type="checkbox"
+                value=""
+                class="sr-only peer"
+              />
+              <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none 
+                rounded-full peer peer-checked:after:translate-x-full
+                 peer-checked:after:border-white after:content-[''] 
+                 after:absolute after:top-[2px] after:left-[2px] 
+                 after:bg-white after:border-gray-300 
+                 after:border after:rounded-full after:h-5 
+                 after:w-5 after:transition-all peer-checked:bg-blue-600"
+              ></div>
+          </label>
+          </div>
+
+         <div class="flex flex-col my-3">
+            <span>Select status:</span>
+            <div id="modify-status-list" class="flex gap-2 mt-2"></div>
+         </div>
+
+        <div class="flex flex-col gap-2">
+          <div class="flex flex-col">
+              <span>From</span>
+              <input type="hidden" id="from-status" />
+              <div 
+                id="from-status-box" 
+                class="bg-white border-blue-600 p-4 
+                border rounded-2.5 min-h-14 flex gap-3"></div>
+          </div>
+
+          <div class="flex flex-col">
+            <span>To</span>
+            <input type="hidden" id="to-status" />
+            <div 
+              id="to-status-box" 
+              class="bg-white p-4 
+              border border-gray-200 rounded-2.5 min-h-14"></div>
+          </div>
+        </div>
+      </div>
+  `;
+
+  modal.querySelector("main").innerHTML = html;
+
+  let statusListContainer = document.getElementById("modify-status-list");
+  let fromStatusBox = document.getElementById("from-status-box");
+  let toStatusBox = document.getElementById("to-status-box");
+
+  fromStatusBox.onclick = function () {
+    this.classList.add("border-blue-600");
+    this.classList.remove("border-gray-200");
+
+    toStatusBox.classList.remove("border-blue-600");
+    toStatusBox.classList.add("border-gray-200");
+    activeFocusedBox = this.id;
+  };
+
+  toStatusBox.onclick = function () {
+    this.classList.add("border-blue-600");
+    this.classList.remove("border-gray-200");
+
+    fromStatusBox.classList.remove("border-blue-600");
+    fromStatusBox.classList.add("border-gray-200");
+    activeFocusedBox = this.id;
+  };
+
+  let data = Object.keys(
+    key === "modify_main_status"
+      ? { ...statuses, do_not_disturb_local: "" }
+      : additionalStatuses
+  );
+
+  console.log(data, "data====");
+
+  let statusListHtml = data
+    .map((el) => {
+      return `
+      <div data-status="${el}" class="w-5 h-5 
+      cursor-pointer rounded-full status-change-item select-none">
+        <img class="border border-blue-500 rounded-full p-0.38" src="/images/status-icons/${el}.svg" />
+      </div>
+    `;
+    })
+    .join(" ");
+
+  let toggleModeInput = document.getElementById("toggle-mode");
+  toggleModeInput.onchange = function (e) {
+    if (e.target.checked) {
+      while (fromStatusBox.children.length > 1) {
+        fromStatusBox.removeChild(fromStatusBox.children[0]);
+      }
+    }
+  };
+
+  statusListContainer.innerHTML = statusListHtml;
+
+  statusListContainer.onclick = function (e) {
+    if (
+      e.target.parentNode.classList.contains("status-change-item") ||
+      e.target.classList.contains("status-change-item")
+    ) {
+      let targetNode = document.getElementById(activeFocusedBox);
+      let isToggleMode = toggleModeInput.checked;
+      let clone = e.target.cloneNode(true);
+      clone.id = e.target.parentNode.dataset.status + "img";
+      clone.classList.add("w-5");
+
+      if (!targetNode.querySelector(`#${clone.id}`)) {
+        if (isToggleMode || targetNode.id.includes("to")) {
+          targetNode.innerHTML = "";
+        }
+        targetNode.appendChild(clone);
+        targetNode.previousElementSibling.value =
+          e.target.parentNode.dataset.status;
+      }
+
+      saveBtn.disabled =
+        fromStatusBox.previousElementSibling.value.length === 0 ||
+        toStatusBox.previousElementSibling.value.length === 0;
+    }
+  };
 }
 
 function handleActions(key) {
@@ -579,8 +718,9 @@ function handleActions(key) {
     case "send_message":
       openSendMessageModal(actionModal);
       break;
-    case "modify_status":
-      openModifyStatusModal(actionModal);
+    case "modify_main_status":
+    case "modify_additional_status":
+      openModifyStatusModal(actionModal, key);
       break;
     default:
       break;
