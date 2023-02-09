@@ -464,7 +464,7 @@ async function openSendMessageModal(modal) {
       let from = messageOptionsWrapper.querySelector("input:checked").value;
 
       let message = messageInput.value;
-      
+
       activeActions.push({
         type: "send_message",
         value: to,
@@ -541,6 +541,13 @@ function openKeyPressModal(modal) {
   };
 }
 
+function openModifyStatusModal(modal) {
+  let saveBtn = modal.querySelector("#save-action-btn");
+  modal.classList.remove("hidden");
+  modal.classList.add("grid");
+  modal.querySelector("h2").innerText = "Modify status";
+}
+
 function handleActions(key) {
   let actionModal = document.getElementById("sidecar-action-modal");
   let closeModal = document.getElementById("close-select-sidecar");
@@ -571,6 +578,9 @@ function handleActions(key) {
       break;
     case "send_message":
       openSendMessageModal(actionModal);
+      break;
+    case "modify_status":
+      openModifyStatusModal(actionModal);
       break;
     default:
       break;
