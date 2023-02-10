@@ -636,8 +636,6 @@ function openModifyStatusModal(modal, key) {
       : additionalStatuses
   );
 
-  console.log(data, "data====");
-
   let statusListHtml = data
     .map((el) => {
       return `
@@ -655,6 +653,8 @@ function openModifyStatusModal(modal, key) {
       while (fromStatusBox.children.length > 1) {
         fromStatusBox.removeChild(fromStatusBox.children[0]);
       }
+      let val = fromStatusBox.children[0].id.split("_")[0];
+      fromStatusBox.previousElementSibling.value = val;
     }
   };
 
@@ -668,7 +668,7 @@ function openModifyStatusModal(modal, key) {
       let targetNode = document.getElementById(activeFocusedBox);
       let isToggleMode = toggleModeInput.checked;
       let clone = e.target.cloneNode(true);
-      clone.id = e.target.parentNode.dataset.status + "img";
+      clone.id = e.target.parentNode.dataset.status + "_" + "img";
       clone.classList.add("w-5");
 
       if (!targetNode.querySelector(`#${clone.id}`)) {
@@ -677,13 +677,33 @@ function openModifyStatusModal(modal, key) {
         }
         targetNode.appendChild(clone);
         targetNode.previousElementSibling.value =
-          e.target.parentNode.dataset.status;
+          !isToggleMode && targetNode.id.includes("from")
+            ? targetNode.previousElementSibling.value +
+              " " +
+              e.target.parentNode.dataset.status
+            : e.target.parentNode.dataset.status;
       }
 
       saveBtn.disabled =
         fromStatusBox.previousElementSibling.value.length === 0 ||
         toStatusBox.previousElementSibling.value.length === 0;
     }
+  };
+
+  saveBtn.onclick = function () {
+    console.log()
+    activeActions.push({
+      type: "modify_status",
+      id: generateUUID(),
+      data: {
+        toggleMode: toggleModeInput.checked ? 1 : 0,
+        fromStatuses: fromStatusBox.previousElementSibling.value,
+        toStatus: toStatusBox.previousElementSibling.value,
+      },
+    });
+
+    // modal.querySelector("#close-select-sidecar").click();
+    // drawActiveActionsList();
   };
 }
 
